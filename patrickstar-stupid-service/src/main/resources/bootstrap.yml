@@ -1,0 +1,40 @@
+server:
+  port: 4002
+spring:
+  application:
+    name: patrickstar-stupid-service
+  messages:
+    encoding: UTF-8
+  cloud:
+    consul:
+      host: 127.0.0.1
+      port: 8500
+      discovery:
+        register: true
+        instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
+        service-name: ${spring.application.name}
+        port: ${server.port}
+        healthCheckPath: /actuator/health
+        healthCheckInterval: 15s
+      config:
+        enabled: true
+        format: YAML
+        # 指定consul配置的文件夹前缀为config
+        prefix: config
+        # 指定consul配置的配置文件父路径
+        defaultContext: ${spring.application.name}
+        profileSeparator: ','
+        # 指定consul配置的配置文件为data
+        data-key: data
+        # 开启动态更新
+        watch:
+          enabled: true
+
+
+# ribbon参数设置
+ribbon:
+  ReadTimeout: 120000
+  ConnectTimeout: 10000
+  SocketTimeout: 10000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 1
