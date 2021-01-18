@@ -1,8 +1,8 @@
-package com.wsw.patrickstarservice.service.impl;
+package com.wsw.patrickstar.service.impl;
 
-import com.wsw.patrickstar.domain.User;
-import com.wsw.patrickstarservice.repository.AuthRepository;
-import com.wsw.patrickstarservice.service.AuthService;
+import com.wsw.patrickstar.entity.User;
+import com.wsw.patrickstar.repository.AuthRepository;
+import com.wsw.patrickstar.service.AuthService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

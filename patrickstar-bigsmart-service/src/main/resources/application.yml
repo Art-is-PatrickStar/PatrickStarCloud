@@ -1,7 +1,0 @@
-spring:
-  profiles:
-    active: dev  # 开发环境
-
-redisson:
-  client:
-    address: redis://39.107.80.231:6379

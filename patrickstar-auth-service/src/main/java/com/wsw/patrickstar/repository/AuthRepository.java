@@ -1,6 +1,6 @@
-package com.wsw.patrickstarservice.repository;
+package com.wsw.patrickstar.repository;
 
-import com.wsw.patrickstar.domain.User;
+import com.wsw.patrickstar.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

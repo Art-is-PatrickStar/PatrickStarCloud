@@ -1,6 +1,6 @@
-package com.wsw.patrickstarservice.service;
+package com.wsw.patrickstar.service;
 
-import com.wsw.patrickstar.domain.User;
+import com.wsw.patrickstar.entity.User;
 
 /**
  * @Author WangSongWen

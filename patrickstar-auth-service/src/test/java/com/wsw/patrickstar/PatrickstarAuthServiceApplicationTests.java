@@ -1,10 +1,10 @@
-package com.wsw.patrickstarbigsmartservice;
+package com.wsw.patrickstar;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PatrickstarBigsmartServiceApplicationTests {
+class PatrickstarAuthServiceApplicationTests {
 
     @Test
     void contextLoads() {

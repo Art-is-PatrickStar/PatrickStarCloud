@@ -1,11 +1,10 @@
-package com.wsw.patrickstarservice.controller;
+package com.wsw.patrickstar.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.wsw.patrickstar.api.CommonResult;
-import com.wsw.patrickstar.domain.User;
-import com.wsw.patrickstarservice.config.AuthConfig;
-import com.wsw.patrickstarservice.service.AuthService;
+import com.wsw.patrickstar.entity.User;
+import com.wsw.patrickstar.service.AuthService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -25,8 +24,8 @@ public class AuthController {
     @Resource
     private AuthService authService;
 
-    @Resource
-    private AuthConfig authConfig;
+    @Value("${jwt.secretKey}")
+    private String secretKey; // token密钥
 
     @Value("${token.expire.time}")
     private long tokenExpireTime;
@@ -45,8 +44,8 @@ public class AuthController {
 
     @PostMapping("/auth")
     @ResponseBody
-    public CommonResult<Map> auth(@RequestParam("username") String username, @RequestParam("password") String password) {
-        CommonResult<Map> commonResult;
+    public CommonResult<Map<String, Object>> auth(@RequestParam("username") String username, @RequestParam("password") String password) {
+        CommonResult<Map<String, Object>> commonResult;
         try {
             Map<String, Object> map = new LinkedHashMap<>();
             User user = authService.auth(username, password);
@@ -77,8 +76,8 @@ public class AuthController {
      * @date: 2021/1/14 10:38
      **/
     @GetMapping("/token/refresh")
-    public CommonResult<Map> refreshToken(@RequestParam String refreshToken){
-        CommonResult<Map> commonResult;
+    public CommonResult<Map<String, Object>> refreshToken(@RequestParam String refreshToken){
+        CommonResult<Map<String, Object>> commonResult;
         Map<String,Object> resultMap = new HashMap<>();
         String refreshTokenKey = String.format(jwtRefreshTokenKeyFormat, refreshToken);
         String userName = (String)stringRedisTemplate.opsForHash().get(refreshTokenKey, "username");
@@ -98,7 +97,6 @@ public class AuthController {
     }
 
     private String buildJWT(String userName){
-        String secretKey = authConfig.getSecretKey();  // token密钥
         //生成jwt
         Date now = new Date();
         Algorithm algo = Algorithm.HMAC256(secretKey);
