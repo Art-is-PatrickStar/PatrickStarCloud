@@ -30,11 +30,13 @@ public class TaskController {
 
     @PostMapping("/create")
     public CommonResult createTask(@RequestBody Task task) {
-        int result = taskService.createTask(task);
-        if (result > 0){
-            return CommonResult.success(result);
+        try {
+            int result = taskService.createTask(task);
+            return CommonResult.success(result, "创建任务成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return CommonResult.failed("创建任务失败");
         }
-        return CommonResult.failed();
     }
 
     @PutMapping("/update/byid")

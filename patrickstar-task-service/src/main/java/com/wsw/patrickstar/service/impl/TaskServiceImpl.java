@@ -51,37 +51,31 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int createTask(Task task) {
-        int result = 0;
+        int result;
+        // 添加任务
+        result = taskMapper.createTask(task);
+        //同步调用
+        // 调用recepienter服务添加领取人员信息
+        // recepienterClient.create(task.getTaskId(), task.getTaskName(), task.getRecepientName(), new Date().toString());
+        Map<String, Object> messageMap = new HashMap<>();
+        messageMap.put("taskId", task.getTaskId());
+        messageMap.put("taskName", task.getTaskName());
+        messageMap.put("testerName", task.getTesterName());
+        messageMap.put("recepientName", task.getRecepientName());
+        messageMap.put("remark", new Date().toString());
+
+        // 防止重复提交 Redis分布式锁
+        RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
+        lock.lock(30, TimeUnit.SECONDS);
         try {
-            // 添加任务
-            result = taskMapper.createTask(task);
-            //同步调用
-            // 调用recepienter服务添加领取人员信息
-            // recepienterClient.create(task.getTaskId(), task.getTaskName(), task.getRecepientName(), new Date().toString());
-            Map<String, Object> messageMap = new HashMap<>();
-            messageMap.put("taskId", task.getTaskId());
-            messageMap.put("taskName", task.getTaskName());
-            messageMap.put("testerName", task.getTesterName());
-            messageMap.put("recepientName", task.getRecepientName());
-            messageMap.put("remark", new Date().toString());
-
-            // 防止重复提交 Redis分布式锁
-            RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
-            lock.lock(30, TimeUnit.SECONDS);
-            try {
-                // RabbitMQ异步发消息
-                asyncSendMessage.asyncSendMessage(messageMap);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                lock.unlock();
-            }
-
-        } catch (AmqpException e) {
+            // RabbitMQ异步发消息
+            asyncSendMessage.asyncSendMessage(messageMap);
+        } catch (Exception e) {
             log.error("消息发送失败: " + e.getMessage());
+        } finally {
+            lock.unlock();
         }
         log.info("消息发送成功!");
-
         return result;
     }
 
