@@ -1,8 +1,8 @@
-package com.wsw.summercloud.controller;
+package com.wsw.patrickstar.controller;
 
-import com.wsw.summercloud.api.CommonResult;
-import com.wsw.summercloud.domain.Task;
-import com.wsw.summercloud.service.TaskService;
+import com.wsw.patrickstar.api.CommonResult;
+import com.wsw.patrickstar.domain.Task;
+import com.wsw.patrickstar.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.*;

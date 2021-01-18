@@ -1,4 +1,4 @@
-package com.wsw.summercloud.config;
+package com.wsw.patrickstar.config;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;

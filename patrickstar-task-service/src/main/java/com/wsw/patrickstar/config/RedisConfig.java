@@ -1,4 +1,4 @@
-package com.wsw.summercloud.config;
+package com.wsw.patrickstar.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

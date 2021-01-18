@@ -1,6 +1,6 @@
-package com.wsw.summercloud.service;
+package com.wsw.patrickstar.service;
 
-import com.wsw.summercloud.domain.Task;
+import com.wsw.patrickstar.domain.Task;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.wsw.summercloud.Schedule;
+package com.wsw.patrickstar.Schedule;
 
 import org.springframework.stereotype.Component;
 

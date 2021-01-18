@@ -1,4 +1,4 @@
-package com.wsw.summercloud.config;
+package com.wsw.patrickstar.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

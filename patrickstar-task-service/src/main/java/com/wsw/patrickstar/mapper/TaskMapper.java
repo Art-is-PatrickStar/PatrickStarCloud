@@ -1,6 +1,6 @@
-package com.wsw.summercloud.mapper;
+package com.wsw.patrickstar.mapper;
 
-import com.wsw.summercloud.domain.Task;
+import com.wsw.patrickstar.domain.Task;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

@@ -1,4 +1,4 @@
-package com.wsw.summercloud.message;
+package com.wsw.patrickstar.message;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;

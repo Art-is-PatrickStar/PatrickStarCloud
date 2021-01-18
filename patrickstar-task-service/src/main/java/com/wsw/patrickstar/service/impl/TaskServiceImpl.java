@@ -1,10 +1,9 @@
-package com.wsw.summercloud.service.impl;
+package com.wsw.patrickstar.service.impl;
 
-import com.wsw.summercloud.client.TaskClient;
-import com.wsw.summercloud.domain.Task;
-import com.wsw.summercloud.mapper.TaskMapper;
-import com.wsw.summercloud.message.AsyncSendMessage;
-import com.wsw.summercloud.service.TaskService;
+import com.wsw.patrickstar.domain.Task;
+import com.wsw.patrickstar.mapper.TaskMapper;
+import com.wsw.patrickstar.message.AsyncSendMessage;
+import com.wsw.patrickstar.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -39,8 +38,8 @@ import java.util.concurrent.TimeUnit;
 public class TaskServiceImpl implements TaskService {
     @Resource
     private TaskMapper taskMapper;
-    @Resource
-    private TaskClient teskClient;
+//    @Resource
+//    private TaskClient teskClient;
     @Resource
     private AsyncSendMessage asyncSendMessage;
     @Resource
