@@ -13,6 +13,8 @@
         <module>patrickstar-common</module>
         <module>patrickstar-auth-service</module>
         <module>patrickstar-gateway-service</module>
+        <module>patrickstar-task-service</module>
+        <module>patrickstar-recepienter-service</module>
     </modules>
 
     <!-- 统一管理jar包版本 -->
