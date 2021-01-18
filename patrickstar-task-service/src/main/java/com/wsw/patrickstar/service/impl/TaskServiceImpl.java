@@ -1,6 +1,7 @@
 package com.wsw.patrickstar.service.impl;
 
 import com.wsw.patrickstar.domain.Task;
+import com.wsw.patrickstar.feign.client.RecepienterClient;
 import com.wsw.patrickstar.mapper.TaskMapper;
 import com.wsw.patrickstar.message.AsyncSendMessage;
 import com.wsw.patrickstar.service.TaskService;
@@ -38,8 +39,8 @@ import java.util.concurrent.TimeUnit;
 public class TaskServiceImpl implements TaskService {
     @Resource
     private TaskMapper taskMapper;
-//    @Resource
-//    private TaskClient teskClient;
+    @Resource
+    private RecepienterClient recepienterClient;
     @Resource
     private AsyncSendMessage asyncSendMessage;
     @Resource
@@ -56,7 +57,7 @@ public class TaskServiceImpl implements TaskService {
             result = taskMapper.createTask(task);
             //同步调用
             // 调用recepienter服务添加领取人员信息
-            //teskClient.create(task.getTaskId(), task.getTaskName(), task.getRecepientName(), new Date().toString());
+            // recepienterClient.create(task.getTaskId(), task.getTaskName(), task.getRecepientName(), new Date().toString());
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("taskId", task.getTaskId());
             messageMap.put("taskName", task.getTaskName());

@@ -32,7 +32,7 @@ public class RecepienterServiceImpl implements RecepienterService {
     public void receiveMessage(Message message, Channel channel, Map<String, Object> messageMap) throws IOException {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            log.info("summercloud-task-service接收到了消息: " + objectMapper.writeValueAsString(messageMap));
+            log.info("patrickstar-recepienter-service接收到了消息: " + objectMapper.writeValueAsString(messageMap));
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
             Long taskId = MapUtils.getLong(messageMap, "taskId");
             String taskName = MapUtils.getString(messageMap, "taskName");
@@ -41,7 +41,7 @@ public class RecepienterServiceImpl implements RecepienterService {
             if (null != taskId && StringUtils.isNotBlank(taskName) && StringUtils.isNotBlank(recepientName)) {
                 int result = insert(taskId, taskName, recepientName, remark);
                 if (result >= 1) {
-                    log.info("summercloud-task-service插入数据成功!");
+                    log.info("patrickstar-recepienter-service插入数据成功!");
                 }
             }
         } catch (Exception e) {

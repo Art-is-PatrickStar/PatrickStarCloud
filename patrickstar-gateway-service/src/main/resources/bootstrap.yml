@@ -35,15 +35,15 @@ spring:
       # 路由规则配置
       routes:
         # main主服务
-        - id: patrickstar-main-service  # 路由ID
-          # gateway自动从consul获取patrickstar-main-service可用节点进行转发
+        - id: patrickstar-task-service  # 路由ID
+          # gateway自动从consul获取patrickstar-task-service可用节点进行转发
           # 默认会将所有gateway uri转发
-          uri: lb://patrickstar-main-service
+          uri: lb://patrickstar-task-service
           predicates: # 谓词
-            - Path=/patrickstar-main-service/**  # 1998/patrickstar-main-service/task/select/byid -> 2001/patrickstar-main-service/task/select/byid
+            - Path=/patrickstar-task-service/**  # 1998/patrickstar-task-service/task/select/byid -> 2001/patrickstar-task-service/task/select/byid
             - After=2020-11-12T00:00:00.000+08:00[Asia/Shanghai]  # 2020-11-12后该微服务才上线，暴露接口
           filters: # 过滤器
-            - StripPrefix=1  # 忽略掉第一层前缀进行转发 1998/patrickstar-main-service/task/select/byid -> 2001/task/select/byid
+            - StripPrefix=1  # 忽略掉第一层前缀进行转发 1998/patrickstar-task-service/task/select/byid -> 2001/task/select/byid
         # 认证中心
         - id: patrickstar-auth-service
           uri: lb://patrickstar-auth-service
