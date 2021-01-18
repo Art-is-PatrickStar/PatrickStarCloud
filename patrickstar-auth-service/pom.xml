@@ -12,7 +12,7 @@
     </parent>
 
     <dependencies>
-        <!--consul-->
+        <!-- consul -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-consul-discovery</artifactId>
@@ -21,12 +21,12 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-consul-config</artifactId>
         </dependency>
-        <!--openFeign-->
+        <!-- openFeign -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
-        <!-- 引入自定义的API通用包-->
+        <!-- 引入自定义的API通用包 -->
         <dependency>
             <groupId>com.wsw</groupId>
             <artifactId>patrickstar-common</artifactId>
