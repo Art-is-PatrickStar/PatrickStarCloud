@@ -10,7 +10,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>patrickstar-bigsmart-service</module>
+        <module>patrickstar-common</module>
+        <module>patrickstar-auth-service</module>
     </modules>
 
     <!-- 统一管理jar包版本 -->
@@ -31,6 +32,7 @@
         <commons-collections4.version>4.4</commons-collections4.version>
         <commons-pool2>2.8.1</commons-pool2>
         <jjwt-version>0.11.2</jjwt-version>
+        <java-jwt-version>3.12.0</java-jwt-version>
         <redisson.version>3.13.4</redisson.version>
     </properties>
 
@@ -123,6 +125,11 @@
                 <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
                 <version>${jjwt-version}</version>
                 <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.auth0</groupId>
+                <artifactId>java-jwt</artifactId>
+                <version>${java-jwt-version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

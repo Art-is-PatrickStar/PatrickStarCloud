@@ -1,8 +1,8 @@
 server:
-  port: 4002
+  port: 3000
 spring:
   application:
-    name: patrickstar-stupid-service
+    name: patrickstar-auth-service
   messages:
     encoding: UTF-8
   cloud:
@@ -11,11 +11,11 @@ spring:
       port: 8500
       discovery:
         register: true
-        instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
+        instance-id: ${spring.application.name}:${server.port}
         service-name: ${spring.application.name}
         port: ${server.port}
-        healthCheckPath: /actuator/health
-        healthCheckInterval: 15s
+        health-check-path: /actuator/health
+        health-check-interval: 15s
       config:
         enabled: true
         format: YAML
@@ -29,7 +29,6 @@ spring:
         # 开启动态更新
         watch:
           enabled: true
-
 
 # ribbon参数设置
 ribbon:

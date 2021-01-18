@@ -1,10 +1,10 @@
-package com.wsw.patrickstarstupidservice;
+package com.wsw.patrickstarservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PatrickstarStupidServiceApplicationTests {
+class PatrickstarAuthServiceApplicationTests {
 
     @Test
     void contextLoads() {
