@@ -25,7 +25,7 @@ Java1.8
 2. 配置中心 consul
 3. 服务调用 OpenFeign
 4. 负载均衡 Ribbon
-5. 服务限流降级 Hytrix
+5. 服务限流降级 Hystrix
 6. 网关 Gateway
 7. 服务总线 SpringCloud Bus
 8. 缓存中间件 Redis
