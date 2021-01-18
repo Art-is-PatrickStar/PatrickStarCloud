@@ -1,35 +1,37 @@
 spring:
-    profiles:
-        active: dev
-    application:
-        name: summercloud-task-service
+  application:
+    name: patrickstar-recepienter-service
+  messages:
+    encoding: UTF-8
+  cloud:
+    consul:
+      host: 127.0.0.1
+      port: 8500
+      discovery:
+        register: true
+        instance-id: ${spring.application.name}:${server.port}
+        service-name: ${spring.application.name}
+        port: ${server.port}
+        health-check-path: /actuator/health
+        health-check-interval: 15s
+      config:
+        enabled: true
+        format: YAML
+        # 指定consul配置的文件夹前缀为config
+        prefix: config
+        # 指定consul配置的配置文件父路径
+        defaultContext: ${spring.application.name}
+        profileSeparator: ','
+        # 指定consul配置的配置文件为data
+        data-key: data
+        # 开启动态更新
+        watch:
+          enabled: true
 
-    cloud:
-        nacos:
-            discovery:
-                server-addr: localhost:8848  # 配置nacos地址
-            config:
-                server-addr: localhost:8848  # nacos配置中心地址
-                file-extension: yaml  # 配置文件格式
-                group: DEFAULT_GROUP
-
-        sentinel:
-            transport:
-                dashboard: localhost:9090  # sentinel dashboard地址
-                port: 8719  # sentinel api port
-            # sentinel配置持久化
-            datasource:
-                ds1:
-                    nacos:
-                        server-addr: localhost:8848
-                        dataId: summercloud-task-service
-                        groupId: DEFAULT_GROUP
-                        data-type: json
-                        rule-type: flow
-
-# 使用openfeign已整合的Ribbon 设置feign客户端的超时时间
+# ribbon参数设置
 ribbon:
-    # 建立连接后，从服务器读取到可用资源所用的时间
-    ReadTimeout: 20000
-    # 建立连接所用的时间，适用于网络状况正常的情况下，两端连接所用的时间
-    ConnectTimeout: 20000
+  ReadTimeout: 120000
+  ConnectTimeout: 10000
+  SocketTimeout: 10000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 1

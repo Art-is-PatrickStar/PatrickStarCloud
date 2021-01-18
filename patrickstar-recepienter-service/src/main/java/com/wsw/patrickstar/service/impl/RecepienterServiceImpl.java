@@ -1,9 +1,9 @@
-package com.wsw.patrickstarrecepienterservice.service.impl;
+package com.wsw.patrickstar.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
-import com.wsw.patrickstarrecepienterservice.mapper.RecepienterMapper;
-import com.wsw.patrickstarrecepienterservice.service.RecepienterService;
+import com.wsw.patrickstar.mapper.RecepienterMapper;
+import com.wsw.patrickstar.service.RecepienterService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;

@@ -1,4 +1,4 @@
-package com.wsw.patrickstarrecepienterservice.service;
+package com.wsw.patrickstar.service;
 
 
 /**

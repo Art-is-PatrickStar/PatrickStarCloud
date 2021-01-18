@@ -1,6 +1,6 @@
-package com.wsw.patrickstarrecepienterservice.mapper;
+package com.wsw.patrickstar.mapper;
 
-import com.wsw.patrickstarrecepienterservice.domain.Recepienter;
+import com.wsw.patrickstar.domain.Recepienter;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

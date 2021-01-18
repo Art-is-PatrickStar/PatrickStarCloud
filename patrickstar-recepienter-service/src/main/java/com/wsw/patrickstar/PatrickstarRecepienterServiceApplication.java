@@ -1,4 +1,4 @@
-package com.wsw.patrickstarrecepienterservice;
+package com.wsw.patrickstar;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

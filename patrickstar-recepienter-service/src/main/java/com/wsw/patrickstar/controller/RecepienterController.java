@@ -1,6 +1,6 @@
-package com.wsw.patrickstarrecepienterservice.controller;
+package com.wsw.patrickstar.controller;
 
-import com.wsw.patrickstarrecepienterservice.service.RecepienterService;
+import com.wsw.patrickstar.service.RecepienterService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
