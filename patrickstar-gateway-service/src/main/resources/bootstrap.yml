@@ -1,37 +1,33 @@
-server:
-  port: 4000
-
 spring:
-  profiles:
-    active: dev  # 开发环境
   application:
-    name: summercloud-gateway-service
+    name: patrickstar-gateway-service
+  messages:
+    encoding: UTF-8
   cloud:
-    nacos:
+    consul:
+      host: 127.0.0.1
+      port: 8500
       discovery:
-        server-addr: localhost:8848  # nacos注册中心地址
+        register: true
+        instance-id: ${spring.application.name}:${server.port}
+        service-name: ${spring.application.name}
+        port: ${server.port}
+        health-check-path: /actuator/health
+        health-check-interval: 15s
       config:
-        server-addr: localhost:8848  # nacos配置中心地址
-        file-extension: yaml  # 配置文件格式
-        group: DEFAULT_GROUP
-        ext-config:
-          - data-id: summercloud-${spring.profiles.active}.yaml
-            group: DEFAULT_GROUP
-            refresh: true  # 是否允许自动刷新
-    sentinel:
-      eager: true  # 取消控制台懒加载
-      transport:
-        dashboard: localhost:9090  # sentinel dashboard地址
-        port: 8719  # sentinel api port
-      # sentinel配置持久化
-      datasource:
-        ds1:
-          nacos:
-            server-addr: localhost:8848
-            dataId: summercloud-gateway-service
-            groupId: TEST_GROUP
-            data-type: json
-            rule-type: flow
+        enabled: true
+        format: YAML
+        # 指定consul配置的文件夹前缀为config
+        prefix: config
+        # 指定consul配置的配置文件父路径
+        defaultContext: ${spring.application.name}
+        profileSeparator: ','
+        # 指定consul配置的配置文件为data
+        data-key: data
+        # 开启动态更新
+        watch:
+          enabled: true
+
     gateway:
       discovery:
         locator:
@@ -39,20 +35,20 @@ spring:
       # 路由规则配置
       routes:
         # main主服务
-        - id: summercloud-main-service-route  # 路由ID
-          # gateway自动从Nacos获取summercloud-main-service可用节点进行转发
+        - id: patrickstar-main-service  # 路由ID
+          # gateway自动从consul获取patrickstar-main-service可用节点进行转发
           # 默认会将所有gateway uri转发
-          uri: lb://summercloud-main-service
+          uri: lb://patrickstar-main-service
           predicates: # 谓词
-            - Path=/summercloud-main-service/**  # 1998/summercloud-main-service/task/select/byid -> 2001/summercloud-main-service/task/select/byid
+            - Path=/patrickstar-main-service/**  # 1998/patrickstar-main-service/task/select/byid -> 2001/patrickstar-main-service/task/select/byid
             - After=2020-11-12T00:00:00.000+08:00[Asia/Shanghai]  # 2020-11-12后该微服务才上线，暴露接口
           filters: # 过滤器
-            - StripPrefix=1  # 忽略掉第一层前缀进行转发 1998/summercloud-main-service/task/select/byid -> 2001/task/select/byid
+            - StripPrefix=1  # 忽略掉第一层前缀进行转发 1998/patrickstar-main-service/task/select/byid -> 2001/task/select/byid
         # 认证中心
-        - id: summercloud-auth-service-route
-          uri: lb://summercloud-auth-service
+        - id: patrickstar-auth-service
+          uri: lb://patrickstar-auth-service
           predicates:
-            - Path=/summercloud-auth-service/**
+            - Path=/patrickstar-auth-service/**
           filters:
             - StripPrefix=1
 
@@ -80,4 +76,12 @@ jwt:
 # 不进行token拦截
 auth:
   skip:
-    urls: /summercloud-auth-service/auth, /summercloud-auth-service/token/refresh
+    urls: /patrickstar-auth-service/auth, /patrickstar-auth-service/token/refresh
+
+# ribbon参数设置
+ribbon:
+  ReadTimeout: 120000
+  ConnectTimeout: 10000
+  SocketTimeout: 10000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 1

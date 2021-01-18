@@ -1,11 +1,10 @@
-package com.wsw.summercloud.filters;
+package com.wsw.patrickstar.filters;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.wsw.summercloud.config.AuthConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -33,8 +32,8 @@ import java.util.Arrays;
 @Component
 @Slf4j
 public class AuthFilter implements GlobalFilter, Ordered {
-    @Resource
-    private AuthConfig authConfig;
+    @Value("${jwt.secretKey}")
+    private String secretKey; // token密钥
 
     @Value("${auth.skip.urls}")
     private String[] skipAuthUrls;
@@ -86,7 +85,6 @@ public class AuthFilter implements GlobalFilter, Ordered {
      **/
     private String verifyJWT(String token){
         String userName;
-        String secretKey = authConfig.getSecretKey();  // token密钥
         try {
             Algorithm algorithm = Algorithm.HMAC256(secretKey);
             JWTVerifier verifier = JWT.require(algorithm)
