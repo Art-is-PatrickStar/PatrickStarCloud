@@ -12,6 +12,7 @@
     <modules>
         <module>patrickstar-common</module>
         <module>patrickstar-auth-service</module>
+        <module>patrickstar-gateway-service</module>
     </modules>
 
     <!-- 统一管理jar包版本 -->
