@@ -112,7 +112,7 @@ spring:
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.wsw.patrickstar.domain
+  type-aliases-package: com.wsw.patrickstar.entity
 
 redisson:
   client:
@@ -215,6 +215,10 @@ spring:
       idle-timeout: 30000
       pool-name: DatebookHikariCP
       connection-timeout: 30000
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
 
   rabbitmq:
     host: 127.0.0.1
@@ -230,10 +234,6 @@ spring:
       simple:
         # 消费端手动ack消息
         acknowledge-mode: manual
-
-mybatis:
-  mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.wsw.patrickstar.domain
 
 management:
   endpoints:
