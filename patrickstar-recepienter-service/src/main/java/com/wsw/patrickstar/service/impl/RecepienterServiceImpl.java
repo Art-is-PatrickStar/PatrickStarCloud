@@ -2,7 +2,7 @@ package com.wsw.patrickstar.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
-import com.wsw.patrickstar.mapper.RecepienterMapper;
+import com.wsw.patrickstar.repository.RecepienterRepository;
 import com.wsw.patrickstar.service.RecepienterService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
@@ -25,7 +25,7 @@ import java.util.Map;
 @Slf4j
 public class RecepienterServiceImpl implements RecepienterService {
     @Resource
-    private RecepienterMapper recepienterMapper;
+    private RecepienterRepository recepienterRepository;
 
     @RabbitHandler
     @RabbitListener(queues = "queueTask")
@@ -60,6 +60,6 @@ public class RecepienterServiceImpl implements RecepienterService {
 
     @Override
     public int insert(Long taskId, String taskName, String name, String remark) {
-        return recepienterMapper.insert(taskId, taskName, name, remark);
+        return recepienterRepository.save(taskId, taskName, name, remark);
     }
 }
