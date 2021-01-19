@@ -52,7 +52,7 @@ public class AuthController {
             // 生成token
             String token = buildJWT(user.getUsername());
             // 生成refreshToken
-            String refreshToken = UUID.randomUUID().toString().replaceAll("-","");
+            String refreshToken = UUID.randomUUID().toString().replaceAll("-", "");
             // 保存refreshToken至redis，使用hash结构保存使用中的token以及用户标识
             String refreshTokenKey = String.format(jwtRefreshTokenKeyFormat, refreshToken);
             stringRedisTemplate.opsForHash().put(refreshTokenKey, "token", token);
@@ -76,18 +76,18 @@ public class AuthController {
      * @date: 2021/1/14 10:38
      **/
     @GetMapping("/token/refresh")
-    public CommonResult<Map<String, Object>> refreshToken(@RequestParam String refreshToken){
+    public CommonResult<Map<String, Object>> refreshToken(@RequestParam String refreshToken) {
         CommonResult<Map<String, Object>> commonResult;
-        Map<String,Object> resultMap = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         String refreshTokenKey = String.format(jwtRefreshTokenKeyFormat, refreshToken);
-        String userName = (String)stringRedisTemplate.opsForHash().get(refreshTokenKey, "username");
-        if(StringUtils.isBlank(userName)){
+        String userName = (String) stringRedisTemplate.opsForHash().get(refreshTokenKey, "username");
+        if (StringUtils.isBlank(userName)) {
             commonResult = CommonResult.unauthorized();
             return commonResult;
         }
         String newToken = buildJWT(userName);
         // 替换当前token，并将旧token添加到黑名单
-        String oldToken = (String)stringRedisTemplate.opsForHash().get(refreshTokenKey, "token");
+        String oldToken = (String) stringRedisTemplate.opsForHash().get(refreshTokenKey, "token");
         stringRedisTemplate.opsForHash().put(refreshTokenKey, "token", newToken);
         stringRedisTemplate.opsForValue().set(String.format(jwtBlacklistKeyFormat, oldToken), "",
                 tokenExpireTime, TimeUnit.MILLISECONDS);
@@ -96,7 +96,7 @@ public class AuthController {
         return commonResult;
     }
 
-    private String buildJWT(String userName){
+    private String buildJWT(String userName) {
         //生成jwt
         Date now = new Date();
         Algorithm algo = Algorithm.HMAC256(secretKey);

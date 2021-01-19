@@ -1,4 +1,4 @@
-package com.wsw.patrickstar.domain;
+package com.wsw.patrickstar.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

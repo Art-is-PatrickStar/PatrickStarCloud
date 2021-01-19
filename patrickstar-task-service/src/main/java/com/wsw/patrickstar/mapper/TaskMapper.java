@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.mapper;
 
-import com.wsw.patrickstar.domain.Task;
+import com.wsw.patrickstar.entity.Task;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

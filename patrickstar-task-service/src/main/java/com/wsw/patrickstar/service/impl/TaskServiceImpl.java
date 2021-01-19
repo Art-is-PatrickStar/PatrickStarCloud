@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.service.impl;
 
-import com.wsw.patrickstar.domain.Task;
+import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.feign.client.RecepienterClient;
 import com.wsw.patrickstar.mapper.TaskMapper;
 import com.wsw.patrickstar.message.AsyncSendMessage;
@@ -8,7 +8,6 @@ import com.wsw.patrickstar.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.amqp.AmqpException;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
