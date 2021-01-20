@@ -33,24 +33,4 @@
     <update id="updateTaskStatusByTaskId">
         update task set task_status=#{taskStatus} where task_id=#{taskId}
     </update>
-
-    <select id="selectTaskById" resultMap="BaseResultMap">
-        select * from task where task_id=#{taskId}
-    </select>
-
-    <select id="selectTaskByName" resultMap="BaseResultMap">
-        select * from task where task_name=#{taskName}
-    </select>
-
-    <select id="selectTaskByStatus" resultMap="BaseResultMap">
-        select * from task where task_status=#{taskStatus}
-    </select>
-
-    <delete id="deleteTaskByTaskId">
-        delete from task where task_id=#{taskId}
-    </delete>
-
-    <delete id="deleteTaskByTaskName">
-        delete from task where task_name=#{taskName}
-    </delete>
 </mapper>

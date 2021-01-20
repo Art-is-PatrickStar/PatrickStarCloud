@@ -4,6 +4,7 @@ import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.feign.client.RecepienterClient;
 import com.wsw.patrickstar.mapper.TaskMapper;
 import com.wsw.patrickstar.message.AsyncSendMessage;
+import com.wsw.patrickstar.repository.TaskRepository;
 import com.wsw.patrickstar.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -36,6 +37,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @CacheConfig(cacheNames = "task")
 public class TaskServiceImpl implements TaskService {
+    @Resource
+    private TaskRepository taskRepository;
     @Resource
     private TaskMapper taskMapper;
     @Resource
@@ -111,30 +114,30 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @CacheEvict(key = "#p0", allEntries = true)
     public int deleteTaskByTaskId(Long taskId) {
-        return taskMapper.deleteTaskByTaskId(taskId);
+        return taskRepository.deleteTaskByTaskId(taskId);
     }
 
     @Override
     @CacheEvict(key = "#p0", allEntries = true)
     public int deleteTaskByTaskName(String taskName) {
-        return taskMapper.deleteTaskByTaskName(taskName);
+        return taskRepository.deleteTaskByTaskName(taskName);
     }
 
     @Override
     @Cacheable(key = "#p0")
     public Task selectTaskById(Long taskId) {
-        return taskMapper.selectTaskById(taskId);
+        return taskRepository.findTaskByTaskId(taskId);
     }
 
     @Override
     @Cacheable(key = "#p0")
     public List<Task> selectTaskByName(String taskName) {
-        return taskMapper.selectTaskByName(taskName);
+        return taskRepository.findTaskByTaskName(taskName);
     }
 
     @Override
     @Cacheable(key = "#p0")
     public List<Task> selectTaskByStatus(char taskStatus) {
-        return taskMapper.selectTaskByStatus(taskStatus);
+        return taskRepository.findTaskByTaskStatus(taskStatus);
     }
 }

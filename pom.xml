@@ -28,7 +28,6 @@
         <mysql.version>8.0.18</mysql.version>
         <spring.boot.version>2.2.2.RELEASE</spring.boot.version>
         <spring.cloud.version>Hoxton.SR1</spring.cloud.version>
-        <spring.cloud.alibaba.version>2.1.0.RELEASE</spring.cloud.alibaba.version>
         <mybatis-spring-boot-starter.version>2.1.1</mybatis-spring-boot-starter.version>
         <spring.boot.admin.version>2.1.6</spring.boot.admin.version>
         <commons-lang3.version>3.11</commons-lang3.version>
