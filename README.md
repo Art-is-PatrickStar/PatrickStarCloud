@@ -70,7 +70,7 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://***:3306/task-system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: HengTian
+    username: ***
     password: ***
     hikari:
       minimum-idle: 5
@@ -135,7 +135,7 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://***:3306/task-system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: HengTian
+    username: ***
     password: ***
     hikari:
       minimum-idle: 5
@@ -205,7 +205,7 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://***:3306/task-system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: HengTian
+    username: ***
     password: ***
     hikari:
       minimum-idle: 5
