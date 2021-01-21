@@ -37,7 +37,7 @@ public class RedisConfig {
     private String redissonAddress;
 
     // 配置Jackson2JsonRedisSerializer序列化策略
-    private Jackson2JsonRedisSerializer<Object> serializer() {
+    private Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer() {
         // 使用Jackson2JsonRedisSerializer来序列化和反序列化redis的value值
         Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -52,7 +52,7 @@ public class RedisConfig {
 
     // 缓存管理器
     @Bean
-    public CacheManager cacheManager(RedisConnectionFactory factory) {
+    public CacheManager taskCacheManager(RedisConnectionFactory factory) {
         RedisSerializer<String> redisSerializer = new StringRedisSerializer();
         // 配置序列化（解决乱码的问题）
         RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
@@ -60,7 +60,7 @@ public class RedisConfig {
                 // 使用StringRedisSerializer来序列化和反序列化redis的key值
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer))
                 // 使用Jackson2JsonRedisSerializer来序列化和反序列化redis的value值
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer()))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer()))
                 // 禁用空值
                 .disableCachingNullValues();
 
@@ -74,16 +74,14 @@ public class RedisConfig {
         RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(factory);
         // 用Jackson2JsonRedisSerializer来序列化和反序列化redis的value值
-        redisTemplate.setValueSerializer(serializer());
-
+        redisTemplate.setValueSerializer(jackson2JsonRedisSerializer());
         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
         // 使用StringRedisSerializer来序列化和反序列化redis的key值
         redisTemplate.setKeySerializer(stringRedisSerializer);
-
         // hash的key也采用String的序列化方式
         redisTemplate.setHashKeySerializer(stringRedisSerializer);
         // hash的value序列化方式采用jackson
-        redisTemplate.setHashValueSerializer(serializer());
+        redisTemplate.setHashValueSerializer(jackson2JsonRedisSerializer());
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
     }

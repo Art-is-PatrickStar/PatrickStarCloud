@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 @Slf4j
-@CacheConfig(cacheNames = "task")
+@CacheConfig(cacheNames = "task", cacheManager = "taskCacheManager")
 public class TaskServiceImpl implements TaskService {
     @Resource
     private TaskRepository taskRepository;
