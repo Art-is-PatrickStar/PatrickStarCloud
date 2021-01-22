@@ -64,7 +64,8 @@ public class ElasticController {
     @GetMapping("/search")
     public CommonResult search(@RequestParam String keyWord) {
         try {
-            Page<Blog> blogs = elasticService.search(keyWord);
+            Page<Blog> blogPage = elasticService.search(keyWord);
+            List<Blog> blogs = blogPage.getContent();
             return CommonResult.success(blogs);
         } catch (Exception e) {
             return CommonResult.failed(e.getMessage());
