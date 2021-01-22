@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: patrickstar-task-service
+  messages:
+    encoding: UTF-8
+  cloud:
+    consul:
+      # consul服务器地址
+      host: 127.0.0.1
+      # consul服务端口
+      port: 8500
+      discovery:
+        # 启用服务发现
+        enabled: true
+        # 启用服务注册
+        register: true
+        # 服务停止时取消注册
+        deregister: true
+        # 表示注册时使用IP而不是hostname
+        prefer-ip-address: true
+        # 服务注册标识,格式为: 应用名称+端口
+        instance-id: ${spring.application.name}:${server.port}
+        service-name: ${spring.application.name}
+        port: ${server.port}
+        # 健康检查的路径
+        health-check-path: /actuator/health
+        # 执行监控检查的频率
+        health-check-interval: 30s
+      config:
+        # enabled为true表示启用配置管理功能
+        enabled: true
+        # 表示使用的配置格式
+        format: YAML
+        # 指定consul配置的文件夹前缀为config
+        prefix: config
+        # 指定consul配置的配置文件父路径
+        defaultContext: ${spring.application.name}
+        # 多配置文件分隔符
+        profileSeparator: ','
+        # 指定consul配置的配置文件为data
+        data-key: data
+        # 表示如果没有发现配置，是否抛出异常，true为是，false为否，当为false时，consul会打印warn级别的日志信息
+        fail-fast: false
+        # watch选项为配置监视功能，主要监视配置的改变
+        watch:
+          enabled: true
+          delay: 10000
+          wait-time: 30
+
+# ribbon参数设置
+ribbon:
+  ReadTimeout: 120000
+  ConnectTimeout: 10000
+  SocketTimeout: 10000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 1
