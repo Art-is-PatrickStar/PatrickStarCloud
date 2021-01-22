@@ -1,6 +1,6 @@
 spring:
   application:
-    name: patrickstar-task-service
+    name: patrickstar-search-service
   messages:
     encoding: UTF-8
   cloud:
