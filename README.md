@@ -27,9 +27,9 @@ Java1.8
 4. 负载均衡 Ribbon
 5. 服务限流降级 Hystrix
 6. 网关 Gateway
-7. 服务总线 SpringCloud Bus
-8. 缓存中间件 Redis
-9. 消息中间件 RabbitMQ
+7. 缓存中间件 Redis
+8. 消息中间件 RabbitMQ
+9. 搜索引擎 ElasticSearch
 ```
 
 ## 项目结构
@@ -39,6 +39,7 @@ patrickstar-gateway-service -> 4000
 patrickstar-auth-service -> 3000
 patrickstar-task-service -> 4001
 patrickstar-recepienter-service -> 4002
+patrickstar-search-service -> 4003
 ```
 
 ## 程序运行
@@ -234,6 +235,44 @@ spring:
       simple:
         # 消费端手动ack消息
         acknowledge-mode: manual
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+```
+
+#### 5. patrickstar-search-service配置文件
+
+```yaml
+server:
+  port: 4003
+
+spring:
+  data:
+    elasticsearch:
+      cluster-nodes: localhost:9300
+      cluster-name: Summer15-cluster
+      repositories:
+        enabled: true
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://***:3306/task-system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: ***
+    password: ***
+    hikari:
+      minimum-idle: 5
+      max-lifetime: 1800000
+      maximum-pool-size: 15
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: DatebookHikariCP
+      connection-timeout: 30000
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
 
 management:
   endpoints:
