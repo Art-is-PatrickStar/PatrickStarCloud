@@ -1,8 +1,8 @@
-package com.wsw.patrickstarsearchservice.controller;
+package com.wsw.patrickstar.controller;
 
 import com.wsw.patrickstar.api.CommonResult;
-import com.wsw.patrickstarsearchservice.entity.Blog;
-import com.wsw.patrickstarsearchservice.service.ElasticService;
+import com.wsw.patrickstar.entity.Blog;
+import com.wsw.patrickstar.service.ElasticService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;

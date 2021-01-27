@@ -1,6 +1,6 @@
-package com.wsw.patrickstarsearchservice.repository;
+package com.wsw.patrickstar.repository;
 
-import com.wsw.patrickstarsearchservice.entity.Blog;
+import com.wsw.patrickstar.entity.Blog;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 

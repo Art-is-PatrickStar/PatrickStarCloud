@@ -1,6 +1,6 @@
-package com.wsw.patrickstarsearchservice.service;
+package com.wsw.patrickstar.service;
 
-import com.wsw.patrickstarsearchservice.entity.Blog;
+import com.wsw.patrickstar.entity.Blog;
 import org.springframework.data.domain.Page;
 
 import java.util.Optional;

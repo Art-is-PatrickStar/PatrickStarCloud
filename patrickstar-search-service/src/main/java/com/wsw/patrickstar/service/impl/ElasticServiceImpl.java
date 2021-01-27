@@ -1,8 +1,8 @@
-package com.wsw.patrickstarsearchservice.service.impl;
+package com.wsw.patrickstar.service.impl;
 
-import com.wsw.patrickstarsearchservice.entity.Blog;
-import com.wsw.patrickstarsearchservice.repository.ElasticRepository;
-import com.wsw.patrickstarsearchservice.service.ElasticService;
+import com.wsw.patrickstar.entity.Blog;
+import com.wsw.patrickstar.repository.ElasticRepository;
+import com.wsw.patrickstar.service.ElasticService;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.data.domain.Page;

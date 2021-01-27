@@ -1,4 +1,4 @@
-package com.wsw.patrickstarsearchservice.entity;
+package com.wsw.patrickstar.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
