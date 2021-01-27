@@ -1,10 +1,8 @@
 package com.wsw.patrickstar.feign.client;
 
-import com.wsw.patrickstar.api.CommonResult;
 import com.wsw.patrickstar.entity.Task;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -14,6 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @FeignClient(value = "patrickstar-task-service")
 public interface TaskClient {
-    @GetMapping("/select/byid")
+    @GetMapping("/task/select/byid")
     Task selectTask(@RequestParam("taskId") Long taskId);
 }

@@ -8,7 +8,7 @@ import feign.hystrix.FallbackFactory;
  * @Date: Created in 15:02 2021/1/18
  * @Description:
  */
-public class taskFallback implements FallbackFactory<TaskClient> {
+public class TaskFallback implements FallbackFactory<TaskClient> {
 
     @Override
     public TaskClient create(Throwable throwable) {
