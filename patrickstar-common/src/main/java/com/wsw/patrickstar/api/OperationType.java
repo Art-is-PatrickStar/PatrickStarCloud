@@ -1,4 +1,4 @@
-package com.wsw.mysqlelasticsearch.api;
+package com.wsw.patrickstar.api;
 
 /**
  * @Author WangSongWen

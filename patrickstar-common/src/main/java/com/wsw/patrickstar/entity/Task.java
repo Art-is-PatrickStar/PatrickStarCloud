@@ -4,9 +4,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.io.Serializable;
 
@@ -16,15 +19,17 @@ import java.io.Serializable;
  * @Description: 任务实体类
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Accessors(chain = true)
+@Document(indexName = "task", type = "_doc")
 @TableName("task")
 public class Task implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @Id
     @TableId(type = IdType.AUTO)
     private Long taskId;  // 任务唯一性ID
 
+    @Field(type = FieldType.Text, analyzer = "ik_max_word")
     @TableField
     private String taskName;  // 任务名称
 
