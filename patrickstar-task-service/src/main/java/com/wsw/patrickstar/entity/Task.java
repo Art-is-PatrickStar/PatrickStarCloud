@@ -1,10 +1,13 @@
 package com.wsw.patrickstar.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -15,39 +18,40 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@TableName("task")
 public class Task implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private static final long serialVersionUID = 1L;
+
+    @TableId(type = IdType.AUTO)
     private Long taskId;  // 任务唯一性ID
 
-    @Column(nullable = false)
+    @TableField
     private String taskName;  // 任务名称
 
-    @Column(nullable = false)
+    @TableField
     private String taskCaption;  // 任务描述
 
-    @Column(nullable = false)
+    @TableField
     private Integer createDate;  // 创建日期
 
-    @Column(nullable = false)
+    @TableField
     private char taskStatus;  // 任务状态 0-创建 1-被领取 2-待测试 3-测试完成 4-已归档
 
-    @Column(nullable = false)
+    @TableField
     private Long recepientId;  // 任务领取者id
 
-    @Column(nullable = false)
+    @TableField
     private String recepientName;  // 任务领取者名称
 
-    @Column(nullable = false)
+    @TableField
     private Long testerId;  // 任务测试者id
 
-    @Column(nullable = false)
+    @TableField
     private String testerName;  // 任务测试者名称
 
-    @Column(nullable = false)
+    @TableField
     private char archive;  // 是否归档，0-未归档 1-已归档
 
-    @Column(nullable = false)
+    @TableField
     private Integer modifyDate;  // 修改日期
 }

@@ -16,7 +16,7 @@ public interface TaskService {
 
     int updateTaskByName(Task task);
 
-    int updateTaskStatusByTaskId(Long taskId, char taskStatus);
+    int updateTaskStatusByTaskId(Task task);
 
     int deleteTaskByTaskId(Long taskId);
 

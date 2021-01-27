@@ -1,10 +1,11 @@
 package com.wsw.patrickstar.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.feign.client.RecepienterClient;
 import com.wsw.patrickstar.mapper.TaskMapper;
 import com.wsw.patrickstar.message.AsyncSendMessage;
-import com.wsw.patrickstar.repository.TaskRepository;
 import com.wsw.patrickstar.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -38,8 +39,6 @@ import java.util.concurrent.TimeUnit;
 @CacheConfig(cacheNames = "task", cacheManager = "taskCacheManager")
 public class TaskServiceImpl implements TaskService {
     @Resource
-    private TaskRepository taskRepository;
-    @Resource
     private TaskMapper taskMapper;
     @Resource
     private RecepienterClient recepienterClient;
@@ -55,7 +54,7 @@ public class TaskServiceImpl implements TaskService {
     public int createTask(Task task) {
         int result;
         // 添加任务
-        result = taskMapper.createTask(task);
+        result = taskMapper.insert(task);
         //同步调用
         // 调用recepienter服务添加领取人员信息
         // recepienterClient.create(task.getTaskId(), task.getTaskName(), task.getRecepientName(), new Date().toString());
@@ -89,7 +88,7 @@ public class TaskServiceImpl implements TaskService {
         RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
         lock.lock(30, TimeUnit.SECONDS);
         try {
-            result = taskMapper.updateTaskById(task);
+            result = taskMapper.updateById(task);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -102,42 +101,54 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @CachePut(key = "#task.taskId")
     public int updateTaskByName(Task task) {
-        return taskMapper.updateTaskByName(task);
+        UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("task_name", task.getTaskName());
+        return taskMapper.update(task, updateWrapper);
     }
 
     @Override
     @CachePut(key = "#p0")
-    public int updateTaskStatusByTaskId(Long taskId, char taskStatus) {
-        return taskMapper.updateTaskStatusByTaskId(taskId, taskStatus);
+    public int updateTaskStatusByTaskId(Task task) {
+        UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
+        updateWrapper
+                .set("task_status", task.getTaskStatus())
+                .eq("task_id", task.getTaskId());
+        return taskMapper.update(task, updateWrapper);
     }
 
     @Override
     @CacheEvict(key = "#p0", allEntries = true)
     public int deleteTaskByTaskId(Long taskId) {
-        return taskRepository.deleteTaskByTaskId(taskId);
+        return taskMapper.deleteById(taskId);
     }
 
     @Override
     @CacheEvict(key = "#p0", allEntries = true)
     public int deleteTaskByTaskName(String taskName) {
-        return taskRepository.deleteTaskByTaskName(taskName);
+        QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("task_name", taskName);
+        return taskMapper.delete(queryWrapper);
     }
 
     @Override
     @Cacheable(key = "#p0")
     public Task selectTaskById(Long taskId) {
-        return taskRepository.findTaskByTaskId(taskId);
+        return taskMapper.selectById(taskId);
     }
 
     @Override
     @Cacheable(key = "#p0")
     public List<Task> selectTaskByName(String taskName) {
-        return taskRepository.findTaskByTaskName(taskName);
+        QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("task_name", taskName);
+        return taskMapper.selectList(queryWrapper);
     }
 
     @Override
     @Cacheable(key = "#p0")
     public List<Task> selectTaskByStatus(char taskStatus) {
-        return taskRepository.findTaskByTaskStatus(taskStatus);
+        QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("task_status", taskStatus);
+        return taskMapper.selectList(queryWrapper);
     }
 }

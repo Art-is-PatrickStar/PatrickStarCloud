@@ -15,7 +15,7 @@
         <result column="modify_date" property="modifyDate" jdbcType="INTEGER"/>
     </resultMap>
 
-    <insert id="createTask" parameterType="Task" useGeneratedKeys="true" keyProperty="taskId">
+<!--    <insert id="createTask" parameterType="Task" useGeneratedKeys="true" keyProperty="taskId">
         insert into task(task_id, task_name, task_caption, create_date, task_status, recepient_id, recepient_name, tester_id, tester_name, archive, modify_date)
         values(#{taskId}, #{taskName}, #{taskCaption}, #{createDate}, #{taskStatus}, #{recepientId}, #{recepientName}, #{testerId}, #{testerName}, #{archive}, #{modifyDate});
     </insert>
@@ -32,5 +32,5 @@
 
     <update id="updateTaskStatusByTaskId">
         update task set task_status=#{taskStatus} where task_id=#{taskId}
-    </update>
+    </update>-->
 </mapper>

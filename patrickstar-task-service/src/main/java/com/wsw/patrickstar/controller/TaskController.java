@@ -57,9 +57,9 @@ public class TaskController {
         return CommonResult.failed();
     }
 
-    @GetMapping("/updatestatus/byid")
-    public CommonResult updateTaskStatusByTaskId(@RequestParam("taskId") Long taskId, @RequestParam("taskStatus") char taskStatus) {
-        int result = taskService.updateTaskStatusByTaskId(taskId, taskStatus);
+    @PutMapping("/updatestatus/byid")
+    public CommonResult updateTaskStatusByTaskId(@RequestBody Task task) {
+        int result = taskService.updateTaskStatusByTaskId(task);
         if (result > 0) {
             return CommonResult.success(result);
         }
