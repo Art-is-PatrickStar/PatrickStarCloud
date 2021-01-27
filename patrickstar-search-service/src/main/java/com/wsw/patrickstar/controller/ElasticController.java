@@ -1,9 +1,8 @@
 package com.wsw.patrickstar.controller;
 
 import com.wsw.patrickstar.api.CommonResult;
-import com.wsw.patrickstar.entity.Blog;
+import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.service.ElasticService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,47 +14,35 @@ import java.util.Optional;
 /**
  * @Author WangSongWen
  * @Date: Created in 15:44 2021/1/22
- * @Description:
+ * @Description: ES查询接口
  */
 @RestController
-@RequestMapping("/blog")
+@RequestMapping("/es/task")
 public class ElasticController {
     @Resource
     private ElasticService elasticService;
 
-    @PostMapping("/add")
-    public CommonResult add(@RequestBody Blog blog) {
+    @GetMapping("/get/{taskId}")
+    public CommonResult getEsTaskById(@PathVariable Long taskId) {
         try {
-            elasticService.addBlog(blog);
-            return CommonResult.success(blog);
-        } catch (Exception e) {
-            return CommonResult.failed(e.getMessage());
-        }
-    }
-
-    @GetMapping("/get/{id}")
-    public CommonResult getBlogById(@PathVariable String id) {
-        if (StringUtils.isBlank(id))
-            return CommonResult.failed("id is empty");
-        try {
-            Optional<Blog> blogOptional = elasticService.getBlogById(id);
-            Blog blog = null;
-            if (blogOptional.isPresent()) {
-                blog = blogOptional.get();
+            Optional<Task> taskOptional = elasticService.getEsTaskById(taskId);
+            Task task = null;
+            if (taskOptional.isPresent()) {
+                task = taskOptional.get();
             }
-            return CommonResult.success(blog);
+            return CommonResult.success(task);
         } catch (Exception e) {
             return CommonResult.failed(e.getMessage());
         }
     }
 
     @GetMapping("/get/all")
-    public CommonResult getAllBlog() {
+    public CommonResult getAllEsTask() {
         try {
-            Iterable<Blog> iterable = elasticService.getAllBlog();
-            List<Blog> list = new ArrayList<>();
-            iterable.forEach(list::add);
-            return CommonResult.success(list);
+            Iterable<Task> taskIterable = elasticService.getAllEsTask();
+            List<Task> taskList = new ArrayList<>();
+            taskIterable.forEach(taskList::add);
+            return CommonResult.success(taskList);
         } catch (Exception e) {
             return CommonResult.failed(e.getMessage());
         }
@@ -64,9 +51,9 @@ public class ElasticController {
     @GetMapping("/search")
     public CommonResult search(@RequestParam String keyWord) {
         try {
-            Page<Blog> blogPage = elasticService.search(keyWord);
-            List<Blog> blogs = blogPage.getContent();
-            return CommonResult.success(blogs);
+            Page<Task> taskPage = elasticService.search(keyWord);
+            List<Task> taskList = taskPage.getContent();
+            return CommonResult.success(taskList);
         } catch (Exception e) {
             return CommonResult.failed(e.getMessage());
         }

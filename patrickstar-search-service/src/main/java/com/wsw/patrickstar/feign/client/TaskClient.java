@@ -1,16 +1,19 @@
 package com.wsw.patrickstar.feign.client;
 
+import com.wsw.patrickstar.api.CommonResult;
+import com.wsw.patrickstar.entity.Task;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @Author WangSongWen
  * @Date: Created in 15:00 2021/1/18
- * @Description:
+ * @Description: openFeign调用task服务
  */
-@FeignClient(value = "patrickstar-recepienter-service")
-public interface RecepienterClient {
-    @PostMapping("/recepienter/create")
-    int create(@RequestParam("taskId") Long taskId, @RequestParam("taskName") String taskName, @RequestParam("name") String name, @RequestParam("remark") String remark);
+@FeignClient(value = "patrickstar-task-service")
+public interface TaskClient {
+    @GetMapping("/select/byid")
+    Task selectTask(@RequestParam("taskId") Long taskId);
 }

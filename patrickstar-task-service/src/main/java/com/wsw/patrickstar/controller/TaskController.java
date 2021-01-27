@@ -93,6 +93,12 @@ public class TaskController {
         return CommonResult.failed();
     }
 
+    @GetMapping("/select/byid")
+    public Task selectTask(@RequestParam("taskId") Long taskId) {
+        Task task = taskService.selectTaskById(taskId);
+        return task;
+    }
+
     @GetMapping("/select/byname")
     public CommonResult selectTaskByName(@RequestParam("taskName") String taskName) {
         List<Task> tasks = taskService.selectTaskByName(taskName);

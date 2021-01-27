@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.feign.fallback;
 
-import com.wsw.patrickstar.feign.client.RecepienterClient;
+import com.wsw.patrickstar.feign.client.TaskClient;
 import feign.hystrix.FallbackFactory;
 
 /**
@@ -8,10 +8,10 @@ import feign.hystrix.FallbackFactory;
  * @Date: Created in 15:02 2021/1/18
  * @Description:
  */
-public class RecepienterFallback implements FallbackFactory<RecepienterClient> {
+public class taskFallback implements FallbackFactory<TaskClient> {
 
     @Override
-    public RecepienterClient create(Throwable throwable) {
+    public TaskClient create(Throwable throwable) {
         return null;
     }
 }

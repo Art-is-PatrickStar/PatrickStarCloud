@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.service;
 
-import com.wsw.patrickstar.entity.Blog;
+import com.wsw.patrickstar.entity.Task;
 import org.springframework.data.domain.Page;
 
 import java.util.Optional;
@@ -11,15 +11,15 @@ import java.util.Optional;
  * @Description:
  */
 public interface ElasticService {
-    Page<Blog> search(String keyWord);
+    Page<Task> search(String keyWord);
 
-    void addBlog(Blog blog);
+    Optional<Task> getEsTaskById(Long taskId);
 
-    Optional<Blog> getBlogById(String id);
+    Iterable<Task> getAllEsTask();
 
-    Iterable<Blog> getAllBlog();
+    void addEsTask(Task task);
 
-    void deleteAllBlog();
+    void deleteEsTaskById(Long taskId);
 
-    void deleteBlogById(String id);
+    void updateEsTask(Task task);
 }

@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.service.impl;
 
-import com.wsw.patrickstar.entity.Blog;
+import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.repository.ElasticRepository;
 import com.wsw.patrickstar.service.ElasticService;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +29,7 @@ public class ElasticServiceImpl implements ElasticService {
     @Resource
     private ElasticsearchTemplate elasticsearchTemplate;
 
-    public Page<Blog> search(String keyWord) {
+    public Page<Task> search(String keyWord) {
         // 构建分页类
         Pageable pageable = PageRequest.of(0, 10);
         // 构建查询NativeSearchQueryBuilder
@@ -38,32 +38,33 @@ public class ElasticServiceImpl implements ElasticService {
             searchQueryBuilder.withQuery(QueryBuilders.queryStringQuery(keyWord));
         }
         SearchQuery searchQuery = searchQueryBuilder.build();
-        Page<Blog> blogPage = elasticsearchTemplate.queryForPage(searchQuery, Blog.class);
+        Page<Task> blogPage = elasticsearchTemplate.queryForPage(searchQuery, Task.class);
         return blogPage;
     }
 
     @Override
-    public void addBlog(Blog blog) {
-        elasticRepository.save(blog);
+    public Optional<Task> getEsTaskById(Long taskId) {
+        return elasticRepository.findById(taskId);
     }
 
     @Override
-    public Optional<Blog> getBlogById(String id) {
-        return elasticRepository.findById(id);
-    }
-
-    @Override
-    public Iterable<Blog> getAllBlog() {
+    public Iterable<Task> getAllEsTask() {
         return elasticRepository.findAll();
     }
 
     @Override
-    public void deleteAllBlog() {
-        elasticRepository.deleteAll();
+    public void addEsTask(Task task) {
+        elasticRepository.save(task);
     }
 
     @Override
-    public void deleteBlogById(String id) {
-        elasticRepository.deleteById(id);
+    public void deleteEsTaskById(Long taskId) {
+        elasticRepository.deleteById(taskId);
     }
+
+    @Override
+    public void updateEsTask(Task task) {
+        elasticRepository.save(task);
+    }
+
 }

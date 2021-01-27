@@ -2,6 +2,7 @@ package com.wsw.patrickstar.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.wsw.patrickstar.api.OperationType;
 import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.feign.client.RecepienterClient;
 import com.wsw.patrickstar.mapper.TaskMapper;
@@ -33,6 +34,9 @@ import java.util.concurrent.TimeUnit;
  * 1.Cacheable: 将查询结果缓存到redis中,(key="#p0")指定传入的第一个参数作为redis的key
  * 2.CachePut: 指定key,将更新的结果同步到redis中
  * 3.CacheEvict: 指定key,删除缓存数据,(allEntries=true)方法调用后将立即清除缓存
+ * <p>
+ * 同步调用: openFeign
+ * 异步调用: RabbitMQ
  */
 @Service
 @Slf4j
@@ -55,79 +59,126 @@ public class TaskServiceImpl implements TaskService {
         int result;
         // 添加任务
         result = taskMapper.insert(task);
-        //同步调用
+        // 同步调用
         // 调用recepienter服务添加领取人员信息
-        // recepienterClient.create(task.getTaskId(), task.getTaskName(), task.getRecepientName(), new Date().toString());
-        Map<String, Object> messageMap = new HashMap<>();
-        messageMap.put("taskId", task.getTaskId());
-        messageMap.put("taskName", task.getTaskName());
-        messageMap.put("testerName", task.getTesterName());
-        messageMap.put("recepientName", task.getRecepientName());
-        messageMap.put("remark", new Date().toString());
-
-        // 防止重复提交 Redis分布式锁
+        recepienterClient.create(task.getTaskId(), task.getTaskName(), task.getRecepientName(), new Date().toString());
+        // 发送消息到数据同步服务
+        // 防止消息重复发送 Redis分布式锁
         RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
         lock.lock(30, TimeUnit.SECONDS);
         try {
             // RabbitMQ异步发消息
+            Map<String, Object> messageMap = new HashMap<>();
+            messageMap.put("operationType", OperationType.ADD.getOperation());
+            messageMap.put("taskId", task.getTaskId());
             asyncSendMessage.asyncSendMessage(messageMap);
+            log.info("新增数据---发送消息到数据同步服务---成功! taskId = " + task.getTaskId());
         } catch (Exception e) {
-            log.error("消息发送失败: " + e.getMessage());
+            log.error("新增数据---发送消息到数据同步服务---失败! taskId =  " + task.getTaskId() + " errorMessage: " + e.getMessage());
         } finally {
             lock.unlock();
         }
-        log.info("消息发送成功!");
         return result;
     }
 
     @Override
     @CachePut(key = "#task.taskId")
     public int updateTaskById(Task task) {
-        int result = 0;
-        // 4. Get Redis based implementation of java.util.concurrent.locks.Lock
+        int result;
+        result = taskMapper.updateById(task);
         RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
         lock.lock(30, TimeUnit.SECONDS);
         try {
-            result = taskMapper.updateById(task);
+            Map<String, Object> messageMap = new HashMap<>();
+            messageMap.put("operationType", OperationType.UPDATE.getOperation());
+            messageMap.put("taskId", task.getTaskId());
+            asyncSendMessage.asyncSendMessage(messageMap);
+            log.info("更新数据---发送消息到数据同步服务---成功! taskId = " + task.getTaskId());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("更新数据---发送消息到数据同步服务---失败! taskId =  " + task.getTaskId() + " errorMessage: " + e.getMessage());
         } finally {
             lock.unlock();
         }
-
         return result;
     }
 
     @Override
     @CachePut(key = "#task.taskId")
     public int updateTaskByName(Task task) {
+        int result;
         UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("task_name", task.getTaskName());
-        return taskMapper.update(task, updateWrapper);
+        result = taskMapper.update(task, updateWrapper);
+        RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
+        lock.lock(30, TimeUnit.SECONDS);
+        try {
+            Map<String, Object> messageMap = new HashMap<>();
+            messageMap.put("operationType", OperationType.UPDATE.getOperation());
+            messageMap.put("taskId", task.getTaskId());
+            asyncSendMessage.asyncSendMessage(messageMap);
+            log.info("更新数据---发送消息到数据同步服务---成功! taskId = " + task.getTaskId());
+        } catch (Exception e) {
+            log.error("更新数据---发送消息到数据同步服务---失败! taskId =  " + task.getTaskId() + " errorMessage: " + e.getMessage());
+        } finally {
+            lock.unlock();
+        }
+        return result;
     }
 
     @Override
     @CachePut(key = "#p0")
     public int updateTaskStatusByTaskId(Task task) {
+        int result;
         UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
         updateWrapper
                 .set("task_status", task.getTaskStatus())
                 .eq("task_id", task.getTaskId());
-        return taskMapper.update(task, updateWrapper);
+        result = taskMapper.update(task, updateWrapper);
+        RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
+        lock.lock(30, TimeUnit.SECONDS);
+        try {
+            Map<String, Object> messageMap = new HashMap<>();
+            messageMap.put("operationType", OperationType.UPDATE.getOperation());
+            messageMap.put("taskId", task.getTaskId());
+            asyncSendMessage.asyncSendMessage(messageMap);
+            log.info("更新数据---发送消息到数据同步服务---成功! taskId = " + task.getTaskId());
+        } catch (Exception e) {
+            log.error("更新数据---发送消息到数据同步服务---失败! taskId =  " + task.getTaskId() + " errorMessage: " + e.getMessage());
+        } finally {
+            lock.unlock();
+        }
+        return result;
     }
 
     @Override
     @CacheEvict(key = "#p0", allEntries = true)
     public int deleteTaskByTaskId(Long taskId) {
-        return taskMapper.deleteById(taskId);
+        int result;
+        result = taskMapper.deleteById(taskId);
+        RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
+        lock.lock(30, TimeUnit.SECONDS);
+        try {
+            Map<String, Object> messageMap = new HashMap<>();
+            messageMap.put("operationType", OperationType.DELETE.getOperation());
+            messageMap.put("taskId", taskId);
+            asyncSendMessage.asyncSendMessage(messageMap);
+            log.info("删除数据---发送消息到数据同步服务---成功! taskId = " + taskId);
+        } catch (Exception e) {
+            log.error("删除数据---发送消息到数据同步服务---失败! taskId =  " + taskId + " errorMessage: " + e.getMessage());
+        } finally {
+            lock.unlock();
+        }
+        return result;
     }
 
     @Override
     @CacheEvict(key = "#p0", allEntries = true)
     public int deleteTaskByTaskName(String taskName) {
+        int result;
         QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("task_name", taskName);
-        return taskMapper.delete(queryWrapper);
+        result = taskMapper.delete(queryWrapper);
+        return result;
     }
 
     @Override

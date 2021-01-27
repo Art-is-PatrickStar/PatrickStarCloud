@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * @Author WangSongWen
  * @Date: Created in 15:00 2021/1/18
- * @Description:
+ * @Description: openFeign调用recepienter服务
  */
 @FeignClient(value = "patrickstar-recepienter-service")
 public interface RecepienterClient {
