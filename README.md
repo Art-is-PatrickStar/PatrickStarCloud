@@ -360,3 +360,10 @@ task_status as taskStatus, recepient_id as recepientId, recepient_name as recepi
 tester_name as testerName, archive, modify_date as modifyDate
 from task
 ```
+启动:
+>bin/logstash -f ../logstash-7.10.1/mysql/mysql.conf
+
+效果:
+![image](https://user-images.githubusercontent.com/34562805/106107277-b2995200-6181-11eb-84be-525a802b03ac.png)
+![image](https://user-images.githubusercontent.com/34562805/106107351-ccd33000-6181-11eb-9bba-f2a19b9c0fa7.png)
+![image](https://user-images.githubusercontent.com/34562805/106107426-e2485a00-6181-11eb-9199-f01a12490a3a.png)
