@@ -1,5 +1,6 @@
 ## PatrickStarCloud
-派大星的微服务!!!
+
+PatrickStar is here!!!
 
 关联项目: https://github.com/WswSummer15/SummerCloud
 
@@ -115,6 +116,10 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.wsw.patrickstar.entity
 
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
 redisson:
   client:
     address: redis://***:6379
@@ -221,21 +226,6 @@ spring:
       ddl-auto: none
     show-sql: true
 
-  rabbitmq:
-    host: 127.0.0.1
-    port: 5672
-    username: guest
-    password: guest
-    publisher-confirms: true
-    publisher-returns: true
-    template:
-      # 只要消息抵达队列,以异步方式优先回调returnsConfirm
-      mandatory: true
-    listener:
-      simple:
-        # 消费端手动ack消息
-        acknowledge-mode: manual
-
 management:
   endpoints:
     web:
@@ -269,10 +259,20 @@ spring:
       idle-timeout: 30000
       pool-name: DatebookHikariCP
       connection-timeout: 30000
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: true
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+    publisher-confirms: true
+    publisher-returns: true
+    template:
+      # 只要消息抵达队列,以异步方式优先回调returnsConfirm
+      mandatory: true
+    listener:
+      simple:
+        # 消费端手动ack消息
+        acknowledge-mode: manual
 
 management:
   endpoints:
@@ -290,5 +290,11 @@ management:
 ```text
 http://localhost:4000/patrickstar-task-service/task/***
 ```
-***
+
+### 认证
 将认证中心独立成了微服务，将token的验证从主服务移到网关服务patrickstar-gateway-service中统一鉴权
+
+### mysql与es数据同步
+DB ES 双写, ES 只做搜索功能, 使用RabbitMQ队列处理数据同步
+![image](https://user-images.githubusercontent.com/34562805/106081036-2ff99e00-6153-11eb-9e00-957ffa7d434c.png)
+只向MQ传递id,不传递业务数据
