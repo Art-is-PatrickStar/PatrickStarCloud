@@ -46,7 +46,7 @@ public class DataSyncServiceImpl implements DataSyncService {
             Task task, esTask = null;
             task = taskClient.selectTask(taskId);
             Optional<Task> taskOptional = elasticService.getEsTaskById(taskId);
-            if (taskOptional.isPresent()){
+            if (taskOptional.isPresent()) {
                 esTask = taskOptional.get();
             }
             switch (operationType) {
@@ -59,6 +59,8 @@ public class DataSyncServiceImpl implements DataSyncService {
                         } catch (Exception e) {
                             log.error("新增数据同步至ElasticSearch失败! " + e.getMessage());
                         }
+                    } else {
+                        log.error("数据未成功新增至数据库,数据同步服务不执行!");
                     }
                     break;
                 case "DELETE":
@@ -70,6 +72,8 @@ public class DataSyncServiceImpl implements DataSyncService {
                         } catch (Exception e) {
                             log.error("删除数据同步至ElasticSearch失败! " + e.getMessage());
                         }
+                    } else {
+                        log.error("数据未成功从数据库中删除或不在es中,数据同步服务不执行!");
                     }
                     break;
                 case "UPDATE":
@@ -81,6 +85,8 @@ public class DataSyncServiceImpl implements DataSyncService {
                         } catch (Exception e) {
                             log.error("更新数据同步至ElasticSearch失败! " + e.getMessage());
                         }
+                    } else {
+                        log.error("数据未成功更新至数据库中,数据同步服务不执行!");
                     }
                     break;
                 default:
