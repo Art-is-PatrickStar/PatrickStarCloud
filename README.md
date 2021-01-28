@@ -279,6 +279,9 @@ management:
     web:
       exposure:
         include: '*'
+  health:
+    elasticsearch:
+      response-timeout: 3s
 ```
 
 配置文件在配置中心配置好后即可依次启动服务。
@@ -298,3 +301,62 @@ http://localhost:4000/patrickstar-task-service/task/***
 DB ES 双写, ES 只做搜索功能, 使用RabbitMQ队列处理数据同步
 ![image](https://user-images.githubusercontent.com/34562805/106081036-2ff99e00-6153-11eb-9e00-957ffa7d434c.png)
 只向MQ传递id,不传递业务数据
+
+### 使用logstash将已存在于数据库的数据一次性同步到es
+配置文件:
+
+**mysql.conf**
+```text
+input {
+  jdbc {
+	# mysql jdbc connection string to our backup databse
+	jdbc_connection_string => "jdbc:mysql://***:3306/task-system"
+	# the user we wish to excute our statement as
+	jdbc_user => "***"
+	jdbc_password => "***"
+	# the path to our downloaded jdbc driver
+	jdbc_driver_library => "C:/Program Files (x86)/MySQL/Connector J 8.0/mysql-connector-java-8.0.20.jar"
+	# the name of the driver class for mysql
+	jdbc_driver_class => "com.mysql.cj.jdbc.Driver"
+	jdbc_paging_enabled => "true"
+	jdbc_page_size => "10000"
+	# 以下对应着要执行的sql的绝对路径
+	statement_filepath => "E:/logstash-7.10.1/mysql/task.sql"
+	# 定时字段 各字段含义（由左至右）分、时、天、月、年，全部为*默认含义为每分钟都更新
+	schedule => "* * * * *"
+	# 设定ES索引类型
+	type => "_doc"
+	# Database field name from uppercase to lowercase
+	lowercase_column_names => false
+  }
+}
+
+filter {
+  json {
+	source => "message"
+	remove_field => ["message"]
+  }
+}
+
+output {
+  elasticsearch {
+	#ESIP地址与端口
+	hosts => "127.0.0.1:9200"
+	# ES索引名称（自己定义的）
+	index => "task"
+	# 自增ID编号
+	document_id => "%{taskId}"
+  }
+  stdout {
+	# 以JSON格式输出
+	codec => json_lines
+  }
+}
+```
+**task.sql**
+```sql
+select task_id as taskId, task_name as taskName, task_caption as taskCaption, create_date as createDate, 
+task_status as taskStatus, recepient_id as recepientId, recepient_name as recepientName, tester_id as testerId, 
+tester_name as testerName, archive, modify_date as modifyDate
+from task
+```
