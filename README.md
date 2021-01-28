@@ -332,6 +332,12 @@ input {
 }
 
 filter {
+  # 过滤指定字段
+  mutate {
+    remove_field => ["@version"]
+	remove_field => ["@timestamp"]
+	remove_field => ["type"]
+  }
   json {
 	source => "message"
 	remove_field => ["message"]
