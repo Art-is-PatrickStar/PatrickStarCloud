@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @Author WangSongWen
@@ -29,7 +30,6 @@ import java.util.Map;
 public class DataSyncServiceImpl implements DataSyncService {
     @Resource
     private ElasticService elasticService;
-
     @Resource
     private TaskClient taskClient;
 
@@ -40,14 +40,18 @@ public class DataSyncServiceImpl implements DataSyncService {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             log.info("数据同步服务接收到了消息: " + objectMapper.writeValueAsString(messageMap));
-            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
             // 获取数据操作类型
             String operationType = MapUtils.getString(messageMap, "operationType");
             Long taskId = MapUtils.getLong(messageMap, "taskId");
-            Task task;
+            Task task, esTask = null;
+            task = taskClient.selectTask(taskId);
+            Optional<Task> taskOptional = elasticService.getEsTaskById(taskId);
+            if (taskOptional.isPresent()){
+                esTask = taskOptional.get();
+            }
             switch (operationType) {
                 case "ADD":
-                    task = taskClient.selectTask(taskId);
+                    // 数据库新增成功, 则新增至es
                     if (task != null) {
                         try {
                             elasticService.addEsTask(task);
@@ -58,7 +62,8 @@ public class DataSyncServiceImpl implements DataSyncService {
                     }
                     break;
                 case "DELETE":
-                    if (taskId != null) {
+                    // 数据库中已删除, es还存在, 则从es中删除
+                    if (task == null && esTask != null) {
                         try {
                             elasticService.deleteEsTaskById(taskId);
                             log.info("删除数据同步至ElasticSearch成功!");
@@ -68,8 +73,8 @@ public class DataSyncServiceImpl implements DataSyncService {
                     }
                     break;
                 case "UPDATE":
-                    task = taskClient.selectTask(taskId);
-                    if (task != null) {
+                    // 数据库中已更新, es未更新, 则更新es
+                    if (!task.equals(esTask)) {
                         try {
                             elasticService.updateEsTask(task);
                             log.info("更新数据同步至ElasticSearch成功!");
@@ -81,6 +86,7 @@ public class DataSyncServiceImpl implements DataSyncService {
                 default:
                     break;
             }
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         } catch (Exception e) {
             if (message.getMessageProperties().getRedelivered()) {
                 log.info("消息已重复处理失败,拒绝再次接收");

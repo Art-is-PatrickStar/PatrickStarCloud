@@ -25,7 +25,6 @@ import java.util.Optional;
 public class ElasticServiceImpl implements ElasticService {
     @Resource
     private ElasticRepository elasticRepository;
-
     @Resource
     private ElasticsearchTemplate elasticsearchTemplate;
 

@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -12,13 +12,18 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @Author WangSongWen
  * @Date: Created in 13:28 2020/11/9
  * @Description: 任务实体类
  */
-@Data
+@Setter
+@Getter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
 @Document(indexName = "task", type = "_doc")
 @TableName("task")
@@ -59,4 +64,24 @@ public class Task implements Serializable {
 
     @TableField
     private Integer modifyDate;  // 修改日期
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof Task))
+            return false;
+        Task task = (Task) obj;
+        return Objects.equals(getTaskId(), task.getTaskId()) &&
+                Objects.equals(getTaskName(), task.getTaskName()) &&
+                Objects.equals(getTaskCaption(), task.getTaskCaption()) &&
+                Objects.equals(getCreateDate(), task.getCreateDate()) &&
+                Objects.equals(getTaskStatus(), task.getTaskStatus()) &&
+                Objects.equals(getRecepientId(), task.getRecepientId()) &&
+                Objects.equals(getRecepientName(), task.getRecepientName()) &&
+                Objects.equals(getTesterId(), task.getTaskId()) &&
+                Objects.equals(getTesterName(), task.getTesterName()) &&
+                Objects.equals(getArchive(), task.getArchive()) &&
+                Objects.equals(getModifyDate(), task.getModifyDate());
+    }
 }
