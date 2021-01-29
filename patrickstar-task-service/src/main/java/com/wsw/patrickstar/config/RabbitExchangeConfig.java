@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
  * @Description: 交换器类型：Fanout
  */
 @Configuration
-public class FanoutRabbitConfig {
+public class RabbitExchangeConfig {
     //队列1
     @Bean
     Queue queueTask(){

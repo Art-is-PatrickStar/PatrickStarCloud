@@ -68,7 +68,7 @@ public class AuthFilter implements GlobalFilter, Ordered {
             ServerHttpResponse originalResponse = exchange.getResponse();
             originalResponse.setStatusCode(HttpStatus.OK);
             originalResponse.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
-            byte[] response = "{\"code\": \"403\",\"msg\": \"invalid token.\"}".getBytes(StandardCharsets.UTF_8);
+            byte[] response = "{\"code\": \"403\",\"massage\": \"invalid token.\"}".getBytes(StandardCharsets.UTF_8);
             DataBuffer buffer = originalResponse.bufferFactory().wrap(response);
             return originalResponse.writeWith(Flux.just(buffer));
         }
