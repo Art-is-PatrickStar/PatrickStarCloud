@@ -82,6 +82,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @CachePut(key = "#task.taskId")
     public int updateTaskById(Task task) {
         int result;
@@ -103,6 +104,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @CachePut(key = "#task.taskId")
     public int updateTaskByName(Task task) {
         int result;
@@ -126,6 +128,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @CachePut(key = "#p0")
     public int updateTaskStatusByTaskId(Task task) {
         int result;
@@ -151,6 +154,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @CacheEvict(key = "#p0", allEntries = true)
     public int deleteTaskByTaskId(Long taskId) {
         int result;
@@ -172,6 +176,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @CacheEvict(key = "#p0", allEntries = true)
     public int deleteTaskByTaskName(String taskName) {
         int result;
@@ -182,12 +187,14 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @Cacheable(key = "#p0")
     public Task selectTaskById(Long taskId) {
         return taskMapper.selectById(taskId);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @Cacheable(key = "#p0")
     public List<Task> selectTaskByName(String taskName) {
         QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
@@ -196,6 +203,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @Cacheable(key = "#p0")
     public List<Task> selectTaskByStatus(char taskStatus) {
         QueryWrapper<Task> queryWrapper = new QueryWrapper<>();

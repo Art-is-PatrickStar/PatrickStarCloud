@@ -12,6 +12,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -34,6 +35,7 @@ public class DataSyncServiceImpl implements DataSyncService {
     private TaskClient taskClient;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @RabbitHandler
     @RabbitListener(queues = "queueTask")
     public void receiveMessage(Message message, Channel channel, Map<String, Object> messageMap) throws IOException {
