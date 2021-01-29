@@ -82,7 +82,6 @@ spring:
       idle-timeout: 30000
       pool-name: DatebookHikariCP
       connection-timeout: 30000
-
   redis:
     host: ***
     port: 6379
@@ -96,7 +95,6 @@ spring:
         max-idle: 8
         # 连接池中的最小空闲连接 默认为 0
         min-idle: 0
-
   rabbitmq:
     host: 127.0.0.1
     port: 5672
@@ -104,13 +102,12 @@ spring:
     password: guest
     publisher-confirms: true
     publisher-returns: true
-    template:
-      # 只要消息抵达队列,以异步方式优先回调returnsConfirm
-      mandatory: true
     listener:
       simple:
         # 消费端手动ack消息
         acknowledge-mode: manual
+        # 是否支持重试
+        retry.enabled: true
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
@@ -266,13 +263,12 @@ spring:
     password: guest
     publisher-confirms: true
     publisher-returns: true
-    template:
-      # 只要消息抵达队列,以异步方式优先回调returnsConfirm
-      mandatory: true
     listener:
       simple:
         # 消费端手动ack消息
         acknowledge-mode: manual
+        # 是否支持重试
+        retry.enabled: true
 
 management:
   endpoints:
