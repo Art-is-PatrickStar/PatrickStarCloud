@@ -195,6 +195,12 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public Task selectEsTaskById(Long taskId) {
+        return taskMapper.selectById(taskId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     @Cacheable(key = "#p0")
     public List<Task> selectTaskByName(String taskName) {
         QueryWrapper<Task> queryWrapper = new QueryWrapper<>();

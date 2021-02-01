@@ -95,7 +95,7 @@ public class TaskController {
 
     @GetMapping("/select/byid")
     public Task selectTask(@RequestParam("taskId") Long taskId) {
-        Task task = taskService.selectTaskById(taskId);
+        Task task = taskService.selectEsTaskById(taskId);
         return task;
     }
 
