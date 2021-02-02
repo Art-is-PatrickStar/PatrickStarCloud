@@ -61,28 +61,12 @@ public class TaskServiceImpl implements TaskService {
         // 同步调用
         // 调用recepienter服务添加领取人员信息
         recepienterClient.create(task.getTaskId(), task.getTaskName(), task.getRecepientName(), new Date().toString());
-        // 发送消息到数据同步服务
-        // 防止消息重复发送 Redis分布式锁
-        RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
-        lock.lock(30, TimeUnit.SECONDS);
-        try {
-            // RabbitMQ异步发消息
-            Map<String, Object> messageMap = new HashMap<>();
-            messageMap.put("operationType", OperationType.ADD.getOperation());
-            messageMap.put("taskId", task.getTaskId());
-            asyncSendMessage.asyncSendMessage(messageMap);
-            log.info("新增数据---发送消息到数据同步服务---成功! taskId = " + task.getTaskId());
-        } catch (Exception e) {
-            log.error("新增数据---发送消息到数据同步服务---失败! taskId =  " + task.getTaskId() + " errorMessage: " + e.getMessage());
-        } finally {
-            lock.unlock();
-        }
         return task;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CachePut(key = "#task.taskId")
+    @CachePut(key = "#task.taskId", unless = "#result == null")
     public Task updateTaskById(Task task) {
         taskMapper.updateById(task);
         RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
@@ -103,7 +87,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CachePut(key = "#task.taskId")
+    @CachePut(key = "#task.taskId", unless = "#result == null")
     public Task updateTaskByName(Task task) {
         UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("task_name", task.getTaskName());
@@ -126,7 +110,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CachePut(key = "#task.taskId")
+    @CachePut(key = "#task.taskId", unless = "#result == null")
     public Task updateTaskStatusByTaskId(Task task) {
         UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
         updateWrapper
@@ -171,6 +155,7 @@ public class TaskServiceImpl implements TaskService {
         return result;
     }
 
+    // 这个方法没有实现数据同步！
     @Override
     @Transactional(rollbackFor = Exception.class)
     @CacheEvict(key = "#p0", allEntries = false)
@@ -184,7 +169,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @Cacheable(key = "#p0")
+    @Cacheable(key = "#p0", unless = "#result == null")
     public Task selectTaskById(Long taskId) {
         return taskMapper.selectById(taskId);
     }
@@ -197,7 +182,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @Cacheable(key = "#p0")
+    @Cacheable(key = "#p0", unless = "#result == null")
     public List<Task> selectTaskByName(String taskName) {
         QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("task_name", taskName);
@@ -206,7 +191,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @Cacheable(key = "#p0")
+    @Cacheable(key = "#p0", unless = "#result == null")
     public List<Task> selectTaskByStatus(char taskStatus) {
         QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("task_status", taskStatus);

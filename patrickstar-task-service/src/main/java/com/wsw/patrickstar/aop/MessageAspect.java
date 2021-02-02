@@ -1,0 +1,67 @@
+package com.wsw.patrickstar.aop;
+
+import com.wsw.patrickstar.api.OperationType;
+import com.wsw.patrickstar.entity.Task;
+import com.wsw.patrickstar.message.AsyncSendMessage;
+import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * @Author WangSongWen
+ * @Date: Created in 16:50 2021/2/2
+ * @Description: 发送消息切面
+ */
+@Aspect
+@Component
+@Slf4j
+public class MessageAspect {
+    @Resource
+    private RedissonClient redissonClient;
+    @Resource
+    private AsyncSendMessage asyncSendMessage;
+
+    private static final String REDIS_LOCK_KEY = "task-service";
+
+    @Pointcut("execution(* com.wsw.patrickstar.service.impl.TaskServiceImpl.createTask(..))")
+    public void pointCutService() {
+    }
+
+    @Around("pointCutService()")
+    public Object sendMessage(ProceedingJoinPoint joinPoint) {
+        Object[] args = joinPoint.getArgs();
+        Task task = (Task) args[0];
+        try {
+            joinPoint.proceed(args);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        // 发送消息到数据同步服务
+        // 防止消息重复发送 Redis分布式锁
+        RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
+        lock.lock(30, TimeUnit.SECONDS);
+        try {
+            // RabbitMQ异步发消息
+            Map<String, Object> messageMap = new HashMap<>();
+            messageMap.put("operationType", OperationType.ADD.getOperation());
+            messageMap.put("taskId", task.getTaskId());
+            asyncSendMessage.asyncSendMessage(messageMap);
+            log.info("新增数据---发送消息到数据同步服务---成功! taskId = " + task.getTaskId());
+        } catch (Exception e) {
+            log.error("新增数据---发送消息到数据同步服务---失败! taskId =  " + task.getTaskId() + " errorMessage: " + e.getMessage());
+        } finally {
+            lock.unlock();
+        }
+        return null;
+    }
+}
