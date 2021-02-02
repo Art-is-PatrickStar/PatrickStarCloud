@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
  * redis缓存:
  * 1.Cacheable: 将查询结果缓存到redis中,(key="#p0")指定传入的第一个参数作为redis的key
  * 2.CachePut: 指定key,将更新的结果同步到redis中
- * 3.CacheEvict: 指定key,删除缓存数据,(allEntries=true)方法调用后将立即清除缓存
+ * 3.CacheEvict: 指定key,删除缓存数据,(allEntries=true)方法调用后将立即清空所有缓存
  * <p>
  * 同步调用: openFeign
  * 异步调用: RabbitMQ
@@ -55,10 +55,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int createTask(Task task) {
-        int result;
+    public Task createTask(Task task) {
         // 添加任务
-        result = taskMapper.insert(task);
+        taskMapper.insert(task);
         // 同步调用
         // 调用recepienter服务添加领取人员信息
         recepienterClient.create(task.getTaskId(), task.getTaskName(), task.getRecepientName(), new Date().toString());
@@ -78,15 +77,14 @@ public class TaskServiceImpl implements TaskService {
         } finally {
             lock.unlock();
         }
-        return result;
+        return task;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     @CachePut(key = "#task.taskId")
-    public int updateTaskById(Task task) {
-        int result;
-        result = taskMapper.updateById(task);
+    public Task updateTaskById(Task task) {
+        taskMapper.updateById(task);
         RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
         lock.lock(30, TimeUnit.SECONDS);
         try {
@@ -100,17 +98,16 @@ public class TaskServiceImpl implements TaskService {
         } finally {
             lock.unlock();
         }
-        return result;
+        return task;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     @CachePut(key = "#task.taskId")
-    public int updateTaskByName(Task task) {
-        int result;
+    public Task updateTaskByName(Task task) {
         UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("task_name", task.getTaskName());
-        result = taskMapper.update(task, updateWrapper);
+        taskMapper.update(task, updateWrapper);
         RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
         lock.lock(30, TimeUnit.SECONDS);
         try {
@@ -124,19 +121,18 @@ public class TaskServiceImpl implements TaskService {
         } finally {
             lock.unlock();
         }
-        return result;
+        return task;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CachePut(key = "#p0")
-    public int updateTaskStatusByTaskId(Task task) {
-        int result;
+    @CachePut(key = "#task.taskId")
+    public Task updateTaskStatusByTaskId(Task task) {
         UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
         updateWrapper
                 .set("task_status", task.getTaskStatus())
                 .eq("task_id", task.getTaskId());
-        result = taskMapper.update(task, updateWrapper);
+        taskMapper.update(task, updateWrapper);
         RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
         lock.lock(30, TimeUnit.SECONDS);
         try {
@@ -150,12 +146,12 @@ public class TaskServiceImpl implements TaskService {
         } finally {
             lock.unlock();
         }
-        return result;
+        return task;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CacheEvict(key = "#p0", allEntries = true)
+    @CacheEvict(key = "#p0", allEntries = false)
     public int deleteTaskByTaskId(Long taskId) {
         int result;
         result = taskMapper.deleteById(taskId);
@@ -177,7 +173,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CacheEvict(key = "#p0", allEntries = true)
+    @CacheEvict(key = "#p0", allEntries = false)
     public int deleteTaskByTaskName(String taskName) {
         int result;
         QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
