@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @Author WangSongWen
  * @Date: Created in 16:50 2021/2/2
- * @Description: 发送消息切面
+ * @Description: 发送数据同步消息切面
  */
 @Aspect
 @Component
@@ -34,11 +34,19 @@ public class MessageAspect {
     private static final String REDIS_LOCK_KEY = "task-service";
 
     @Pointcut("execution(* com.wsw.patrickstar.service.impl.TaskServiceImpl.createTask(..))")
-    public void pointCutService() {
+    public void addPointCutService() {
     }
 
-    @Around("pointCutService()")
-    public Object sendMessage(ProceedingJoinPoint joinPoint) {
+    @Pointcut("execution(* com.wsw.patrickstar.service.impl.TaskServiceImpl.updateTask*(..))")
+    public void updatePointCutService() {
+    }
+
+    @Pointcut("execution(* com.wsw.patrickstar.service.impl.TaskServiceImpl.deleteTaskByTaskId(..))")
+    public void deletePointCutService() {
+    }
+
+    @Around("addPointCutService()")
+    public Object sendAddMessage(ProceedingJoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
         Task task = (Task) args[0];
         try {
@@ -63,5 +71,56 @@ public class MessageAspect {
             lock.unlock();
         }
         return null;
+    }
+
+    @Around("updatePointCutService()")
+    public Object sendUpdateMessage(ProceedingJoinPoint joinPoint) {
+        Object[] args = joinPoint.getArgs();
+        Task task = (Task) args[0];
+        try {
+            joinPoint.proceed(args);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
+        lock.lock(30, TimeUnit.SECONDS);
+        try {
+            Map<String, Object> messageMap = new HashMap<>();
+            messageMap.put("operationType", OperationType.UPDATE.getOperation());
+            messageMap.put("taskId", task.getTaskId());
+            asyncSendMessage.asyncSendMessage(messageMap);
+            log.info("更新数据---发送消息到数据同步服务---成功! taskId = " + task.getTaskId());
+        } catch (Exception e) {
+            log.error("更新数据---发送消息到数据同步服务---失败! taskId =  " + task.getTaskId() + " errorMessage: " + e.getMessage());
+        } finally {
+            lock.unlock();
+        }
+        return null;
+    }
+
+    @Around("deletePointCutService()")
+    public Object sendDeleteMessage(ProceedingJoinPoint joinPoint) {
+        Object[] args = joinPoint.getArgs();
+        Long taskId = (Long) args[0];
+        Object obj = null;
+        try {
+            obj = joinPoint.proceed(args);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
+        lock.lock(30, TimeUnit.SECONDS);
+        try {
+            Map<String, Object> messageMap = new HashMap<>();
+            messageMap.put("operationType", OperationType.DELETE.getOperation());
+            messageMap.put("taskId", taskId);
+            asyncSendMessage.asyncSendMessage(messageMap);
+            log.info("删除数据---发送消息到数据同步服务---成功! taskId = " + taskId);
+        } catch (Exception e) {
+            log.error("删除数据---发送消息到数据同步服务---失败! taskId =  " + taskId + " errorMessage: " + e.getMessage());
+        } finally {
+            lock.unlock();
+        }
+        return obj;
     }
 }

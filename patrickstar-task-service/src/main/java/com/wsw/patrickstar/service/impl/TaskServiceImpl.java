@@ -2,15 +2,11 @@ package com.wsw.patrickstar.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.wsw.patrickstar.api.OperationType;
 import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.feign.client.RecepienterClient;
 import com.wsw.patrickstar.mapper.TaskMapper;
-import com.wsw.patrickstar.message.AsyncSendMessage;
 import com.wsw.patrickstar.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -20,10 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author WangSongWen
@@ -46,12 +39,6 @@ public class TaskServiceImpl implements TaskService {
     private TaskMapper taskMapper;
     @Resource
     private RecepienterClient recepienterClient;
-    @Resource
-    private AsyncSendMessage asyncSendMessage;
-    @Resource
-    private RedissonClient redissonClient;
-
-    private static final String REDIS_LOCK_KEY = "task-service";
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -69,19 +56,6 @@ public class TaskServiceImpl implements TaskService {
     @CachePut(key = "#task.taskId", unless = "#result == null")
     public Task updateTaskById(Task task) {
         taskMapper.updateById(task);
-        RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
-        lock.lock(30, TimeUnit.SECONDS);
-        try {
-            Map<String, Object> messageMap = new HashMap<>();
-            messageMap.put("operationType", OperationType.UPDATE.getOperation());
-            messageMap.put("taskId", task.getTaskId());
-            asyncSendMessage.asyncSendMessage(messageMap);
-            log.info("更新数据---发送消息到数据同步服务---成功! taskId = " + task.getTaskId());
-        } catch (Exception e) {
-            log.error("更新数据---发送消息到数据同步服务---失败! taskId =  " + task.getTaskId() + " errorMessage: " + e.getMessage());
-        } finally {
-            lock.unlock();
-        }
         return task;
     }
 
@@ -92,19 +66,6 @@ public class TaskServiceImpl implements TaskService {
         UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("task_name", task.getTaskName());
         taskMapper.update(task, updateWrapper);
-        RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
-        lock.lock(30, TimeUnit.SECONDS);
-        try {
-            Map<String, Object> messageMap = new HashMap<>();
-            messageMap.put("operationType", OperationType.UPDATE.getOperation());
-            messageMap.put("taskId", task.getTaskId());
-            asyncSendMessage.asyncSendMessage(messageMap);
-            log.info("更新数据---发送消息到数据同步服务---成功! taskId = " + task.getTaskId());
-        } catch (Exception e) {
-            log.error("更新数据---发送消息到数据同步服务---失败! taskId =  " + task.getTaskId() + " errorMessage: " + e.getMessage());
-        } finally {
-            lock.unlock();
-        }
         return task;
     }
 
@@ -117,19 +78,6 @@ public class TaskServiceImpl implements TaskService {
                 .set("task_status", task.getTaskStatus())
                 .eq("task_id", task.getTaskId());
         taskMapper.update(task, updateWrapper);
-        RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
-        lock.lock(30, TimeUnit.SECONDS);
-        try {
-            Map<String, Object> messageMap = new HashMap<>();
-            messageMap.put("operationType", OperationType.UPDATE.getOperation());
-            messageMap.put("taskId", task.getTaskId());
-            asyncSendMessage.asyncSendMessage(messageMap);
-            log.info("更新数据---发送消息到数据同步服务---成功! taskId = " + task.getTaskId());
-        } catch (Exception e) {
-            log.error("更新数据---发送消息到数据同步服务---失败! taskId =  " + task.getTaskId() + " errorMessage: " + e.getMessage());
-        } finally {
-            lock.unlock();
-        }
         return task;
     }
 
@@ -137,22 +85,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional(rollbackFor = Exception.class)
     @CacheEvict(key = "#p0", allEntries = false)
     public int deleteTaskByTaskId(Long taskId) {
-        int result;
-        result = taskMapper.deleteById(taskId);
-        RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
-        lock.lock(30, TimeUnit.SECONDS);
-        try {
-            Map<String, Object> messageMap = new HashMap<>();
-            messageMap.put("operationType", OperationType.DELETE.getOperation());
-            messageMap.put("taskId", taskId);
-            asyncSendMessage.asyncSendMessage(messageMap);
-            log.info("删除数据---发送消息到数据同步服务---成功! taskId = " + taskId);
-        } catch (Exception e) {
-            log.error("删除数据---发送消息到数据同步服务---失败! taskId =  " + taskId + " errorMessage: " + e.getMessage());
-        } finally {
-            lock.unlock();
-        }
-        return result;
+        return taskMapper.deleteById(taskId);
     }
 
     // 这个方法没有实现数据同步！
