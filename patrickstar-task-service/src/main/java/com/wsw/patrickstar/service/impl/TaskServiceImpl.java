@@ -101,14 +101,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     @Cacheable(key = "#p0", unless = "#result == null")
     public Task selectTaskById(Long taskId) {
         return taskMapper.selectById(taskId);
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     @Cacheable(key = "#p0", unless = "#result == null")
     public List<Task> selectTaskByName(String taskName) {
         QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
@@ -117,7 +115,6 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     @Cacheable(key = "#p0", unless = "#result == null")
     public List<Task> selectTaskByStatus(char taskStatus) {
         QueryWrapper<Task> queryWrapper = new QueryWrapper<>();

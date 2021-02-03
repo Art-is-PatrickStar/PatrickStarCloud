@@ -34,7 +34,7 @@ public class TaskController {
             return CommonResult.success("创建任务成功!");
         } catch (Exception e) {
             e.printStackTrace();
-            return CommonResult.failed("创建任务失败!");
+            return CommonResult.failed("创建任务失败! " + e.getMessage());
         }
     }
 
@@ -45,7 +45,7 @@ public class TaskController {
             return CommonResult.success("更新任务成功!");
         } catch (Exception e) {
             e.printStackTrace();
-            return CommonResult.failed("更新任务失败!");
+            return CommonResult.failed("更新任务失败! " + e.getMessage());
         }
     }
 
@@ -56,7 +56,7 @@ public class TaskController {
             return CommonResult.success("更新任务成功!");
         } catch (Exception e) {
             e.printStackTrace();
-            return CommonResult.failed("更新任务失败!");
+            return CommonResult.failed("更新任务失败! " + e.getMessage());
         }
     }
 
@@ -67,7 +67,7 @@ public class TaskController {
             return CommonResult.success("更新任务成功!");
         } catch (Exception e) {
             e.printStackTrace();
-            return CommonResult.failed("更新任务失败!");
+            return CommonResult.failed("更新任务失败! " + e.getMessage());
         }
     }
 
@@ -78,7 +78,7 @@ public class TaskController {
             return CommonResult.success("删除任务成功!");
         } catch (Exception e) {
             e.printStackTrace();
-            return CommonResult.failed("删除任务失败!");
+            return CommonResult.failed("删除任务失败! " + e.getMessage());
         }
     }
 
@@ -89,7 +89,7 @@ public class TaskController {
             return CommonResult.success("删除任务成功!");
         } catch (Exception e) {
             e.printStackTrace();
-            return CommonResult.failed("删除任务失败!");
+            return CommonResult.failed("删除任务失败! " + e.getMessage());
         }
     }
 
@@ -100,13 +100,18 @@ public class TaskController {
             return CommonResult.success(task);
         } catch (Exception e) {
             e.printStackTrace();
-            return CommonResult.failed("查询任务失败!");
+            return CommonResult.failed("查询任务失败! " + e.getMessage());
         }
     }
 
     @GetMapping("/select/byid")
     public Task selectTask(@RequestParam("taskId") Long taskId) {
-        Task task = taskService.selectTaskById(taskId);
+        Task task = null;
+        try {
+            task = taskService.selectTaskById(taskId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return task;
     }
 
@@ -117,7 +122,7 @@ public class TaskController {
             return CommonResult.success(tasks);
         } catch (Exception e) {
             e.printStackTrace();
-            return CommonResult.failed("查询任务失败!");
+            return CommonResult.failed("查询任务失败! " + e.getMessage());
         }
     }
 
@@ -128,7 +133,7 @@ public class TaskController {
             return CommonResult.success(tasks);
         } catch (Exception e) {
             e.printStackTrace();
-            return CommonResult.failed("查询任务失败!");
+            return CommonResult.failed("查询任务失败! " + e.getMessage());
         }
     }
 }
