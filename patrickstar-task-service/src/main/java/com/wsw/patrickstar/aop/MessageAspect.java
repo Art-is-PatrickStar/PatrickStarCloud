@@ -10,6 +10,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 @Aspect
 @Component
 @Slf4j
+@Order(-99) // 越小越先执行
 public class MessageAspect {
     @Resource
     private RedissonClient redissonClient;
@@ -46,14 +48,10 @@ public class MessageAspect {
     }
 
     @Around("addPointCutService()")
-    public Object sendAddMessage(ProceedingJoinPoint joinPoint) {
+    public Object sendAddMessage(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
         Task task = (Task) args[0];
-        try {
-            joinPoint.proceed(args);
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
+        joinPoint.proceed(args);
         // 发送消息到数据同步服务
         // 防止消息重复发送 Redis分布式锁
         RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
@@ -74,14 +72,10 @@ public class MessageAspect {
     }
 
     @Around("updatePointCutService()")
-    public Object sendUpdateMessage(ProceedingJoinPoint joinPoint) {
+    public Object sendUpdateMessage(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
         Task task = (Task) args[0];
-        try {
-            joinPoint.proceed(args);
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
+        joinPoint.proceed(args);
         RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
         lock.lock(30, TimeUnit.SECONDS);
         try {
@@ -99,15 +93,11 @@ public class MessageAspect {
     }
 
     @Around("deletePointCutService()")
-    public Object sendDeleteMessage(ProceedingJoinPoint joinPoint) {
+    public Object sendDeleteMessage(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
         Long taskId = (Long) args[0];
         Object obj = null;
-        try {
-            obj = joinPoint.proceed(args);
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
+        obj = joinPoint.proceed(args);
         RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
         lock.lock(30, TimeUnit.SECONDS);
         try {
