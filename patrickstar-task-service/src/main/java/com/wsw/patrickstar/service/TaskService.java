@@ -24,8 +24,6 @@ public interface TaskService {
 
     Task selectTaskById(Long taskId);
 
-    Task selectEsTaskById(Long taskId);
-
     List<Task> selectTaskByName(String taskName);
 
     List<Task> selectTaskByStatus(char taskStatus);
