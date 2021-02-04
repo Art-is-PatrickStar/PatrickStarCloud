@@ -28,112 +28,72 @@ public class TaskController {
     private TaskService taskService;
 
     @PostMapping("/create")
+    @ResponseBody
     public CommonResult createTask(@RequestBody Task task) {
-        try {
-            taskService.createTask(task);
-            return CommonResult.success("创建任务成功!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return CommonResult.failed("创建任务失败! " + e.getMessage());
-        }
+        taskService.createTask(task);
+        return CommonResult.success("创建任务成功!");
     }
 
     @PutMapping("/update/byid")
+    @ResponseBody
     public CommonResult updateTaskById(@RequestBody Task task) {
-        try {
-            taskService.updateTaskById(task);
-            return CommonResult.success("更新任务成功!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return CommonResult.failed("更新任务失败! " + e.getMessage());
-        }
+        taskService.updateTaskById(task);
+        return CommonResult.success("更新任务成功!");
     }
 
     @PutMapping("/update/byname")
+    @ResponseBody
     public CommonResult updateTaskByName(@RequestBody Task task) {
-        try {
-            taskService.updateTaskByName(task);
-            return CommonResult.success("更新任务成功!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return CommonResult.failed("更新任务失败! " + e.getMessage());
-        }
+        taskService.updateTaskByName(task);
+        return CommonResult.success("更新任务成功!");
     }
 
     @PutMapping("/updatestatus/byid")
+    @ResponseBody
     public CommonResult updateTaskStatusByTaskId(@RequestBody Task task) {
-        try {
-            taskService.updateTaskStatusByTaskId(task);
-            return CommonResult.success("更新任务成功!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return CommonResult.failed("更新任务失败! " + e.getMessage());
-        }
+        taskService.updateTaskStatusByTaskId(task);
+        return CommonResult.success("更新任务成功!");
     }
 
     @DeleteMapping("/delete/byid")
+    @ResponseBody
     public CommonResult deleteTaskByTaskId(@RequestParam("taskId") Long taskId) {
-        try {
-            taskService.deleteTaskByTaskId(taskId);
-            return CommonResult.success("删除任务成功!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return CommonResult.failed("删除任务失败! " + e.getMessage());
-        }
+        taskService.deleteTaskByTaskId(taskId);
+        return CommonResult.success("删除任务成功!");
     }
 
     @DeleteMapping("/delete/byname")
+    @ResponseBody
     public CommonResult deleteTaskByTaskName(@RequestParam("taskName") String taskName) {
-        try {
-            taskService.deleteTaskByTaskName(taskName);
-            return CommonResult.success("删除任务成功!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return CommonResult.failed("删除任务失败! " + e.getMessage());
-        }
+        taskService.deleteTaskByTaskName(taskName);
+        return CommonResult.success("删除任务成功!");
     }
 
     @GetMapping("/select/byid/{taskId}")
+    @ResponseBody
     public CommonResult selectTaskById(@PathVariable("taskId") Long taskId) {
-        try {
-            Task task = taskService.selectTaskById(taskId);
-            return CommonResult.success(task);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return CommonResult.failed("查询任务失败! " + e.getMessage());
-        }
+        Task task = taskService.selectTaskById(taskId);
+        return CommonResult.success(task);
     }
 
     @GetMapping("/select/byid")
+    @ResponseBody
     public Task selectTask(@RequestParam("taskId") Long taskId) {
-        Task task = null;
-        try {
-            task = taskService.selectTaskById(taskId);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Task task = taskService.selectTaskById(taskId);
         return task;
     }
 
     @GetMapping("/select/byname")
+    @ResponseBody
     public CommonResult selectTaskByName(@RequestParam("taskName") String taskName) {
-        try {
-            List<Task> tasks = taskService.selectTaskByName(taskName);
-            return CommonResult.success(tasks);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return CommonResult.failed("查询任务失败! " + e.getMessage());
-        }
+        List<Task> tasks = taskService.selectTaskByName(taskName);
+        return CommonResult.success(tasks);
     }
 
     @GetMapping("/select/bystatus/{taskStatus}")
+    @ResponseBody
     public CommonResult selectTaskByStatus(@PathVariable("taskStatus") char taskStatus) {
-        try {
-            List<Task> tasks = taskService.selectTaskByStatus(taskStatus);
-            return CommonResult.success(tasks);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return CommonResult.failed("查询任务失败! " + e.getMessage());
-        }
+        List<Task> tasks = taskService.selectTaskByStatus(taskStatus);
+        return CommonResult.success(tasks);
     }
 }

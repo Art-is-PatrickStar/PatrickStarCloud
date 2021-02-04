@@ -3,6 +3,7 @@ package com.wsw.patrickstar.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.wsw.patrickstar.entity.Task;
+import com.wsw.patrickstar.exception.TaskServiceException;
 import com.wsw.patrickstar.feign.client.RecepienterClient;
 import com.wsw.patrickstar.mapper.TaskMapper;
 import com.wsw.patrickstar.service.TaskService;
@@ -42,7 +43,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Task createTask(Task task) {
+    public Task createTask(Task task) throws TaskServiceException {
         // 添加任务
         taskMapper.insert(task);
         // 同步调用
@@ -54,7 +55,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @CachePut(key = "#task.taskId", unless = "#result == null")
-    public Task updateTaskById(Task task) {
+    public Task updateTaskById(Task task) throws TaskServiceException {
         taskMapper.updateById(task);
         return task;
     }
@@ -62,7 +63,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @CachePut(key = "#task.taskId", unless = "#result == null")
-    public Task updateTaskByName(Task task) {
+    public Task updateTaskByName(Task task) throws TaskServiceException {
         UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("task_name", task.getTaskName());
         taskMapper.update(task, updateWrapper);
@@ -72,7 +73,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @CachePut(key = "#task.taskId", unless = "#result == null")
-    public Task updateTaskStatusByTaskId(Task task) {
+    public Task updateTaskStatusByTaskId(Task task) throws TaskServiceException {
         UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
         updateWrapper
                 .set("task_status", task.getTaskStatus())
@@ -84,7 +85,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @CacheEvict(key = "#p0", allEntries = false)
-    public int deleteTaskByTaskId(Long taskId) {
+    public int deleteTaskByTaskId(Long taskId) throws TaskServiceException {
         return taskMapper.deleteById(taskId);
     }
 
@@ -92,7 +93,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @CacheEvict(key = "#p0", allEntries = false)
-    public int deleteTaskByTaskName(String taskName) {
+    public int deleteTaskByTaskName(String taskName) throws TaskServiceException {
         int result;
         QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("task_name", taskName);
@@ -102,13 +103,13 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Cacheable(key = "#p0", unless = "#result == null")
-    public Task selectTaskById(Long taskId) {
+    public Task selectTaskById(Long taskId) throws TaskServiceException {
         return taskMapper.selectById(taskId);
     }
 
     @Override
     @Cacheable(key = "#p0", unless = "#result == null")
-    public List<Task> selectTaskByName(String taskName) {
+    public List<Task> selectTaskByName(String taskName) throws TaskServiceException {
         QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("task_name", taskName);
         return taskMapper.selectList(queryWrapper);
@@ -116,7 +117,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Cacheable(key = "#p0", unless = "#result == null")
-    public List<Task> selectTaskByStatus(char taskStatus) {
+    public List<Task> selectTaskByStatus(char taskStatus) throws TaskServiceException {
         QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("task_status", taskStatus);
         return taskMapper.selectList(queryWrapper);
