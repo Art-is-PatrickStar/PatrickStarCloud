@@ -3,6 +3,7 @@ package com.wsw.patrickstar.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.wsw.patrickstar.entity.Task;
+import com.wsw.patrickstar.exception.TaskServiceException;
 import com.wsw.patrickstar.feign.client.TaskClient;
 import com.wsw.patrickstar.service.DataSyncService;
 import com.wsw.patrickstar.service.ElasticService;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -38,7 +38,7 @@ public class DataSyncServiceImpl implements DataSyncService {
     @Transactional(rollbackFor = Exception.class)
     @RabbitHandler
     @RabbitListener(queues = "queueTask")
-    public void receiveMessage(Message message, Channel channel, Map<String, Object> messageMap) throws IOException {
+    public void receiveMessage(Message message, Channel channel, Map<String, Object> messageMap) throws Exception {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             log.info("数据同步服务接收到了消息: " + objectMapper.writeValueAsString(messageMap));
@@ -60,9 +60,11 @@ public class DataSyncServiceImpl implements DataSyncService {
                             log.info("新增数据同步至ElasticSearch成功!");
                         } catch (Exception e) {
                             log.error("新增数据同步至ElasticSearch失败! " + e.getMessage());
+                            throw new TaskServiceException(e.getMessage(), e.getCause());
                         }
                     } else {
                         log.error("数据未成功新增至数据库,数据同步服务不执行!");
+                        throw new TaskServiceException("数据未成功新增至数据库,数据同步服务不执行!");
                     }
                     break;
                 case "DELETE":
@@ -73,9 +75,11 @@ public class DataSyncServiceImpl implements DataSyncService {
                             log.info("删除数据同步至ElasticSearch成功!");
                         } catch (Exception e) {
                             log.error("删除数据同步至ElasticSearch失败! " + e.getMessage());
+                            throw new TaskServiceException(e.getMessage(), e.getCause());
                         }
                     } else {
                         log.error("数据未成功从数据库中删除或不在es中,数据同步服务不执行!");
+                        throw new TaskServiceException("数据未成功从数据库中删除或不在es中,数据同步服务不执行!");
                     }
                     break;
                 case "UPDATE":
@@ -86,9 +90,11 @@ public class DataSyncServiceImpl implements DataSyncService {
                             log.info("更新数据同步至ElasticSearch成功!");
                         } catch (Exception e) {
                             log.error("更新数据同步至ElasticSearch失败! " + e.getMessage());
+                            throw new TaskServiceException(e.getMessage(), e.getCause());
                         }
                     } else {
                         log.error("数据未成功更新至数据库中,数据同步服务不执行!");
+                        throw new TaskServiceException("数据未成功更新至数据库中,数据同步服务不执行!");
                     }
                     break;
                 default:
@@ -106,6 +112,7 @@ public class DataSyncServiceImpl implements DataSyncService {
                 channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, true);
             }
             log.error(e.getMessage());
+            throw new TaskServiceException(e.getMessage(), e.getCause());
         }
     }
 }
