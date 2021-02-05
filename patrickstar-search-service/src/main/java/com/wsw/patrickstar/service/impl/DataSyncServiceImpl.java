@@ -9,11 +9,13 @@ import com.wsw.patrickstar.service.DataSyncService;
 import com.wsw.patrickstar.service.ElasticService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
 import java.util.Map;
@@ -37,11 +39,17 @@ public class DataSyncServiceImpl implements DataSyncService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @RabbitHandler
-    @RabbitListener(queues = "queueTask")
+    @RabbitListener(queues = "task-queue")
     public void receiveMessage(Message message, Channel channel, Map<String, Object> messageMap) throws Exception {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            log.info("数据同步服务接收到了消息: " + objectMapper.writeValueAsString(messageMap));
+            String messageString = objectMapper.writeValueAsString(messageMap);
+            if (StringUtils.isBlank(messageString)) {
+                log.error("数据同步服务接收到的消息为空, 无法同步!");
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                return;
+            }
+            log.info("数据同步服务接收到了消息: " + messageString);
             // 获取数据操作类型
             String operationType = MapUtils.getString(messageMap, "operationType");
             Long taskId = MapUtils.getLong(messageMap, "taskId");
@@ -100,7 +108,6 @@ public class DataSyncServiceImpl implements DataSyncService {
                 default:
                     break;
             }
-            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         } catch (Exception e) {
             if (message.getMessageProperties().getRedelivered()) {
                 log.error("消息已重复处理失败,拒绝再次接收!");
@@ -112,7 +119,10 @@ public class DataSyncServiceImpl implements DataSyncService {
                 channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, true);
             }
             log.error(e.getMessage());
+            // 使用了声明式事务,异常后手动回滚事务
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             throw new TaskServiceException(e.getMessage(), e.getCause());
         }
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
     }
 }

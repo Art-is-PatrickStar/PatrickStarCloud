@@ -1,5 +1,6 @@
 package com.wsw.patrickstar.message;
 
+import com.wsw.patrickstar.config.RabbitConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
@@ -26,7 +27,7 @@ public class MessageService implements RabbitTemplate.ConfirmCallback, RabbitTem
         rabbitTemplate.setConfirmCallback(this);
         rabbitTemplate.setReturnCallback(this);
         CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
-        rabbitTemplate.convertAndSend("summerCloudExchange", "", message, correlationData);
+        rabbitTemplate.convertAndSend(RabbitConfig.TASK_EXCHANGE, RabbitConfig.ROUTING_KEY, message, correlationData);
     }
 
     @Override
