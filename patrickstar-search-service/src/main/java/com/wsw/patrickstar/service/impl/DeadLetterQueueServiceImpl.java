@@ -2,6 +2,7 @@ package com.wsw.patrickstar.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
+import com.wsw.patrickstar.exception.TaskServiceException;
 import com.wsw.patrickstar.service.DeadLetterQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
@@ -25,8 +26,15 @@ public class DeadLetterQueueServiceImpl implements DeadLetterQueueService {
     @RabbitHandler
     @RabbitListener(queues = "dead-letter-queue")
     public void deadLetterMessage(Message message, Channel channel, Map<String, Object> messageMap) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        String messageString = objectMapper.writeValueAsString(messageMap);
-        System.out.println("死信队列接收到的消息: " + messageString);
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String messageString = objectMapper.writeValueAsString(messageMap);
+            log.info("死信队列接收到的消息: " + messageString);
+            // 对进入死信队列的消息进行处理或补偿
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new TaskServiceException(e.getMessage(), e.getCause());
+        }
     }
 }
