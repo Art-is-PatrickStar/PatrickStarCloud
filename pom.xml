@@ -34,10 +34,12 @@
         <spring.boot.admin.version>2.1.6</spring.boot.admin.version>
         <commons-lang3.version>3.11</commons-lang3.version>
         <commons-collections4.version>4.4</commons-collections4.version>
-        <commons-pool2>2.8.1</commons-pool2>
-        <jjwt-version>0.11.2</jjwt-version>
-        <java-jwt-version>3.12.0</java-jwt-version>
+        <commons-pool2.version>2.8.1</commons-pool2.version>
+        <jjwt.version>0.11.2</jjwt.version>
+        <java-jwt.version>3.12.0</java-jwt.version>
         <redisson.version>3.13.4</redisson.version>
+        <xxl-job-core.version>2.3.0</xxl-job-core.version>
+        <slf4j-api.version>1.7.30</slf4j-api.version>
     </properties>
 
     <distributionManagement>
@@ -94,7 +96,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-pool2</artifactId>
-                <version>${commons-pool2}</version>
+                <version>${commons-pool2.version}</version>
             </dependency>
             <!-- spring boot admin client -->
             <dependency>
@@ -121,24 +123,34 @@
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-api</artifactId>
-                <version>${jjwt-version}</version>
+                <version>${jjwt.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-impl</artifactId>
-                <version>${jjwt-version}</version>
+                <version>${jjwt.version}</version>
                 <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
-                <version>${jjwt-version}</version>
+                <version>${jjwt.version}</version>
                 <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>com.auth0</groupId>
                 <artifactId>java-jwt</artifactId>
-                <version>${java-jwt-version}</version>
+                <version>${java-jwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.xuxueli</groupId>
+                <artifactId>xxl-job-core</artifactId>
+                <version>${xxl-job-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j-api.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
