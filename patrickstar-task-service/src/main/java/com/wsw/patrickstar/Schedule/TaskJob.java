@@ -1,25 +1,12 @@
 package com.wsw.patrickstar.Schedule;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabbitmq.client.Channel;
-import com.wsw.patrickstar.entity.Task;
-import com.wsw.patrickstar.exception.TaskServiceException;
-import com.wsw.patrickstar.message.MessageService;
-import com.wsw.patrickstar.service.TaskService;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
-import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.rabbit.annotation.RabbitHandler;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author WangSongWen
@@ -33,44 +20,10 @@ import java.util.Map;
  * 4、任务结果：默认任务结果为 "成功" 状态，不需要主动设置；如有诉求，比如设置任务结果为失败，可以通过 "XxlJobHelper.handleFail/handleSuccess" 自主设置任务结果；
  */
 @Component
-@Transactional(rollbackFor = Exception.class)
 public class TaskJob {
     private static final Logger logger = LoggerFactory.getLogger(TaskJob.class);
 
-    @Resource
-    private MessageService messageService;
-    @Resource
-    private TaskService taskService;
-
-    ObjectMapper objectMapper = new ObjectMapper();
-
-    @RabbitHandler
-    @RabbitListener(queues = "dead-letter-queue")
-    @XxlJob("checkDeadLetterMessageHandler")
-    public void checkDeadLetterMessageHandler(Message message, Channel channel, Map<String, Object> messageMap) throws Exception {
-        try {
-            if (MapUtils.isNotEmpty(messageMap)) {
-                String messageString = objectMapper.writeValueAsString(messageMap);
-                XxlJobHelper.log("死信队列接收到的消息: " + messageString);
-                // 对进入死信队列的消息进行处理或补偿
-                Long taskId = MapUtils.getLong(messageMap, "taskId");
-                String operationType = MapUtils.getString(messageMap, "operationType");
-                Task task = taskService.selectTaskById(taskId);
-                if (task != null) {
-                    Map<String, Object> reMessageMap = new HashMap<>();
-                    reMessageMap.put("operationType", operationType);
-                    reMessageMap.put("taskId", taskId);
-                    //messageService.sendMessage(reMessageMap);
-                }
-            }
-            //channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new TaskServiceException(e.getMessage(), e.getCause());
-        }
-    }
-
-/*    @XxlJob("taskJobHandler")
+    @XxlJob("taskJobHandler")
     public void taskJobHandler() throws Exception {
         XxlJobHelper.log("Task Job Test: Hello World.");
 
@@ -78,7 +31,7 @@ public class TaskJob {
             XxlJobHelper.log("beat at: " + i);
             TimeUnit.SECONDS.sleep(2);
         }
-    }*/
+    }
 
 //    /**
 //     * 2、分片广播任务
