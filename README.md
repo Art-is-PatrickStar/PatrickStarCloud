@@ -120,6 +120,12 @@ mybatis-plus:
 redisson:
   client:
     address: redis://***:6379
+    
+minio:
+  url: http://***:9000
+  accessKey: ***
+  secretKey: ***
+  bucketName: test
 
 management:
   endpoints:

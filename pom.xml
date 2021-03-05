@@ -40,6 +40,7 @@
         <redisson.version>3.13.4</redisson.version>
         <xxl-job-core.version>2.3.0</xxl-job-core.version>
         <slf4j-api.version>1.7.30</slf4j-api.version>
+        <minio.version>7.1.0</minio.version>
     </properties>
 
     <distributionManagement>
@@ -151,6 +152,11 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.minio</groupId>
+                <artifactId>minio</artifactId>
+                <version>${minio.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
