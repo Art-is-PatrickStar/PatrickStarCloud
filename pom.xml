@@ -41,6 +41,7 @@
         <xxl-job-core.version>2.3.0</xxl-job-core.version>
         <slf4j-api.version>1.7.30</slf4j-api.version>
         <minio.version>7.1.0</minio.version>
+        <sharding-jdbc.version>4.0.0-RC1</sharding-jdbc.version>
     </properties>
 
     <distributionManagement>
@@ -157,6 +158,16 @@
                 <groupId>io.minio</groupId>
                 <artifactId>minio</artifactId>
                 <version>${minio.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+                <version>${sharding-jdbc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>sharding-core-common</artifactId>
+                <version>${sharding-jdbc.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

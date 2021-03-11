@@ -2,6 +2,49 @@ spring:
   profiles:
     active: dev  # 开发环境
 
+#  shardingsphere:
+#    datasource:
+#      names: ds-master-0
+#        # 配置数据源
+#        ds-master-0:
+#          # 数据库连接池类名称
+#          type: com.zaxxer.hikari.HikariDataSource
+#          driver-class-name: com.mysql.cj.jdbc.Driver
+#          # 数据库url连接
+#          jdbcUrl: jdbc:mysql://localhost:3306/task-system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+#          #数据库用户名
+#          username: root
+#          # 数据库密码
+#          password: ***
+#          hikari:
+#            minimum-idle: 5
+#            max-lifetime: 1800000
+#            maximum-pool-size: 15
+#            auto-commit: true
+#            idle-timeout: 30000
+#            pool-name: DatebookHikariCP
+#            connection-timeout: 30000
+#        # 配置分表规则
+#        sharding:
+#          tables:
+#            test_user:
+#              actual-data-nodes: ds-master-0.task_$->{0..1}
+#              # 配置分表策略 主键取模 0在0表 1在1表
+#              table-strategy:
+#                inline:
+#                  #分片列名称
+#                  sharding-column: id
+#                  #分片算法行表达式
+#                  algorithm-expression: task_$->{id % 2}
+#              # 主键策略 雪花算法
+#              key-generator:
+#                column: id
+#                type: SNOWFLAKE
+#        # 打开sql控制台输出日志
+#        props:
+#          sql:
+#            show: true
+
 # xxl-job配置
 # log config
 logging:
