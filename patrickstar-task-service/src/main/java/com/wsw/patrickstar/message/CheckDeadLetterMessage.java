@@ -2,19 +2,19 @@ package com.wsw.patrickstar.message;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
-import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.exception.TaskServiceException;
-import com.wsw.patrickstar.service.TaskService;
-import com.xxl.job.core.context.XxlJobHelper;
+import com.wsw.patrickstar.service.MailService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -22,13 +22,12 @@ import java.util.Map;
  * @Date: Created in 16:32 2021/3/1
  * @Description:
  */
+@Slf4j
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class CheckDeadLetterMessage {
     @Resource
-    private AsyncSendMessage asyncSendMessage;
-    @Resource
-    private TaskService taskService;
+    private MailService mailService;
 
     @RabbitHandler
     @RabbitListener(queues = "dead-letter-queue")
@@ -37,18 +36,18 @@ public class CheckDeadLetterMessage {
             if (MapUtils.isNotEmpty(messageMap)) {
                 ObjectMapper objectMapper = new ObjectMapper();
                 String messageString = objectMapper.writeValueAsString(messageMap);
-                XxlJobHelper.log("死信队列接收到的消息: " + messageString);
+                log.info("死信队列接收到的消息: " + messageString);
                 // 对进入死信队列的消息进行处理或补偿
                 Long taskId = MapUtils.getLong(messageMap, "taskId");
-                String operationType = MapUtils.getString(messageMap, "operationType");
-                Task task = taskService.selectTaskById(taskId);
-                if (task != null) {
-                    Map<String, Object> reMessageMap = new HashMap<>();
-                    reMessageMap.put("operationType", operationType);
-                    reMessageMap.put("taskId", taskId);
-                    System.out.println(reMessageMap);
-                    //asyncSendMessage.asyncSendMessage(reMessageMap);
-                }
+                SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+                simpleMailMessage.setSubject("任务死信队列接收到消息，请重新处理!");
+                simpleMailMessage.setFrom("1111111111@qq.com");
+                simpleMailMessage.setTo("2544894086@qq.com");
+                simpleMailMessage.setCc("2544894086@qq.com");
+                simpleMailMessage.setBcc("2544894086@qq.com");
+                simpleMailMessage.setSentDate(new Date());
+                simpleMailMessage.setText("失败的任务ID: " + taskId);
+                mailService.sendMail(simpleMailMessage);
             }
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         } catch (Exception e) {

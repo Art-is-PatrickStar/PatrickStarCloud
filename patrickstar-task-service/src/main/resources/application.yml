@@ -2,6 +2,17 @@ spring:
   profiles:
     active: dev  # 开发环境
 
+  mail:
+    host: smtp.qq.com
+    port: 587
+    username: 2544894086@qq.com
+    password: uvfpmqyyzdgleahd
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          socketFactoryClass: javax.net.ssl.SSLSocketFactory
+        debug: true
 #  shardingsphere:
 #    datasource:
 #      names: ds-master-0
@@ -46,10 +57,6 @@ spring:
 #            show: true
 
 # xxl-job配置
-# log config
-logging:
-  config: classpath:logback.xml
-
 xxl:
   job:
     ### xxl-job admin address list, such as "http://address" or "http://address01,http://address02"
