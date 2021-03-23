@@ -2,8 +2,6 @@ package com.wsw.patrickstar.service.impl;
 
 import com.wsw.patrickstar.exception.TaskServiceException;
 import com.wsw.patrickstar.service.MailService;
-import com.wsw.patrickstar.vo.MailVo;
-import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;

@@ -41,7 +41,7 @@ public class CheckDeadLetterMessage {
                 Long taskId = MapUtils.getLong(messageMap, "taskId");
                 SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
                 simpleMailMessage.setSubject("任务死信队列接收到消息，请重新处理!");
-                simpleMailMessage.setFrom("1111111111@qq.com");
+                simpleMailMessage.setFrom("2544894086@qq.com");
                 simpleMailMessage.setTo("2544894086@qq.com");
                 simpleMailMessage.setCc("2544894086@qq.com");
                 simpleMailMessage.setBcc("2544894086@qq.com");
