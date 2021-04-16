@@ -1,6 +1,7 @@
 package com.wsw.patrickstar.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.rabbitmq.client.Channel;
 import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.exception.TaskServiceException;
@@ -14,8 +15,6 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
 import java.util.Map;
@@ -37,19 +36,17 @@ public class DataSyncServiceImpl implements DataSyncService {
     private TaskClient taskClient;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     @RabbitHandler
     @RabbitListener(queues = "task-queue")
-    public void receiveMessage(Message message, Channel channel, Map<String, Object> messageMap) throws Exception {
+    public void receiveMessage(Message message, Channel channel) throws Exception {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            String messageString = objectMapper.writeValueAsString(messageMap);
-            if (StringUtils.isBlank(messageString)) {
+            Map<String, Object> messageMap = JSONObject.parseObject(message.getBody(), Map.class);
+            if (MapUtils.isNotEmpty(messageMap)) {
                 log.error("数据同步服务接收到的消息为空, 无法同步!");
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
                 return;
             }
-            log.info("数据同步服务接收到了消息: " + messageString);
+            log.info("数据同步服务接收到了消息: " + JSONObject.toJSONString(messageMap));
             // 获取数据操作类型
             String operationType = MapUtils.getString(messageMap, "operationType");
             Long taskId = MapUtils.getLong(messageMap, "taskId");
@@ -108,21 +105,11 @@ public class DataSyncServiceImpl implements DataSyncService {
                 default:
                     break;
             }
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
+            log.info("MySQL与ElasticSearch数据同步成功!");
         } catch (Exception e) {
-            if (message.getMessageProperties().getRedelivered()) {
-                log.error("消息已重复处理失败,拒绝再次接收!");
-                // 拒绝消息，requeue=false 表示不再重新入队，如果配置了死信队列则进入死信队列
-                channel.basicReject(message.getMessageProperties().getDeliveryTag(), false);
-            } else {
-                log.error("消息即将再次返回队列处理!");
-                // requeue为是否重新回到队列，true重新入队
-                channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, true);
-            }
-            log.error(e.getMessage());
-            // 使用了声明式事务,异常后手动回滚事务
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            throw new TaskServiceException(e.getMessage(), e.getCause());
+            channel.basicReject(message.getMessageProperties().getDeliveryTag(), false);
+            log.error("MySQL与ElasticSearch数据同步失败! error: " + e.getMessage());
         }
-        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
     }
 }
