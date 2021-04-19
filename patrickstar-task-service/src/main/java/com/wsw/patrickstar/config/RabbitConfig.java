@@ -1,5 +1,6 @@
 package com.wsw.patrickstar.config;
 
+import com.wsw.patrickstar.api.Rabbit;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -18,12 +19,6 @@ import java.util.Map;
  */
 @Configuration
 public class RabbitConfig {
-    public static final String TASK_EXCHANGE = "task-exchange";
-    public static final String DEAD_LETTER_EXCHANGE = "dead-letter-exchange";
-    public static final String TASK_QUEUE = "task-queue";
-    public static final String DEAD_LETTER_QUEUE = "dead-letter-queue";
-    public static final String ROUTING_KEY = "wsw";
-
     // task队列
     @Bean
     Queue taskQueue() {
@@ -33,38 +28,38 @@ public class RabbitConfig {
         // return new Queue("directQueue",true,true,false);
         //一般设置一下队列的持久化就好,其余两个就是默认false
         Map<String, Object> args = new HashMap<>();
-        args.put("x-dead-letter-exchange", DEAD_LETTER_EXCHANGE); // 绑定死信交换机
-        return QueueBuilder.durable(TASK_QUEUE).withArguments(args).build();
+        args.put("x-dead-letter-exchange", Rabbit.DEAD_LETTER_EXCHANGE); // 绑定死信交换机
+        return QueueBuilder.durable(Rabbit.TASK_QUEUE).withArguments(args).build();
     }
 
     // 死信队列
     @Bean
     Queue deadLetterQueue() {
-        return new Queue(DEAD_LETTER_QUEUE, true);
+        return new Queue(Rabbit.DEAD_LETTER_QUEUE, true);
     }
 
     // task交换器
     @Bean
     DirectExchange taskExchange() {
-        return new DirectExchange(TASK_EXCHANGE, true, false);
+        return new DirectExchange(Rabbit.TASK_EXCHANGE, true, false);
     }
 
     // 死信队列交换器
     @Bean
     DirectExchange deadLetterExchange() {
-        return new DirectExchange(DEAD_LETTER_EXCHANGE, true, false);
+        return new DirectExchange(Rabbit.DEAD_LETTER_EXCHANGE, true, false);
     }
 
     // 将task队列绑定到task交换机
     @Bean
     Binding bindTaskQueue() {
-        return BindingBuilder.bind(taskQueue()).to(taskExchange()).with(ROUTING_KEY);
+        return BindingBuilder.bind(taskQueue()).to(taskExchange()).with(Rabbit.ROUTING_KEY);
     }
 
     // 将ta死信队列绑定到死信交换机
     @Bean
     Binding binddeadLetterQueue() {
-        return BindingBuilder.bind(deadLetterQueue()).to(deadLetterExchange()).with(ROUTING_KEY);
+        return BindingBuilder.bind(deadLetterQueue()).to(deadLetterExchange()).with(Rabbit.ROUTING_KEY);
     }
 
     @Bean
