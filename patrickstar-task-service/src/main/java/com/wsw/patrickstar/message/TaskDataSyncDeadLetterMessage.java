@@ -24,7 +24,7 @@ import java.util.Map;
  */
 @Slf4j
 @Service
-public class CheckDeadLetterMessage {
+public class TaskDataSyncDeadLetterMessage {
     @Resource
     private MailService mailService;
 
