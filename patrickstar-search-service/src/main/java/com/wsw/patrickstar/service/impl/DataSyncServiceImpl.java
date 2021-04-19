@@ -1,6 +1,7 @@
 package com.wsw.patrickstar.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.rabbitmq.client.Channel;
 import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.exception.TaskServiceException;
@@ -36,8 +37,10 @@ public class DataSyncServiceImpl implements DataSyncService {
     @Override
     @RabbitHandler
     @RabbitListener(queues = "task-queue")
-    public void receiveMessage(Message message, Channel channel, Map<String, Object> messageMap) throws Exception {
+    public void receiveMessage(Message message, Channel channel) throws Exception {
         try {
+            String messageBody = new String(message.getBody());
+            Map<String, Object> messageMap = JSONObject.parseObject(messageBody, new TypeReference<Map<String, Object>>() {});
             if (MapUtils.isEmpty(messageMap)) {
                 log.error("数据同步服务接收到的消息为空, 无法同步!");
                 channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);

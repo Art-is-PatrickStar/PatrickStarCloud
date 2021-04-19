@@ -1,5 +1,6 @@
 package com.wsw.patrickstar.aop;
 
+import com.alibaba.fastjson.JSONObject;
 import com.wsw.patrickstar.api.OperationType;
 import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.exception.TaskServiceException;
@@ -62,7 +63,7 @@ public class MessageAspect {
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("operationType", OperationType.ADD.getOperation());
             messageMap.put("taskId", task.getTaskId());
-            asyncSendMessage.asyncSendMessage(messageMap);
+            asyncSendMessage.asyncSendMessage(JSONObject.toJSONString(messageMap));
             log.info("新增数据---发送消息到数据同步服务---成功! taskId = " + task.getTaskId());
         } catch (Exception e) {
             log.error("新增数据---发送消息到数据同步服务---失败! taskId =  " + task.getTaskId() + " errorMessage: " + e.getMessage());
@@ -84,7 +85,7 @@ public class MessageAspect {
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("operationType", OperationType.UPDATE.getOperation());
             messageMap.put("taskId", task.getTaskId());
-            asyncSendMessage.asyncSendMessage(messageMap);
+            asyncSendMessage.asyncSendMessage(JSONObject.toJSONString(messageMap));
             log.info("更新数据---发送消息到数据同步服务---成功! taskId = " + task.getTaskId());
         } catch (Exception e) {
             log.error("更新数据---发送消息到数据同步服务---失败! taskId =  " + task.getTaskId() + " errorMessage: " + e.getMessage());
@@ -106,7 +107,7 @@ public class MessageAspect {
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("operationType", OperationType.DELETE.getOperation());
             messageMap.put("taskId", taskId);
-            asyncSendMessage.asyncSendMessage(messageMap);
+            asyncSendMessage.asyncSendMessage(JSONObject.toJSONString(messageMap));
             log.info("删除数据---发送消息到数据同步服务---成功! taskId = " + taskId);
         } catch (Exception e) {
             log.error("删除数据---发送消息到数据同步服务---失败! taskId =  " + taskId + " errorMessage: " + e.getMessage());
