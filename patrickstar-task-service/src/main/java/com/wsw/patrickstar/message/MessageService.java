@@ -8,6 +8,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -21,7 +22,7 @@ public class MessageService implements RabbitTemplate.ConfirmCallback, RabbitTem
     @Resource
     private RabbitTemplate rabbitTemplate;
 
-    public void sendMessage(String message) {
+    public void sendMessage(Map<String, Object> message) {
         rabbitTemplate.setMandatory(true);
         rabbitTemplate.setConfirmCallback(this);
         rabbitTemplate.setReturnCallback(this);

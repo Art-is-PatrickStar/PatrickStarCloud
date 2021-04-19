@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Map;
 
 /**
  * @Author WangSongWen
@@ -18,7 +19,7 @@ public class AsyncSendMessage {
     private MessageService messageService;
 
     @Async("taskExecutor")
-    public void asyncSendMessage(String message) {
+    public void asyncSendMessage(Map<String, Object> message) {
         log.info("异步推送消息...");
         messageService.sendMessage(message);
     }

@@ -1,7 +1,6 @@
 package com.wsw.patrickstar.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
 import com.rabbitmq.client.Channel;
 import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.exception.TaskServiceException;
@@ -10,14 +9,12 @@ import com.wsw.patrickstar.service.DataSyncService;
 import com.wsw.patrickstar.service.ElasticService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 
@@ -39,10 +36,9 @@ public class DataSyncServiceImpl implements DataSyncService {
     @Override
     @RabbitHandler
     @RabbitListener(queues = "task-queue")
-    public void receiveMessage(Message message, Channel channel) throws Exception {
+    public void receiveMessage(Message message, Channel channel, Map<String, Object> messageMap) throws Exception {
         try {
-            Map<String, Object> messageMap = JSONObject.parseObject(message.getBody(), Map.class);
-            if (MapUtils.isNotEmpty(messageMap)) {
+            if (MapUtils.isEmpty(messageMap)) {
                 log.error("数据同步服务接收到的消息为空, 无法同步!");
                 channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
                 return;
