@@ -17,7 +17,7 @@ spring:
           ssl:
             enable:
               true
-        debug: true
+        debug: false
 #  shardingsphere:
 #    datasource:
 #      names: ds-master-0
@@ -66,12 +66,12 @@ xxl:
   job:
     ### xxl-job admin address list, such as "http://address" or "http://address01,http://address02"
     admin:
-      addresses: http://127.0.0.1:8088/xxl-job-admin
+      addresses: http://39.107.80.231:8088/xxl-job-admin
     ### xxl-job, access token
     accessToken:
     ### xxl-job executor appname
     executor:
-      appname: xxl-job-executor-sample
+      appname: patrick-star-wsw-task-excutor
       ### xxl-job executor registry-address: default use address to registry , otherwise use ip:port if address is null
       address:
       ### xxl-job executor server-info
