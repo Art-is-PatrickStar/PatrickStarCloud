@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.wsw</groupId>
         <artifactId>PatrickStarCloud</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <dependencies>
@@ -25,6 +25,11 @@
         <dependency>
             <groupId>com.wsw</groupId>
             <artifactId>patrickstar-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.wsw</groupId>
+            <artifactId>patrickstar-dao</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!--openFeign-->
