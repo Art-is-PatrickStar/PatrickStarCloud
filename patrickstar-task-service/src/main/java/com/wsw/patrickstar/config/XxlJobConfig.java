@@ -1,4 +1,4 @@
-package com.wsw.patrickstar.Schedule;
+package com.wsw.patrickstar.config;
 
 import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
 import org.slf4j.Logger;

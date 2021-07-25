@@ -25,10 +25,10 @@ import java.util.concurrent.TimeUnit;
  * @Date: Created in 16:50 2021/2/2
  * @Description: 发送数据同步消息切面
  */
-@Aspect
-@Component
 @Slf4j
-@Order(-99) // 越小越先执行
+@Aspect
+@Order(1) // 越小越先执行
+@Component
 public class MessageAspect {
     @Resource
     private RedissonClient redissonClient;

@@ -32,8 +32,8 @@ import java.util.List;
  * 同步调用: openFeign
  * 异步调用: RabbitMQ
  */
-@Service
 @Slf4j
+@Service
 @CacheConfig(cacheNames = "task", cacheManager = "taskCacheManager")
 public class TaskServiceImpl implements TaskService {
     @Resource
@@ -75,8 +75,7 @@ public class TaskServiceImpl implements TaskService {
     @CachePut(key = "#task.taskId", unless = "#result == null")
     public Task updateTaskStatusByTaskId(Task task) throws TaskServiceException {
         UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
-        updateWrapper
-                .set("task_status", task.getTaskStatus())
+        updateWrapper.set("task_status", task.getTaskStatus())
                 .eq("task_id", task.getTaskId());
         taskMapper.update(task, updateWrapper);
         return task;

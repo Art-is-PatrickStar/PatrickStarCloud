@@ -27,8 +27,8 @@ import java.util.Optional;
  * <p>
  * 消息接收到后,根据taskId去查数据库,如果数据存在或已更改,则更新到es中,否则不同步
  */
-@Service
 @Slf4j
+@Service
 public class DataSyncServiceImpl implements DataSyncService {
     @Resource
     private ElasticService elasticService;
