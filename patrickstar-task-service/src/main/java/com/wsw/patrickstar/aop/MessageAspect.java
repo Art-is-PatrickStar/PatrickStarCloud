@@ -5,20 +5,19 @@ import com.wsw.patrickstar.api.OperationType;
 import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.exception.TaskServiceException;
 import com.wsw.patrickstar.message.AsyncSendMessage;
+import com.wsw.patrickstar.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author WangSongWen
@@ -31,11 +30,11 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class MessageAspect {
     @Resource
-    private RedissonClient redissonClient;
+    private RedisService redisService;
     @Resource
     private AsyncSendMessage asyncSendMessage;
 
-    private static final String REDIS_LOCK_KEY = "task-service";
+    private static final String REDIS_LOCK_KEY = "send-message-lock";
 
     @Pointcut("execution(* com.wsw.patrickstar.service.impl.TaskServiceImpl.createTask(..))")
     public void addPointCutService() {
@@ -56,8 +55,7 @@ public class MessageAspect {
         joinPoint.proceed(args);
         // 发送消息到数据同步服务
         // 防止消息重复发送 Redis分布式锁
-        RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
-        lock.lock(30, TimeUnit.SECONDS);
+        RLock lock = redisService.tryLock(REDIS_LOCK_KEY);
         try {
             // RabbitMQ异步发消息
             Map<String, Object> messageMap = new HashMap<>();
@@ -79,8 +77,7 @@ public class MessageAspect {
         Object[] args = joinPoint.getArgs();
         Task task = (Task) args[0];
         joinPoint.proceed(args);
-        RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
-        lock.lock(30, TimeUnit.SECONDS);
+        RLock lock = redisService.tryLock(REDIS_LOCK_KEY);
         try {
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("operationType", OperationType.UPDATE.getOperation());
@@ -101,8 +98,7 @@ public class MessageAspect {
         Object[] args = joinPoint.getArgs();
         Long taskId = (Long) args[0];
         Object obj = joinPoint.proceed(args);
-        RLock lock = redissonClient.getLock(REDIS_LOCK_KEY);
-        lock.lock(30, TimeUnit.SECONDS);
+        RLock lock = redisService.tryLock(REDIS_LOCK_KEY);
         try {
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("operationType", OperationType.DELETE.getOperation());
