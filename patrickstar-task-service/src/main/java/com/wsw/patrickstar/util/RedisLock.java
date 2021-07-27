@@ -5,7 +5,7 @@ import org.redisson.api.RLock;
 /**
  * @Author WangSongWen
  * @Date 2021/7/25 23:34
- * @Description: redis锁
+ * @Description: 获取redis锁的封装对象
  */
 public class RedisLock {
     private RLock rLock;
@@ -28,10 +28,6 @@ public class RedisLock {
 
     public boolean isLockSuccessed() {
         return lockSuccessed;
-    }
-
-    public void setLockSuccessed(boolean lockSuccessed) {
-        this.lockSuccessed = lockSuccessed;
     }
 
 }

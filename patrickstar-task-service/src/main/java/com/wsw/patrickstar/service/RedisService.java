@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.service;
 
-import org.redisson.api.RLock;
+import com.wsw.patrickstar.util.RedisLock;
 
 /**
  * @Author WangSongWen
@@ -8,5 +8,11 @@ import org.redisson.api.RLock;
  * @Description: redis服务接口
  */
 public interface RedisService {
-    RLock tryLock(String key);
+    /**
+     * 获取分布式锁接口
+     *
+     * @param key
+     * @return
+     */
+    RedisLock tryLock(String key);
 }

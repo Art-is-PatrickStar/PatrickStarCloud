@@ -6,12 +6,12 @@ import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.exception.TaskServiceException;
 import com.wsw.patrickstar.message.AsyncSendMessage;
 import com.wsw.patrickstar.service.RedisService;
+import com.wsw.patrickstar.util.RedisLock;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.redisson.api.RLock;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -55,8 +55,12 @@ public class MessageAspect {
         joinPoint.proceed(args);
         // 发送消息到数据同步服务
         // 防止消息重复发送 Redis分布式锁
-        RLock lock = redisService.tryLock(REDIS_LOCK_KEY);
+        RedisLock redisLock = redisService.tryLock(REDIS_LOCK_KEY + ":sendAddMessage");
         try {
+            if (!redisLock.isLockSuccessed()) {
+                log.error("redis分布式锁获取失败!");
+                return null;
+            }
             // RabbitMQ异步发消息
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("operationType", OperationType.ADD.getOperation());
@@ -64,10 +68,11 @@ public class MessageAspect {
             asyncSendMessage.asyncSendMessage(JSONObject.toJSONString(messageMap));
             log.info("新增数据---发送消息到数据同步服务---成功! taskId = " + task.getTaskId());
         } catch (Exception e) {
+            redisLock.unlock();
             log.error("新增数据---发送消息到数据同步服务---失败! taskId =  " + task.getTaskId() + " errorMessage: " + e.getMessage());
             throw new TaskServiceException(e.getMessage(), e.getCause());
         } finally {
-            lock.unlock();
+            redisLock.unlock();
         }
         return null;
     }
@@ -77,18 +82,23 @@ public class MessageAspect {
         Object[] args = joinPoint.getArgs();
         Task task = (Task) args[0];
         joinPoint.proceed(args);
-        RLock lock = redisService.tryLock(REDIS_LOCK_KEY);
+        RedisLock redisLock = redisService.tryLock(REDIS_LOCK_KEY + ":sendUpdateMessage");
         try {
+            if (!redisLock.isLockSuccessed()) {
+                log.error("redis分布式锁获取失败!");
+                return null;
+            }
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("operationType", OperationType.UPDATE.getOperation());
             messageMap.put("taskId", task.getTaskId());
             asyncSendMessage.asyncSendMessage(JSONObject.toJSONString(messageMap));
             log.info("更新数据---发送消息到数据同步服务---成功! taskId = " + task.getTaskId());
         } catch (Exception e) {
+            redisLock.unlock();
             log.error("更新数据---发送消息到数据同步服务---失败! taskId =  " + task.getTaskId() + " errorMessage: " + e.getMessage());
             throw new TaskServiceException(e.getMessage(), e.getCause());
         } finally {
-            lock.unlock();
+            redisLock.unlock();
         }
         return null;
     }
@@ -98,18 +108,23 @@ public class MessageAspect {
         Object[] args = joinPoint.getArgs();
         Long taskId = (Long) args[0];
         Object obj = joinPoint.proceed(args);
-        RLock lock = redisService.tryLock(REDIS_LOCK_KEY);
+        RedisLock redisLock = redisService.tryLock(REDIS_LOCK_KEY + ":sendDeleteMessage");
         try {
+            if (!redisLock.isLockSuccessed()) {
+                log.error("redis分布式锁获取失败!");
+                return null;
+            }
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("operationType", OperationType.DELETE.getOperation());
             messageMap.put("taskId", taskId);
             asyncSendMessage.asyncSendMessage(JSONObject.toJSONString(messageMap));
             log.info("删除数据---发送消息到数据同步服务---成功! taskId = " + taskId);
         } catch (Exception e) {
+            redisLock.unlock();
             log.error("删除数据---发送消息到数据同步服务---失败! taskId =  " + taskId + " errorMessage: " + e.getMessage());
             throw new TaskServiceException(e.getMessage(), e.getCause());
         } finally {
-            lock.unlock();
+            redisLock.unlock();
         }
         return obj;
     }

@@ -2,12 +2,11 @@ package com.wsw.patrickstar.service.impl;
 
 import com.wsw.patrickstar.Constants.RedisConstants;
 import com.wsw.patrickstar.service.RedisService;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
+import com.wsw.patrickstar.util.RedisDistributedLock;
+import com.wsw.patrickstar.util.RedisLock;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author WangSongWen
@@ -17,12 +16,11 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class RedisServiceImpl implements RedisService {
     @Resource
-    private RedissonClient redissonClient;
+    private RedisDistributedLock redisDistributedLock;
 
     @Override
-    public RLock tryLock(String key) {
-        RLock lock = redissonClient.getLock(RedisConstants.REDIS_LOCK_PREFIX + key);
-        lock.lock(RedisConstants.REDIS_LOCK_LEASE_TIME, TimeUnit.SECONDS);
-        return lock;
+    public RedisLock tryLock(String key) {
+        return redisDistributedLock.tryLock(RedisConstants.REDIS_LOCK_PREFIX + key,
+                RedisConstants.REDIS_LOCK_WAIT_TIME, RedisConstants.REDIS_LOCK_LEASE_TIME, RedisConstants.REDIS_LOCK_TIME_UNIT);
     }
 }
