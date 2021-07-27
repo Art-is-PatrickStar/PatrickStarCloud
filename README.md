@@ -271,10 +271,11 @@ spring:
     publisher-returns: true
     listener:
       simple:
-        # 消费端手动ack消息
-        acknowledge-mode: manual
-        # 是否支持重试
-        retry.enabled: true
+        acknowledge-mode: manual # 消费端手动ack消息
+        retry:
+          enabled: true # 允许消息消费失败的重试
+          max-attempts: 3 # 消息最多消费次数3次
+          initial-interval: 2000 # 消息多次消费的间隔2秒
 
 management:
   endpoints:
