@@ -9,7 +9,7 @@ import org.redisson.api.RLock;
  */
 public class RedisLock {
     private RLock rLock;
-    private boolean lockSuccessed;
+    private boolean lockSuccessed = false;
 
     public RedisLock() {
     }
