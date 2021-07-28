@@ -7,6 +7,7 @@ spring:
     consul:
       # consul服务器地址
       host: 127.0.0.1
+      #host: 39.107.80.231
       # consul服务端口
       port: 8500
       discovery:
@@ -18,6 +19,8 @@ spring:
         deregister: true
         # 表示注册时使用IP而不是hostname
         prefer-ip-address: true
+        # 如果是云服务器,如阿里云,可以通过此属性来指定外网调用地址
+        #ip-address: 10.105.100.77 # 指定程序运行ip
         # 服务注册标识,格式为: 应用名称+端口
         instance-id: ${spring.application.name}:${server.port}
         service-name: ${spring.application.name}
