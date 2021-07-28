@@ -1,11 +1,9 @@
 ## PatrickStarCloud
-
 PatrickStar is here!!!
 
-关联项目: https://github.com/WswSummer15/SummerCloud
+使用Consul作为注册/配置中心请选择分支: patrick-star-consul-main
 
-移除spring.cloud.alibaba依赖以及alibaba所有开源组件后重构
-
+使用Nacos作为注册/配置中心请选择分支: patrick-star-nacos-main
 ## Java版本
 
 ```text
@@ -17,16 +15,17 @@ Java1.8
 ```text
 <spring.boot.version>2.2.2.RELEASE</spring.boot.version>
 <spring.cloud.version>Hoxton.SR1</spring.cloud.version>
+<spring.cloud.alibaba.version>2.1.0.RELEASE</spring.cloud.alibaba.version>
 ```
 
 ## SpringCloud组件选择
 
 ```text
-1. 注册中心 consul
-2. 配置中心 consul
+1. 注册中心 Consul/Nacos
+2. 配置中心 Consul/Nacos
 3. 服务调用 OpenFeign
 4. 负载均衡 Ribbon
-5. 服务限流降级 Hystrix
+5. 服务限流降级 Hystrix/Sentinel
 6. 网关 Gateway
 7. 缓存中间件 Redis
 8. 消息中间件 RabbitMQ
@@ -56,11 +55,27 @@ cd consul ->  .\consul agent -server -bootstrap-expect 1 -data-dir E:\consul\dat
 省略
 3. Redis
 省略
+
+or
+
+最新版本即可
+1. Nacos
+cd bin -> .\startup.cmd
+
+2. Sentinel(jar包)
+自定义端口启动 -> java -jar .\sentinel-dashboard-1.8.0.jar --server.port=9090
+
+3. RabbitMQ
+省略
+4. Redis
+省略
 ```
 
-### 使用consul作为配置中心管理配置文件
+### 使用Consul/Nacos作为配置中心管理配置文件
 
-配置文件格式: config/patrickstar-bigsmart-service/data
+配置文件格式Consul: config/patrickstar-task-service/data
+
+配置文件格式Nacos: {微服务名称}-{环境}.{文件格式} 例如: patrickstar-task-service-dev.yaml
 
 #### 1. patrickstar-task-service配置文件
 
