@@ -1,54 +1,37 @@
 spring:
   application:
     name: patrickstar-recepienter-service
-  messages:
-    encoding: UTF-8
+  profiles:
+    active: dev  # 开发环境
+
   cloud:
-    consul:
-      # consul服务器地址
-      host: 127.0.0.1
-      #host: 39.107.80.231
-      # consul服务端口
-      port: 8500
+    nacos:
       discovery:
-        # 启用服务发现
-        enabled: true
-        # 启用服务注册
-        register: true
-        # 服务停止时取消注册
-        deregister: true
-        # 表示注册时使用IP而不是hostname
-        prefer-ip-address: true
-        # 如果是云服务器,如阿里云,可以通过此属性来指定外网调用地址
-        #ip-address: 10.105.100.77 # 指定程序运行ip
-        # 服务注册标识,格式为: 应用名称+端口
-        instance-id: ${spring.application.name}:${server.port}
-        service-name: ${spring.application.name}
-        port: ${server.port}
-        # 健康检查的路径
-        health-check-path: /actuator/health
-        # 执行监控检查的频率
-        health-check-interval: 30s
+        server-addr: localhost:8848  # 配置nacos地址
       config:
-        # enabled为true表示启用配置管理功能
-        enabled: true
-        # 表示使用的配置格式
-        format: YAML
-        # 指定consul配置的文件夹前缀为config
-        prefix: config
-        # 指定consul配置的配置文件父路径
-        defaultContext: ${spring.application.name}
-        # 多配置文件分隔符
-        profileSeparator: ','
-        # 指定consul配置的配置文件为data
-        data-key: data
-        # 表示如果没有发现配置，是否抛出异常，true为是，false为否，当为false时，consul会打印warn级别的日志信息
-        fail-fast: false
-        # watch选项为配置监视功能，主要监视配置的改变
-        watch:
-          enabled: true
-          delay: 10000
-          wait-time: 30
+        server-addr: localhost:8848  # nacos配置中心地址
+        file-extension: yaml  # 配置文件格式
+        group: DEFAULT_GROUP
+        # 公共配置文件
+        ext-config:
+          - data-id: patrickstar-${spring.profiles.active}.yaml
+            group: DEFAULT_GROUP
+            refresh: true  # 是否允许自动刷新
+
+    sentinel:
+      eager: true  # 取消控制台懒加载
+      transport:
+        dashboard: localhost:9090  # sentinel dashboard地址
+        port: 8719  # sentinel api port
+      # sentinel配置持久化
+      datasource:
+        ds1:
+          nacos:
+            server-addr: localhost:8848
+            dataId: ${spring.application.name}
+            groupId: DEFAULT_GROUP
+            data-type: json
+            rule-type: flow
 
 # ribbon参数设置
 ribbon:
