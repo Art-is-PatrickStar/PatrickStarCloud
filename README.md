@@ -4,6 +4,8 @@ PatrickStar is here!!!
 使用Consul作为注册/配置中心请选择分支: patrick-star-consul-main
 
 使用Nacos作为注册/配置中心请选择分支: patrick-star-nacos-main
+
+main分支使用的注册/配置中心为Nacos.
 ## Java版本
 
 ```text
