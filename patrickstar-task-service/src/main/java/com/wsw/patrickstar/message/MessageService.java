@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.message;
 
-import com.wsw.patrickstar.Constants.Rabbit;
+import com.wsw.patrickstar.Constants.RabbitConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
@@ -26,7 +26,7 @@ public class MessageService implements RabbitTemplate.ConfirmCallback, RabbitTem
         rabbitTemplate.setConfirmCallback(this);
         rabbitTemplate.setReturnCallback(this);
         CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
-        rabbitTemplate.convertAndSend(Rabbit.TASK_EXCHANGE, Rabbit.ROUTING_KEY, message, correlationData);
+        rabbitTemplate.convertAndSend(RabbitConstants.TASK_EXCHANGE, RabbitConstants.TASK_ROUTING_KEY, message, correlationData);
     }
 
     @Override

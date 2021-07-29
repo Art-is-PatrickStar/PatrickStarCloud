@@ -3,7 +3,7 @@ package com.wsw.patrickstar.message;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.rabbitmq.client.Channel;
-import com.wsw.patrickstar.Constants.Rabbit;
+import com.wsw.patrickstar.Constants.RabbitConstants;
 import com.wsw.patrickstar.service.MailService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
@@ -29,7 +29,7 @@ public class TaskDataSyncDeadLetterMessage {
     private MailService mailService;
 
     @RabbitHandler
-    @RabbitListener(queues = Rabbit.DEAD_LETTER_QUEUE)
+    @RabbitListener(queues = RabbitConstants.TASK_DEAD_LETTER_QUEUE)
     public void checkDeadLetterMessageHandler(Message message, Channel channel) throws Exception {
         try {
             String messageBody = new String(message.getBody());
