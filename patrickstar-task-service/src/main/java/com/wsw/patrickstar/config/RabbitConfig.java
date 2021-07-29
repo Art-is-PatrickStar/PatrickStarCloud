@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.config;
 
-import com.wsw.patrickstar.api.Rabbit;
+import com.wsw.patrickstar.Constants.Rabbit;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;

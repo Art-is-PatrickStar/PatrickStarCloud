@@ -1,7 +1,5 @@
 package com.wsw.patrickstar.exception;
 
-import com.wsw.patrickstar.api.IErrorCode;
-
 import java.io.Serializable;
 
 /**
@@ -10,28 +8,25 @@ import java.io.Serializable;
  * @Description: patrickstar-task-service 自定义异常类
  */
 public class TaskServiceException extends RuntimeException implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 6094159908069439356L;
 
-    private IErrorCode errorCode;
-
-    public TaskServiceException(IErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
-    }
+    private Throwable cause;
 
     public TaskServiceException(String message) {
         super(message);
     }
 
     public TaskServiceException(Throwable cause) {
-        super(cause);
+        super(cause.getCause());
+        this.cause = cause;
     }
 
     public TaskServiceException(String message, Throwable cause) {
-        super(message, cause);
+        super(message);
+        this.cause = cause;
     }
 
-    public IErrorCode getErrorCode() {
-        return errorCode;
+    public Throwable getCause() {
+        return this.cause;
     }
 }

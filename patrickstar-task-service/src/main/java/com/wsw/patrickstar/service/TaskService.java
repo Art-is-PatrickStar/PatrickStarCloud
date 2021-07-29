@@ -10,13 +10,13 @@ import java.util.List;
  * @Description:
  */
 public interface TaskService {
-    Task createTask(Task task);
+    int createTask(Task task);
 
-    Task updateTaskById(Task task);
+    int updateTaskById(Task task);
 
-    Task updateTaskByName(Task task);
+    int updateTaskByName(Task task);
 
-    Task updateTaskStatusByTaskId(Task task);
+    int updateTaskStatusByTaskId(Task task);
 
     int deleteTaskByTaskId(Long taskId);
 

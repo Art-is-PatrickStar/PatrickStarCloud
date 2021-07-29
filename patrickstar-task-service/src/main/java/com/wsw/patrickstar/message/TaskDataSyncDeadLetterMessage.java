@@ -3,7 +3,7 @@ package com.wsw.patrickstar.message;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.rabbitmq.client.Channel;
-import com.wsw.patrickstar.api.Rabbit;
+import com.wsw.patrickstar.Constants.Rabbit;
 import com.wsw.patrickstar.service.MailService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;

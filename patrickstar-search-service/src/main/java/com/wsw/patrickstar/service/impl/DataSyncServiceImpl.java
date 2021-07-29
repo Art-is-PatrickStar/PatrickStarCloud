@@ -3,7 +3,7 @@ package com.wsw.patrickstar.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.rabbitmq.client.Channel;
-import com.wsw.patrickstar.api.Rabbit;
+import com.wsw.patrickstar.Constants.Rabbit;
 import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.exception.TaskServiceException;
 import com.wsw.patrickstar.feign.client.TaskClient;

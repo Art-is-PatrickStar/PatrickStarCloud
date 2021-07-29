@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.handler;
 
-import com.wsw.patrickstar.api.CommonResult;
+import com.wsw.patrickstar.api.Result;
 import com.wsw.patrickstar.exception.TaskServiceException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -16,16 +16,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = TaskServiceException.class)
     @ResponseBody
-    public CommonResult taskExceptionHandler(TaskServiceException e) {
+    public Result<String> taskExceptionHandler(TaskServiceException e) {
         e.printStackTrace();
-        return CommonResult.failed("失败: " + e.getMessage());
+        return Result.createFailResult("失败: " + e.getMessage());
     }
 
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
-    public CommonResult exceptionHandler(Exception e) {
+    public Result<String> exceptionHandler(Exception e) {
         e.printStackTrace();
-        return CommonResult.failed("失败: " + e.getMessage());
+        return Result.createFailResult("失败: " + e.getMessage());
     }
 
 }

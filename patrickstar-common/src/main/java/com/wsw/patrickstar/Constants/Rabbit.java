@@ -1,4 +1,4 @@
-package com.wsw.patrickstar.api;
+package com.wsw.patrickstar.Constants;
 
 /**
  * @Author WangSongWen

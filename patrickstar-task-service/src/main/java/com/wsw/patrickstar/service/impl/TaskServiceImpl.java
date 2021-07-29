@@ -43,42 +43,44 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Task createTask(Task task) throws TaskServiceException {
+    public int createTask(Task task) throws TaskServiceException {
+        int result;
         // 添加任务
-        taskMapper.insert(task);
+        result = taskMapper.insert(task);
         // 同步调用
         // 调用recepienter服务添加领取人员信息
-        recepienterClient.create(task.getTaskId(), task.getTaskName(), task.getRecepientName(), new Date().toString());
-        return task;
+        result = recepienterClient.create(task.getTaskId(), task.getTaskName(), task.getRecepientName(), new Date().toString());
+        return result;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     @CachePut(key = "#task.taskId", unless = "#result == null")
-    public Task updateTaskById(Task task) throws TaskServiceException {
-        taskMapper.updateById(task);
-        return task;
+    public int updateTaskById(Task task) throws TaskServiceException {
+        return taskMapper.updateById(task);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     @CachePut(key = "#task.taskId", unless = "#result == null")
-    public Task updateTaskByName(Task task) throws TaskServiceException {
+    public int updateTaskByName(Task task) throws TaskServiceException {
+        int result;
         UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("task_name", task.getTaskName());
-        taskMapper.update(task, updateWrapper);
-        return task;
+        result = taskMapper.update(task, updateWrapper);
+        return result;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     @CachePut(key = "#task.taskId", unless = "#result == null")
-    public Task updateTaskStatusByTaskId(Task task) throws TaskServiceException {
+    public int updateTaskStatusByTaskId(Task task) throws TaskServiceException {
+        int result;
         UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
         updateWrapper.set("task_status", task.getTaskStatus())
                 .eq("task_id", task.getTaskId());
-        taskMapper.update(task, updateWrapper);
-        return task;
+        result = taskMapper.update(task, updateWrapper);
+        return result;
     }
 
     @Override

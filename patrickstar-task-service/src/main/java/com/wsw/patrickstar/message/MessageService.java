@@ -1,7 +1,6 @@
 package com.wsw.patrickstar.message;
 
-import com.wsw.patrickstar.api.Rabbit;
-import com.wsw.patrickstar.config.RabbitConfig;
+import com.wsw.patrickstar.Constants.Rabbit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.CorrelationData;

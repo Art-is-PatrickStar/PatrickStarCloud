@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.controller;
 
-import com.wsw.patrickstar.api.CommonResult;
+import com.wsw.patrickstar.api.Result;
 import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +20,8 @@ import java.util.List;
  * 2. Post请求
  * 前台请求参数设置 -> contentType: "application/json" -> xxx/task/create形式 -> @RequestBody
  */
-@RestController
 @Slf4j
+@RestController
 @RequestMapping("/task")
 public class TaskController {
     @Resource
@@ -29,71 +29,103 @@ public class TaskController {
 
     @PostMapping("/create")
     @ResponseBody
-    public CommonResult createTask(@RequestBody Task task) {
-        taskService.createTask(task);
-        return CommonResult.success("创建任务成功!");
+    public Result<Integer> createTask(@RequestBody Task task) {
+        Result<Integer> result = Result.createFailResult();
+        int i = taskService.createTask(task);
+        if (i > 0) {
+            result = Result.createSuccessResult("创建任务成功!");
+        }
+        return result;
     }
 
     @PutMapping("/update/byid")
     @ResponseBody
-    public CommonResult updateTaskById(@RequestBody Task task) {
-        taskService.updateTaskById(task);
-        return CommonResult.success("更新任务成功!");
+    public Result<Integer> updateTaskById(@RequestBody Task task) {
+        Result<Integer> result = Result.createFailResult();
+        int i = taskService.updateTaskById(task);
+        if (i > 0) {
+            result = Result.createSuccessResult("更新任务成功!");
+        }
+        return result;
     }
 
     @PutMapping("/update/byname")
     @ResponseBody
-    public CommonResult updateTaskByName(@RequestBody Task task) {
-        taskService.updateTaskByName(task);
-        return CommonResult.success("更新任务成功!");
+    public Result<Integer> updateTaskByName(@RequestBody Task task) {
+        Result<Integer> result = Result.createFailResult();
+        int i = taskService.updateTaskByName(task);
+        if (i > 0) {
+            result = Result.createSuccessResult("更新任务成功!");
+        }
+        return result;
     }
 
     @PutMapping("/updatestatus/byid")
     @ResponseBody
-    public CommonResult updateTaskStatusByTaskId(@RequestBody Task task) {
-        taskService.updateTaskStatusByTaskId(task);
-        return CommonResult.success("更新任务成功!");
+    public Result<Integer> updateTaskStatusByTaskId(@RequestBody Task task) {
+        Result<Integer> result = Result.createFailResult();
+        int i = taskService.updateTaskStatusByTaskId(task);
+        if (i > 0) {
+            result = Result.createSuccessResult("更新任务成功!");
+        }
+        return result;
     }
 
     @DeleteMapping("/delete/byid")
     @ResponseBody
-    public CommonResult deleteTaskByTaskId(@RequestParam("taskId") Long taskId) {
-        taskService.deleteTaskByTaskId(taskId);
-        return CommonResult.success("删除任务成功!");
+    public Result<Integer> deleteTaskByTaskId(@RequestParam("taskId") Long taskId) {
+        Result<Integer> result = Result.createFailResult();
+        int i = taskService.deleteTaskByTaskId(taskId);
+        if (i > 0) {
+            result = Result.createSuccessResult("删除任务成功!");
+        }
+        return result;
     }
 
     @DeleteMapping("/delete/byname")
     @ResponseBody
-    public CommonResult deleteTaskByTaskName(@RequestParam("taskName") String taskName) {
-        taskService.deleteTaskByTaskName(taskName);
-        return CommonResult.success("删除任务成功!");
+    public Result<Integer> deleteTaskByTaskName(@RequestParam("taskName") String taskName) {
+        Result<Integer> result = Result.createFailResult();
+        int i = taskService.deleteTaskByTaskName(taskName);
+        if (i > 0) {
+            result = Result.createSuccessResult("删除任务成功!");
+        }
+        return result;
     }
 
     @GetMapping("/select/byid/{taskId}")
     @ResponseBody
-    public CommonResult selectTaskById(@PathVariable("taskId") Long taskId) {
+    public Result<Task> selectTaskById(@PathVariable("taskId") Long taskId) {
+        Result<Task> result = Result.createFailResult();
         Task task = taskService.selectTaskById(taskId);
-        return CommonResult.success(task);
+        result = Result.createSuccessResult(task);
+        return result;
     }
 
     @GetMapping("/select/byid")
     @ResponseBody
-    public Task selectTask(@RequestParam("taskId") Long taskId) {
+    public Result<Task> selectTask(@RequestParam("taskId") Long taskId) {
+        Result<Task> result = Result.createFailResult();
         Task task = taskService.selectTaskById(taskId);
-        return task;
+        result = Result.createSuccessResult(task);
+        return result;
     }
 
     @GetMapping("/select/byname")
     @ResponseBody
-    public CommonResult selectTaskByName(@RequestParam("taskName") String taskName) {
+    public Result<List<Task>> selectTaskByName(@RequestParam("taskName") String taskName) {
+        Result<List<Task>> result = Result.createFailResult();
         List<Task> tasks = taskService.selectTaskByName(taskName);
-        return CommonResult.success(tasks);
+        result = Result.createSuccessResult(tasks);
+        return result;
     }
 
     @GetMapping("/select/bystatus/{taskStatus}")
     @ResponseBody
-    public CommonResult selectTaskByStatus(@PathVariable("taskStatus") char taskStatus) {
+    public Result<List<Task>> selectTaskByStatus(@PathVariable("taskStatus") char taskStatus) {
+        Result<List<Task>> result = Result.createFailResult();
         List<Task> tasks = taskService.selectTaskByStatus(taskStatus);
-        return CommonResult.success(tasks);
+        result = Result.createSuccessResult(tasks);
+        return result;
     }
 }

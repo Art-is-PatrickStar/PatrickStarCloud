@@ -1,8 +1,9 @@
 package com.wsw.patrickstar.controller;
 
-import com.wsw.patrickstar.api.CommonResult;
+import com.wsw.patrickstar.api.Result;
 import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.service.ElasticService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import java.util.Optional;
  * @Date: Created in 15:44 2021/1/22
  * @Description: ES查询接口
  */
+@Slf4j
 @RestController
 @RequestMapping("/es/task")
 public class ElasticController {
@@ -23,39 +25,48 @@ public class ElasticController {
     private ElasticService elasticService;
 
     @GetMapping("/get/{taskId}")
-    public CommonResult getEsTaskById(@PathVariable Long taskId) {
+    public Result<Task> getEsTaskById(@PathVariable Long taskId) {
+        Result<Task> result = Result.createFailResult();
         try {
             Optional<Task> taskOptional = elasticService.getEsTaskById(taskId);
             Task task = null;
             if (taskOptional.isPresent()) {
                 task = taskOptional.get();
             }
-            return CommonResult.success(task);
+            result = Result.createSuccessResult(task);
         } catch (Exception e) {
-            return CommonResult.failed(e.getMessage());
+            result.setMsg(e.getMessage());
+            log.error(e.getMessage(), e.getCause());
         }
+        return result;
     }
 
     @GetMapping("/get/all")
-    public CommonResult getAllEsTask() {
+    public Result<List<Task>> getAllEsTask() {
+        Result<List<Task>> result = Result.createFailResult();
         try {
             Iterable<Task> taskIterable = elasticService.getAllEsTask();
             List<Task> taskList = new ArrayList<>();
             taskIterable.forEach(taskList::add);
-            return CommonResult.success(taskList);
+            result = Result.createSuccessResult(taskList);
         } catch (Exception e) {
-            return CommonResult.failed(e.getMessage());
+            result.setMsg(e.getMessage());
+            log.error(e.getMessage(), e.getCause());
         }
+        return result;
     }
 
     @GetMapping("/search")
-    public CommonResult search(@RequestParam String keyWord) {
+    public Result<List<Task>> search(@RequestParam String keyWord) {
+        Result<List<Task>> result = Result.createFailResult();
         try {
             Page<Task> taskPage = elasticService.search(keyWord);
             List<Task> taskList = taskPage.getContent();
-            return CommonResult.success(taskList);
+            result = Result.createSuccessResult(taskList);
         } catch (Exception e) {
-            return CommonResult.failed(e.getMessage());
+            result.setMsg(e.getMessage());
+            log.error(e.getMessage(), e.getCause());
         }
+        return result;
     }
 }
