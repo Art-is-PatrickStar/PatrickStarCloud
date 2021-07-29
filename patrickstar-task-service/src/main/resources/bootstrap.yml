@@ -33,23 +33,6 @@ spring:
             data-type: json
             rule-type: flow
 
-  mail:
-    host: smtp.qq.com
-    username: 2544894086@qq.com
-    password: uvfpmqyyzdgleahd
-    default-encoding: UTF-8
-    properties:
-      mail:
-        smtp:
-          port: 465
-          starttls:
-            enable: true
-            required: true
-          ssl:
-            enable:
-              true
-        debug: false
-
 #  shardingsphere:
 #    datasource:
 #      names: ds-master-0
@@ -93,6 +76,23 @@ spring:
 #          sql:
 #            show: true
 
+  mail:
+    host: smtp.qq.com
+    username: 2544894086@qq.com
+    password: uvfpmqyyzdgleahd
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          port: 465
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            enable:
+              true
+        debug: false
+
 # xxl-job配置
 xxl:
   job:
@@ -113,11 +113,3 @@ xxl:
       logpath: /data/applogs/xxl-job/jobhandler
       ### xxl-job executor log-retention-days
       logretentiondays: 30
-
-# ribbon参数设置
-ribbon:
-  ReadTimeout: 120000
-  ConnectTimeout: 10000
-  SocketTimeout: 10000
-  MaxAutoRetries: 0
-  MaxAutoRetriesNextServer: 1
