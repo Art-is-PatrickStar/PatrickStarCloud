@@ -3,7 +3,7 @@ package com.wsw.patrickstar.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.rabbitmq.client.Channel;
-import com.wsw.patrickstar.Constants.Rabbit;
+import com.wsw.patrickstar.Constants.RabbitConstants;
 import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.exception.TaskServiceException;
 import com.wsw.patrickstar.feign.client.TaskClient;
@@ -37,7 +37,7 @@ public class DataSyncServiceImpl implements DataSyncService {
 
     @Override
     @RabbitHandler
-    @RabbitListener(queues = Rabbit.TASK_QUEUE)
+    @RabbitListener(queues = RabbitConstants.TASK_QUEUE)
     public void receiveMessage(Message message, Channel channel) throws Exception {
         try {
             String messageBody = new String(message.getBody());

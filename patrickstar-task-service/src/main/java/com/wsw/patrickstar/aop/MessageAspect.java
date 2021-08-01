@@ -50,9 +50,9 @@ public class MessageAspect {
 
     @Around("addPointCutService()")
     public Object sendAddMessage(ProceedingJoinPoint joinPoint) throws Throwable {
+        Object result;
         Object[] args = joinPoint.getArgs();
         Task task = (Task) args[0];
-        joinPoint.proceed(args);
         // 发送消息到数据同步服务
         // 防止消息重复发送 Redis分布式锁
         RedisLock redisLock = redisService.tryLock(REDIS_LOCK_KEY + ":sendAddMessage");
@@ -61,6 +61,7 @@ public class MessageAspect {
                 log.error("redis分布式锁获取失败!");
                 return null;
             }
+            result = joinPoint.proceed(args);
             // RabbitMQ异步发消息
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("operationType", OperationType.ADD.getOperation());
@@ -74,20 +75,21 @@ public class MessageAspect {
         } finally {
             redisLock.unlock();
         }
-        return null;
+        return result;
     }
 
     @Around("updatePointCutService()")
     public Object sendUpdateMessage(ProceedingJoinPoint joinPoint) throws Throwable {
+        Object result;
         Object[] args = joinPoint.getArgs();
         Task task = (Task) args[0];
-        joinPoint.proceed(args);
         RedisLock redisLock = redisService.tryLock(REDIS_LOCK_KEY + ":sendUpdateMessage");
         try {
             if (!redisLock.isLockSuccessed()) {
                 log.error("redis分布式锁获取失败!");
                 return null;
             }
+            result = joinPoint.proceed(args);
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("operationType", OperationType.UPDATE.getOperation());
             messageMap.put("taskId", task.getTaskId());
@@ -100,20 +102,21 @@ public class MessageAspect {
         } finally {
             redisLock.unlock();
         }
-        return null;
+        return result;
     }
 
     @Around("deletePointCutService()")
     public Object sendDeleteMessage(ProceedingJoinPoint joinPoint) throws Throwable {
+        Object result;
         Object[] args = joinPoint.getArgs();
         Long taskId = (Long) args[0];
-        Object obj = joinPoint.proceed(args);
         RedisLock redisLock = redisService.tryLock(REDIS_LOCK_KEY + ":sendDeleteMessage");
         try {
             if (!redisLock.isLockSuccessed()) {
                 log.error("redis分布式锁获取失败!");
                 return null;
             }
+            result = joinPoint.proceed(args);
             Map<String, Object> messageMap = new HashMap<>();
             messageMap.put("operationType", OperationType.DELETE.getOperation());
             messageMap.put("taskId", taskId);
@@ -126,6 +129,6 @@ public class MessageAspect {
         } finally {
             redisLock.unlock();
         }
-        return obj;
+        return result;
     }
 }

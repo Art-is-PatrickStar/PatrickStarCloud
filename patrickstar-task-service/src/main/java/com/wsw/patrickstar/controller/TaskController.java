@@ -29,8 +29,8 @@ public class TaskController {
 
     @PostMapping("/create")
     @ResponseBody
-    public Result<Integer> createTask(@RequestBody Task task) {
-        Result<Integer> result = Result.createFailResult();
+    public Result<String> createTask(@RequestBody Task task) {
+        Result<String> result = Result.createFailResult();
         int i = taskService.createTask(task);
         if (i > 0) {
             result = Result.createSuccessResult("创建任务成功!");
@@ -40,8 +40,8 @@ public class TaskController {
 
     @PutMapping("/update/byid")
     @ResponseBody
-    public Result<Integer> updateTaskById(@RequestBody Task task) {
-        Result<Integer> result = Result.createFailResult();
+    public Result<String> updateTaskById(@RequestBody Task task) {
+        Result<String> result = Result.createFailResult();
         int i = taskService.updateTaskById(task);
         if (i > 0) {
             result = Result.createSuccessResult("更新任务成功!");
@@ -51,8 +51,8 @@ public class TaskController {
 
     @PutMapping("/update/byname")
     @ResponseBody
-    public Result<Integer> updateTaskByName(@RequestBody Task task) {
-        Result<Integer> result = Result.createFailResult();
+    public Result<String> updateTaskByName(@RequestBody Task task) {
+        Result<String> result = Result.createFailResult();
         int i = taskService.updateTaskByName(task);
         if (i > 0) {
             result = Result.createSuccessResult("更新任务成功!");
@@ -62,8 +62,8 @@ public class TaskController {
 
     @PutMapping("/updatestatus/byid")
     @ResponseBody
-    public Result<Integer> updateTaskStatusByTaskId(@RequestBody Task task) {
-        Result<Integer> result = Result.createFailResult();
+    public Result<String> updateTaskStatusByTaskId(@RequestBody Task task) {
+        Result<String> result = Result.createFailResult();
         int i = taskService.updateTaskStatusByTaskId(task);
         if (i > 0) {
             result = Result.createSuccessResult("更新任务成功!");
@@ -73,8 +73,8 @@ public class TaskController {
 
     @DeleteMapping("/delete/byid")
     @ResponseBody
-    public Result<Integer> deleteTaskByTaskId(@RequestParam("taskId") Long taskId) {
-        Result<Integer> result = Result.createFailResult();
+    public Result<String> deleteTaskByTaskId(@RequestParam("taskId") Long taskId) {
+        Result<String> result = Result.createFailResult();
         int i = taskService.deleteTaskByTaskId(taskId);
         if (i > 0) {
             result = Result.createSuccessResult("删除任务成功!");
@@ -84,8 +84,8 @@ public class TaskController {
 
     @DeleteMapping("/delete/byname")
     @ResponseBody
-    public Result<Integer> deleteTaskByTaskName(@RequestParam("taskName") String taskName) {
-        Result<Integer> result = Result.createFailResult();
+    public Result<String> deleteTaskByTaskName(@RequestParam("taskName") String taskName) {
+        Result<String> result = Result.createFailResult();
         int i = taskService.deleteTaskByTaskName(taskName);
         if (i > 0) {
             result = Result.createSuccessResult("删除任务成功!");
