@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class RedisServiceImpl implements RedisService {
     @Resource
-    private StringRedisTemplate redisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
 
     @Resource
     private RedisDistributedLock redisDistributedLock;
@@ -31,21 +31,21 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public void setRefreshToken(String hashName, String hashKey, String hashValue) {
-        redisTemplate.opsForHash().put(hashName, hashKey, hashKey);
+        stringRedisTemplate.opsForHash().put(hashName, hashKey, hashKey);
     }
 
     @Override
     public String getRefreshToken(String hashName, String hashKey) {
-        return (String) redisTemplate.opsForHash().get(hashName, hashKey);
+        return (String) stringRedisTemplate.opsForHash().get(hashName, hashKey);
     }
 
     @Override
     public void setRefreshTokenExpire(String hashName, long timeOut, TimeUnit unit) {
-        redisTemplate.expire(hashName, timeOut, unit);
+        stringRedisTemplate.expire(hashName, timeOut, unit);
     }
 
     @Override
     public void setOldToken(String key, String value, long timeOut, TimeUnit unit) {
-        redisTemplate.opsForValue().set(key, value, timeOut, unit);
+        stringRedisTemplate.opsForValue().set(key, value, timeOut, unit);
     }
 }
