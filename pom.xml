@@ -16,7 +16,6 @@
         <module>patrickstar-task-service</module>
         <module>patrickstar-recepienter-service</module>
         <module>patrickstar-search-service</module>
-        <module>patrickstar-redis-service</module>
     </modules>
 
     <!-- 统一管理jar包版本 -->
