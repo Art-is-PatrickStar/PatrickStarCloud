@@ -86,7 +86,7 @@ server:
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/task-system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://***:3306/patrickstar-task?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: ***
     password: ***
     hikari:
@@ -158,7 +158,7 @@ server:
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/task-system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://***:3306/patrickstar-user?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: ***
     password: ***
     hikari:
@@ -202,6 +202,20 @@ management:
 
 ```yaml
 spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://***:3306/patrickstar-user?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: ***
+    password: ***
+    hikari:
+      minimum-idle: 5
+      max-lifetime: 1800000
+      maximum-pool-size: 15
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: DatebookHikariCP
+      connection-timeout: 30000
+
   redis:
     host: ***
     port: 6379
@@ -215,6 +229,7 @@ spring:
         max-idle: 8
         # 连接池中的最小空闲连接 默认为 0
         min-idle: 0
+
 jwt:
   secretKey: ***
 ```
@@ -228,7 +243,7 @@ server:
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/task-system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://***:3306/patrickstar-recepienter?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: ***
     password: ***
     hikari:
@@ -266,7 +281,7 @@ spring:
         enabled: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/task-system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://***:3306/patrickstar-task?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: ***
     password: ***
     hikari:
@@ -328,7 +343,7 @@ DB ES 双写, ES 只做搜索功能, 使用RabbitMQ队列处理数据同步
 input {
   jdbc {
 	# mysql jdbc connection string to our backup databse
-	jdbc_connection_string => "jdbc:mysql://***:3306/task-system"
+	jdbc_connection_string => "jdbc:mysql://***:3306/patrickstar-task"
 	# the user we wish to excute our statement as
 	jdbc_user => "***"
 	jdbc_password => "***"
