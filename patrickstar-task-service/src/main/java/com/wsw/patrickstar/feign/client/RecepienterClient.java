@@ -1,8 +1,9 @@
 package com.wsw.patrickstar.feign.client;
 
+import com.wsw.patrickstar.entity.Recepienter;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * @Author WangSongWen
@@ -12,5 +13,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(value = "patrickstar-recepienter-service")
 public interface RecepienterClient {
     @PostMapping("/recepienter/create")
-    int create(@RequestParam("taskId") Long taskId, @RequestParam("taskName") String taskName, @RequestParam("name") String name, @RequestParam("remark") String remark);
+    int create(@RequestBody Recepienter recepienter);
 }

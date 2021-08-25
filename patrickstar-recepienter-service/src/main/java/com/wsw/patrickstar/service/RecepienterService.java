@@ -1,6 +1,8 @@
 package com.wsw.patrickstar.service;
 
 
+import com.wsw.patrickstar.entity.Recepienter;
+
 /**
  * @Author WangSongWen
  * @Date: Created in 13:44 2020/11/20
@@ -9,9 +11,9 @@ package com.wsw.patrickstar.service;
 public interface RecepienterService {
     /**
      * 新增领取者
-     * @param name
-     * @param remark
+     *
+     * @param recepienter
      * @return
      */
-    int insert(Long taskId, String taskName, String name, String remark);
+    int create(Recepienter recepienter);
 }

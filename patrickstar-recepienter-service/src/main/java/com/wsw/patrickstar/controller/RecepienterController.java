@@ -1,8 +1,9 @@
 package com.wsw.patrickstar.controller;
 
+import com.wsw.patrickstar.entity.Recepienter;
 import com.wsw.patrickstar.service.RecepienterService;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -18,7 +19,7 @@ public class RecepienterController {
     private RecepienterService recepienterService;
 
     @PostMapping("/recepienter/create")
-    public int create(@RequestParam("taskId") Long taskId, @RequestParam("taskName") String taskName, @RequestParam("name") String name, @RequestParam("remark") String remark){
-        return recepienterService.insert(taskId, taskName, name, remark);
+    public int create(@RequestBody Recepienter recepienter) {
+        return recepienterService.create(recepienter);
     }
 }

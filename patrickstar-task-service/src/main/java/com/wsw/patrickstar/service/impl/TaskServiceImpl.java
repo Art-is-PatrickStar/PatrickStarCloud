@@ -2,6 +2,7 @@ package com.wsw.patrickstar.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.wsw.patrickstar.entity.Recepienter;
 import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.exception.TaskServiceException;
 import com.wsw.patrickstar.feign.client.RecepienterClient;
@@ -49,7 +50,9 @@ public class TaskServiceImpl implements TaskService {
         result = taskMapper.insert(task);
         // 同步调用
         // 调用recepienter服务添加领取人员信息
-        result = recepienterClient.create(task.getTaskId(), task.getTaskName(), task.getRecepientName(), new Date().toString());
+        Recepienter recepienter = Recepienter.builder().taskId(task.getTaskId()).taskName(task.getTaskName())
+                .name(task.getRecepientName()).remark(new Date().toString()).build();
+        result = recepienterClient.create(recepienter);
         return result;
     }
 

@@ -5,14 +5,14 @@
         <id column="task_id" property="taskId" jdbcType="BIGINT"/>
         <result column="task_name" property="taskName" jdbcType="VARCHAR"/>
         <result column="task_caption" property="taskCaption" jdbcType="VARCHAR"/>
-        <result column="create_date" property="createDate" jdbcType="INTEGER"/>
+        <result column="create_date" property="createDate" jdbcType="DATE"/>
         <result column="task_status" property="taskStatus" jdbcType="CHAR"/>
         <result column="recepient_id" property="recepientId" jdbcType="BIGINT"/>
         <result column="recepient_name" property="recepientName" jdbcType="VARCHAR"/>
         <result column="tester_id" property="testerId" jdbcType="BIGINT"/>
         <result column="tester_name" property="testerName" jdbcType="VARCHAR"/>
         <result column="archive" property="archive" jdbcType="CHAR"/>
-        <result column="modify_date" property="modifyDate" jdbcType="INTEGER"/>
+        <result column="modify_date" property="modifyDate" jdbcType="DATE"/>
     </resultMap>
 
 <!--    <insert id="createTask" parameterType="Task" useGeneratedKeys="true" keyProperty="taskId">
