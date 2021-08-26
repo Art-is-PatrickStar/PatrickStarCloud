@@ -11,6 +11,7 @@ import java.util.Collection;
  * @Date: Created in 16:28 2021/8/24
  * @Description: 自定义库分片策略
  */
+@Deprecated
 public class TaskDataBaseShardingAlgorithm implements PreciseShardingAlgorithm<String> {
 
     @Override

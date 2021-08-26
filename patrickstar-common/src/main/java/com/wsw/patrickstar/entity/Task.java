@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
@@ -43,6 +44,7 @@ public class Task implements Serializable {
     private String taskCaption;  // 任务描述
 
     @TableField
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createDate;  // 创建日期
 
     @TableField
@@ -64,6 +66,7 @@ public class Task implements Serializable {
     private char archive;  // 是否归档，0-未归档 1-已归档
 
     @TableField
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date modifyDate;  // 修改日期
 
     @Override

@@ -15,6 +15,7 @@ import java.util.*;
  * @Date: Created in 16:28 2021/8/24
  * @Description: 自定义表分片策略
  */
+@Deprecated
 public class TaskTableShardingAlgorithm implements PreciseShardingAlgorithm<Date>, RangeShardingAlgorithm<Date> {
 
     @Override
