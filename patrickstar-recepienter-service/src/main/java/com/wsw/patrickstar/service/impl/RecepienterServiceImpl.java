@@ -1,5 +1,6 @@
 package com.wsw.patrickstar.service.impl;
 
+import com.wsw.patrickstar.entity.Recepienter;
 import com.wsw.patrickstar.repository.RecepienterRepository;
 import com.wsw.patrickstar.service.RecepienterService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,14 +13,21 @@ import javax.annotation.Resource;
  * @Date: Created in 14:21 2020/11/20
  * @Description:
  */
-@Service
 @Slf4j
+@Service
 public class RecepienterServiceImpl implements RecepienterService {
     @Resource
     private RecepienterRepository recepienterRepository;
 
     @Override
-    public int insert(Long taskId, String taskName, String name, String remark) {
-        return recepienterRepository.save(taskId, taskName, name, remark);
+    public int create(Recepienter recepienter) {
+        try {
+            recepienterRepository.save(recepienter);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("新增领取者异常: " + e.getMessage());
+            return 0;
+        }
+        return 1;
     }
 }

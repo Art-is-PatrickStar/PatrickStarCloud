@@ -1,18 +1,18 @@
 package com.wsw.patrickstar.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
-@Data
+@Getter
+@Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 public class Recepienter implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -8010801768253092925L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

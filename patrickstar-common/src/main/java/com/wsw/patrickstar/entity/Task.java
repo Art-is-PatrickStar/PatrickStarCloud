@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
@@ -12,6 +13,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -28,7 +30,7 @@ import java.util.Objects;
 @Document(indexName = "task", type = "_doc")
 @TableName("task")
 public class Task implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 7690326552082622459L;
 
     @Id
     @TableId(type = IdType.AUTO)
@@ -42,7 +44,8 @@ public class Task implements Serializable {
     private String taskCaption;  // 任务描述
 
     @TableField
-    private Integer createDate;  // 创建日期
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    private Date createDate;  // 创建日期
 
     @TableField
     private char taskStatus;  // 任务状态 0-创建 1-被领取 2-待测试 3-测试完成 4-已归档
@@ -63,7 +66,8 @@ public class Task implements Serializable {
     private char archive;  // 是否归档，0-未归档 1-已归档
 
     @TableField
-    private Integer modifyDate;  // 修改日期
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    private Date modifyDate;  // 修改日期
 
     @Override
     public boolean equals(Object obj) {

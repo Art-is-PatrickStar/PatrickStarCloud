@@ -86,19 +86,50 @@ server:
   port: 4001
 
 spring:
-  datasource:
-    type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/task-system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: ***
-    password: ***
-    hikari:
-      minimum-idle: 5
-      max-lifetime: 1800000
-      maximum-pool-size: 15
-      auto-commit: true
-      idle-timeout: 30000
-      pool-name: DatebookHikariCP
-      connection-timeout: 30000
+  shardingsphere:
+    datasource:
+      names: ds0
+      # 配置数据源
+      ds0:
+        # 数据库连接池类名称
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        # 数据库url连接
+        jdbcUrl: jdbc:mysql://***:3306/patrickstar-task?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+        #数据库用户名
+        username: ***
+        # 数据库密码
+        password: ***
+        hikari:
+          minimum-idle: 5
+          max-lifetime: 1800000
+          maximum-pool-size: 15
+          auto-commit: true
+          idle-timeout: 30000
+          pool-name: DatebookHikariCP
+          connection-timeout: 30000
+    # 配置分表规则
+    sharding:
+      tables:
+        task:
+          actual-data-nodes: ds0.task_$->{2020..2021}
+          # 配置分表策略
+          table-strategy:
+            standard:
+              #分片列名称
+              sharding-column: create_date
+              #分片算法行表达式
+              precise-algorithm-class-name: com.wsw.patrickstar.algorithm.PreciseYearTableShardingAlgorithm
+              range-algorithm-class-name: com.wsw.patrickstar.algorithm.RangeYearTableShardingAlgorithm
+          # 主键策略 雪花算法
+          key-generator:
+            column: task_id
+            type: SNOWFLAKE
+      defaultDataSourceName: ds0
+    # 打开sql控制台输出日志
+    props:
+      sql:
+        show: true
   redis:
     host: ***
     port: 6379
@@ -160,7 +191,7 @@ server:
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/task-system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://***:3306/patrickstar-user?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: ***
     password: ***
     hikari:
@@ -204,6 +235,20 @@ management:
 
 ```yaml
 spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://***:3306/patrickstar-user?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: ***
+    password: ***
+    hikari:
+      minimum-idle: 5
+      max-lifetime: 1800000
+      maximum-pool-size: 15
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: DatebookHikariCP
+      connection-timeout: 30000
+
   redis:
     host: ***
     port: 6379
@@ -217,6 +262,7 @@ spring:
         max-idle: 8
         # 连接池中的最小空闲连接 默认为 0
         min-idle: 0
+
 jwt:
   secretKey: ***
 ```
@@ -230,7 +276,7 @@ server:
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/task-system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://***:3306/patrickstar-recepienter?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: ***
     password: ***
     hikari:
@@ -268,7 +314,7 @@ spring:
         enabled: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/task-system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://***:3306/patrickstar-task?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: ***
     password: ***
     hikari:
@@ -330,7 +376,7 @@ DB ES 双写, ES 只做搜索功能, 使用RabbitMQ队列处理数据同步
 input {
   jdbc {
 	# mysql jdbc connection string to our backup databse
-	jdbc_connection_string => "jdbc:mysql://***:3306/task-system"
+	jdbc_connection_string => "jdbc:mysql://***:3306/patrickstar-task"
 	# the user we wish to excute our statement as
 	jdbc_user => "***"
 	jdbc_password => "***"

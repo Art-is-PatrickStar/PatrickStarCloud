@@ -1,8 +1,7 @@
 package com.wsw.patrickstar.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.baomidou.mybatisplus.annotation.TableField;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,11 +11,15 @@ import java.io.Serializable;
  * @Date: Created in 17:42 2020/11/12
  * @Description:
  */
-@Data
+@Setter
+@Getter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 public class User implements Serializable {
+    private static final long serialVersionUID = -5041579146782385968L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long uid;
@@ -28,5 +31,6 @@ public class User implements Serializable {
     private String password;
 
     @Column(nullable = false)
+    @TableField("username_chn")
     private String usernameCHN;
 }

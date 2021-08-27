@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 public interface RecepienterRepository extends JpaRepository<Recepienter, Long> {
-    @Modifying
-    @Transactional
-    @Query(value = "insert into recepienter (task_id, task_name, name, remark) values (?1, ?2, ?3, ?4)", nativeQuery = true)
-    int save(Long taskId, String taskName, String name, String remark);
+//    @Modifying
+//    @Transactional
+//    @Query(value = "insert into recepienter (task_id, task_name, name, remark) values (?1, ?2, ?3, ?4)", nativeQuery = true)
+//    int save(Long taskId, String taskName, String name, String remark);
 
 }
