@@ -15,22 +15,44 @@
         <result column="modify_date" property="modifyDate" jdbcType="DATE"/>
     </resultMap>
 
-<!--    <insert id="createTask" parameterType="Task" useGeneratedKeys="true" keyProperty="taskId">
-        insert into task(task_id, task_name, task_caption, create_date, task_status, recepient_id, recepient_name, tester_id, tester_name, archive, modify_date)
-        values(#{taskId}, #{taskName}, #{taskCaption}, #{createDate}, #{taskStatus}, #{recepientId}, #{recepientName}, #{testerId}, #{testerName}, #{archive}, #{modifyDate});
-    </insert>
+    <sql id="baseColumn">
+        task_id, task_name, task_caption, create_date, task_status, recepient_id, recepient_name,
+        tester_id, tester_name, archive, modify_date
+    </sql>
 
-    <update id="updateTaskById">
-        update task set task_name=#{taskName}, task_caption=#{taskCaption}, create_date=#{createDate}, task_status=#{taskStatus}, recepient_id=#{recepientId},
-        recepient_name=#{recepientName}, tester_id=#{testerId}, tester_name=#{testerName}, archive=#{archive}, modify_date=#{modifyDate} where task_id=#{taskId}
-    </update>
+    <select id="selectTaskByTime1" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="baseColumn"/>
+        FROM task WHERE
+        create_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY modify_date ASC
+        <!--<if test="startDate != null">
+            create_date <![CDATA[>=]]> #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND create_date <![CDATA[<=]]> #{endDate}
+        </if>-->
+    </select>
 
-    <update id="updateTaskByName">
+    <select id="selectTaskByTime2" parameterType="java.util.Date" resultMap="BaseResultMap">
+        SELECT
+        <include refid="baseColumn"/>
+        FROM task WHERE
+        create_date = #{date}
+    </select>
+
+    <select id="selectTaskByTime3" parameterType="java.util.List" resultMap="BaseResultMap">
+        SELECT
+        <include refid="baseColumn"/>
+        FROM task WHERE
+        create_date IN
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--<update id="updateTaskByName">
         update task set task_caption=#{taskCaption}, create_date=#{createDate}, task_status=#{taskStatus}, recepient_id=#{recepientId},
         recepient_name=#{recepientName}, tester_id=#{testerId}, tester_name=#{testerName}, archive=#{archive}, modify_date=#{modifyDate} where task_name=#{taskName}
-    </update>
-
-    <update id="updateTaskStatusByTaskId">
-        update task set task_status=#{taskStatus} where task_id=#{taskId}
     </update>-->
 </mapper>
