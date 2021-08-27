@@ -1,5 +1,6 @@
 package com.wsw.patrickstar.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.*;
 
 import javax.persistence.*;
@@ -30,5 +31,6 @@ public class User implements Serializable {
     private String password;
 
     @Column(nullable = false)
+    @TableField("username_chn")
     private String usernameCHN;
 }
