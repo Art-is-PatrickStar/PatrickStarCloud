@@ -57,14 +57,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     @CachePut(key = "#task.taskId", unless = "#result == null")
     public int updateTaskById(Task task) throws TaskServiceException {
         return taskMapper.updateById(task);
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     @CachePut(key = "#task.taskId", unless = "#result == null")
     public int updateTaskByName(Task task) throws TaskServiceException {
         int result;
@@ -75,7 +73,6 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     @CachePut(key = "#task.taskId", unless = "#result == null")
     public int updateTaskStatusByTaskId(Task task) throws TaskServiceException {
         int result;
@@ -87,7 +84,6 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     @CacheEvict(key = "#p0", allEntries = false)
     public int deleteTaskByTaskId(Long taskId) throws TaskServiceException {
         return taskMapper.deleteById(taskId);
@@ -95,7 +91,6 @@ public class TaskServiceImpl implements TaskService {
 
     // 这个方法没有实现数据同步！
     @Override
-    @Transactional(rollbackFor = Exception.class)
     @CacheEvict(key = "#p0", allEntries = false)
     public int deleteTaskByTaskName(String taskName) throws TaskServiceException {
         int result;
