@@ -3,7 +3,7 @@ package com.wsw.patrickstar;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wsw.patrickstar.entity.Task;
 import com.wsw.patrickstar.mapper.TaskMapper;
-import com.wsw.patrickstar.service.impl.TaskServiceImpl;
+import com.wsw.patrickstar.util.MinioUtil;
 import org.apache.commons.collections4.MapUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +15,11 @@ import java.util.Map;
 @SpringBootTest
 class PatrickstarTaskServiceApplicationTests {
     @Autowired
-    private TaskServiceImpl taskService;
+    private MinioUtil minioUtil;
     @Autowired
     private TaskMapper taskMapper;
+
+    private final String bucketName = "wsw";
 
     public void selectTask(char taskStatus) {
         QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
@@ -34,4 +36,10 @@ class PatrickstarTaskServiceApplicationTests {
         selectTask('0');
     }
 
+    @Test
+    void uploadFile() {
+        String fileName = "667048448726.PDF";
+        String filePath = "C:\\Users\\wangsongwen\\Desktop\\667048448726.PDF";
+        minioUtil.upload(bucketName, fileName, filePath);
+    }
 }
