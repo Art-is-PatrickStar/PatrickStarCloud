@@ -15,9 +15,9 @@ import java.util.UUID;
  * @Date: Created in 16:39 2020/12/8
  * @Description:
  */
-@Service
 @Slf4j
-public class MessageService implements RabbitTemplate.ConfirmCallback, RabbitTemplate.ReturnCallback {
+@Service
+public class RabbitMessageService implements RabbitTemplate.ConfirmCallback, RabbitTemplate.ReturnCallback {
     @Resource
     private RabbitTemplate rabbitTemplate;
 

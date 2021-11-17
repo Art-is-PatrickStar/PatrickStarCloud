@@ -11,11 +11,11 @@ import javax.annotation.Resource;
  * @Date: Created in 16:59 2020/12/30
  * @Description:
  */
-@Component
 @Slf4j
+@Component
 public class AsyncSendMessage {
     @Resource
-    private MessageService messageService;
+    private RabbitMessageService messageService;
 
     @Async("taskExecutor")
     public void asyncSendMessage(String message) {
