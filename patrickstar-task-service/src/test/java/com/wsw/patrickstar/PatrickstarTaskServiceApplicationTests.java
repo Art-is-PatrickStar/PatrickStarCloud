@@ -1,12 +1,12 @@
 package com.wsw.patrickstar;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.wsw.patrickstar.entity.Task;
-import com.wsw.patrickstar.entity.TaskMessage;
-import com.wsw.patrickstar.enums.TopicEnum;
-import com.wsw.patrickstar.mapper.TaskMapper;
-import com.wsw.patrickstar.message.KafkaMessageService;
-import com.wsw.patrickstar.util.MinioUtil;
+import com.wsw.patrickstar.task.entity.Task;
+import com.wsw.patrickstar.task.entity.TaskMessage;
+import com.wsw.patrickstar.task.enums.TopicEnum;
+import com.wsw.patrickstar.task.mapper.TaskMapper;
+import com.wsw.patrickstar.task.message.KafkaMessageService;
+import com.wsw.patrickstar.task.minio.MinioUtil;
 import org.apache.commons.collections4.MapUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

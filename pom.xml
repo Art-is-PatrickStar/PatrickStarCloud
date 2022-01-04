@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>patrickstar-common</module>
+        <module>patrickstar-api</module>
         <module>patrickstar-auth-service</module>
         <module>patrickstar-gateway-service</module>
         <module>patrickstar-task-service</module>

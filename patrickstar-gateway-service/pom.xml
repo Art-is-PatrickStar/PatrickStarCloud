@@ -45,7 +45,7 @@
         <!-- 引入自定义的API通用包 -->
         <dependency>
             <groupId>com.wsw</groupId>
-            <artifactId>patrickstar-common</artifactId>
+            <artifactId>patrickstar-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- JWT -->
