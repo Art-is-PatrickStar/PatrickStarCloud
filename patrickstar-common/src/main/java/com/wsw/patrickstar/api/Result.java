@@ -16,10 +16,9 @@ public class Result<T> implements Serializable {
     private Integer status;
     private String msg;
     private T data;
-
-    private boolean success;
-    public long startTime = -1;
-    public long timeConsume;
+    private Boolean success;
+    private Long startTime = -1L;
+    private Long timeConsume;
 
     public static <W> Result<W> createFailResult() {
         return createFailResult(ResultStatusEnums.FAILED);

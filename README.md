@@ -80,9 +80,6 @@ cd bin -> .\startup.cmd
 #### 1. patrickstar-task-service配置文件
 
 ```yaml
-server:
-  port: 4001
-
 spring:
   shardingsphere:
     datasource:
@@ -154,6 +151,61 @@ spring:
         acknowledge-mode: manual
         # 是否支持重试
         retry.enabled: true
+  kafka:
+    listener:
+      # 批量监听开启
+      type: batch
+      # 在侦听器容器中运行的线程数
+      concurrency: 3
+      # 当enable.auto.commit的值设置为false时,该值会生效,为true时不会生效
+      # 每处理完业务手动调用Acknowledgment.acknowledge()后立即提交
+      ack-mode: manual_immediate
+    # 消费者全局配置
+    consumer:
+      bootstrap-servers: 127.0.0.1:9092
+      group-id: taskService-consumer
+      # 是否开启自动提交 offset 功能
+      enable-auto-commit: false
+      # 如果'enable.auto.commit'为true,则消费者偏移自动提交给Kafka的频率(毫秒)
+      auto-commit-interval: 1000
+      # key反序列化
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # value反序列化
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      # 当Kafka中没有初始偏移量或者服务器上不再存在当前偏移量时该怎么办，默认值为latest，表示自动将偏移重置为最新的偏移量
+      auto-offset-reset: earliest
+      # 一次调用poll()操作时返回的最大记录数
+      max-poll-records: 10
+      properties:
+        session.timeout.ms: 15000
+        retry.backoff.ms: 100
+    # 生产者全局配置
+    producer:
+      bootstrap-servers: 127.0.0.1:9092
+      # key序列化
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      # value序列化
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+      # 当所有的follower都同步消息成功后发送ack。不仅是主的分区将消息保存成功了，而且其所有的分区的副本数也都同步好了，才会被认为发动成功。
+      acks: -1
+      # 当producer接收到error ACK,或者没有接收到ACK时,允许消息重发的次数
+      retries: 3
+  mail:
+    host: smtp.qq.com
+    username: 2544894086@qq.com
+    password: ***
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          port: 465
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            enable:
+              true
+        debug: false
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
@@ -173,6 +225,27 @@ minio:
   secretKey: ***
   bucketName: test
 
+# xxl-job配置
+xxl:
+  job:
+    ### xxl-job admin address list, such as "http://address" or "http://address01,http://address02"
+    admin:
+      addresses: http://127.0.0.1:8088/xxl-job-admin
+    ### xxl-job, access token
+    accessToken:
+    ### xxl-job executor appname
+    executor:
+      appname: patrick-star-wsw-task-excutor
+      ### xxl-job executor registry-address: default use address to registry , otherwise use ip:port if address is null
+      address:
+      ### xxl-job executor server-info
+      ip:
+      port: 9999
+      ### xxl-job executor log-path
+      logpath: /data/applogs/xxl-job/jobhandler
+      ### xxl-job executor log-retention-days
+      logretentiondays: 7
+
 management:
   endpoints:
     web:
@@ -183,9 +256,6 @@ management:
 #### 2. patrickstar-auth-service配置文件
 
 ```yaml
-server:
-  port: 3000
-
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
@@ -268,9 +338,6 @@ jwt:
 #### 4. patrickstar-recepienter-service配置文件
 
 ```yaml
-server:
-  port: 4002
-
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
@@ -300,9 +367,6 @@ management:
 #### 5. patrickstar-search-service配置文件
 
 ```yaml
-server:
-  port: 4003
-
 spring:
   data:
     elasticsearch:
