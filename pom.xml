@@ -11,11 +11,10 @@
 
     <modules>
         <module>patrickstar-api</module>
-        <module>patrickstar-auth-service</module>
-        <module>patrickstar-gateway-service</module>
-        <module>patrickstar-task-service</module>
-        <module>patrickstar-recepienter-service</module>
-        <module>patrickstar-search-service</module>
+        <module>patrickstar-auth</module>
+        <module>patrickstar-common</module>
+        <module>patrickstar-gateway</module>
+        <module>patrickstar-services</module>
     </modules>
 
     <!-- 统一管理jar包版本 -->

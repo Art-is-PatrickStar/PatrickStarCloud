@@ -1,0 +1,76 @@
+server:
+  port: 4000
+
+spring:
+  application:
+    name: patrickstar-gateway
+  profiles:
+    active: dev  # 开发环境
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848  # 配置nacos地址
+      config:
+        server-addr: localhost:8848  # nacos配置中心地址
+        file-extension: yaml  # 配置文件格式
+        group: DEFAULT_GROUP
+        # 公共配置文件
+        ext-config:
+          - data-id: patrickstar-${spring.profiles.active}.yaml
+            group: DEFAULT_GROUP
+            refresh: true  # 是否允许自动刷新
+
+    sentinel:
+      eager: true  # 取消控制台懒加载
+      transport:
+        dashboard: localhost:9090  # sentinel dashboard地址
+        port: 8719  # sentinel api port
+      # sentinel配置持久化
+      datasource:
+        ds1:
+          nacos:
+            server-addr: localhost:8848
+            dataId: ${spring.application.name}
+            groupId: DEFAULT_GROUP
+            data-type: json
+            rule-type: flow
+
+    gateway:
+      discovery:
+        locator:
+          enabled: false  # 是否与服务发现组件进行结合，通过 serviceId 转发到具体的服务实例。默认为false
+      # 路由规则配置
+      routes:
+        # main主服务
+        - id: patrickstar-task-service  # 路由ID
+          # gateway自动从consul获取patrickstar-task-service可用节点进行转发
+          # 默认会将所有gateway uri转发
+          uri: lb://patrickstar-task-service
+          predicates: # 谓词
+            - Path=/patrickstar-task-service/**  # 1998/patrickstar-task-service/task/select/byid -> 2001/patrickstar-task-service/task/select/byid
+            - After=2020-11-12T00:00:00.000+08:00[Asia/Shanghai]  # 2020-11-12后该微服务才上线，暴露接口
+          filters: # 过滤器
+            - StripPrefix=1  # 忽略掉第一层前缀进行转发 1998/patrickstar-task-service/task/select/byid -> 2001/task/select/byid
+        # 认证中心
+        - id: patrickstar-auth
+          uri: lb://patrickstar-auth
+          predicates:
+            - Path=/patrickstar-auth/**
+          filters:
+            - StripPrefix=1
+
+      globalcors:
+        cors-configurations:
+          '[/**]': # gateway网关上所有URI都应用以下跨域设计
+            allow-credentials: true  # 允许携带认证信息
+            allowed-origins:
+              - "*"  # 允许所有来源进行跨域访问
+            allowed-headers: "*"  # 允许跨域请求里的head字段
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            max-age: 3600  # 缓存时长 1小时
