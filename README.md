@@ -37,8 +37,8 @@ Java1.8
 ## 项目结构
 
 ```text
-patrickstar-gateway-service -> 4000
-patrickstar-auth-service -> 3000
+patrickstar-gateway -> 4000
+patrickstar-auth -> 3000
 patrickstar-task-service -> 4001
 patrickstar-recepienter-service -> 4002
 patrickstar-search-service -> 4003
@@ -255,7 +255,7 @@ management:
         include: '*' 
 ```
 
-#### 2. patrickstar-auth-service配置文件
+#### 2. patrickstar-auth配置文件
 
 ```yaml
 spring:
@@ -301,7 +301,7 @@ management:
         include: '*'
 ```
 
-#### 3. patrickstar-gateway-service配置文件
+#### 3. patrickstar-gateway配置文件
 
 ```yaml
 spring:
@@ -418,14 +418,14 @@ management:
 
 ### 访问服务
 
-将其他服务的端口写在配置中心，只通过4000端口的gateway网关暴露服务,通过网关访问具体服务即可,比如访问patrickstar-task-service微服务:
+通过4000端口的gateway网关暴露服务,通过网关访问具体服务即可,比如访问patrickstar-task-service微服务:
 
 ```text
 http://localhost:4000/patrickstar-task-service/task/***
 ```
 
 ### 认证
-将认证中心独立成了微服务，将token的验证从主服务移到网关服务patrickstar-gateway-service中统一鉴权
+将认证中心独立成了微服务，将token的验证从主服务移到网关服务patrickstar-gateway中统一鉴权
 
 ### mysql与es数据同步
 DB ES 双写, ES 只做搜索功能, 使用RabbitMQ队列处理数据同步
