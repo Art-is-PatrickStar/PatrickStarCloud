@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.recepienter.service.impl;
 
-import com.wsw.patrickstar.api.domain.Recepienter;
+import com.wsw.patrickstar.recepienter.entity.Recepienter;
 import com.wsw.patrickstar.recepienter.service.RecepienterService;
 import com.wsw.patrickstar.recepienter.repository.RecepienterRepository;
 import lombok.extern.slf4j.Slf4j;

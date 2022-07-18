@@ -1,7 +1,7 @@
 package com.wsw.patrickstar.recepienter.service;
 
 
-import com.wsw.patrickstar.api.domain.Recepienter;
+import com.wsw.patrickstar.recepienter.entity.Recepienter;
 
 /**
  * @Author WangSongWen

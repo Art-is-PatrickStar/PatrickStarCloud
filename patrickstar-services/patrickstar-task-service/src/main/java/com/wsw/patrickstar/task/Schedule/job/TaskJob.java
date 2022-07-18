@@ -1,7 +1,7 @@
 package com.wsw.patrickstar.task.Schedule.job;
 
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
-import com.wsw.patrickstar.api.domain.Task;
+import com.wsw.patrickstar.task.entity.Task;
 import com.wsw.patrickstar.task.mapper.TaskMapper;
 import com.wsw.patrickstar.task.service.TaskService;
 import com.xxl.job.core.context.XxlJobHelper;
@@ -33,7 +33,7 @@ public class TaskJob {
             task = taskService.selectTaskById(taskId);
         } else {
             Optional<Task> firstTask = new LambdaQueryChainWrapper<>(taskMapper)
-                    .orderByDesc(Task::getModifyDate)
+                    .orderByDesc(Task::getUpdateTime)
                     .list()
                     .stream()
                     .findFirst();

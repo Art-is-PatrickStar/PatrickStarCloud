@@ -1,7 +1,7 @@
 package com.wsw.patrickstar.task.controller;
 
 import com.wsw.patrickstar.api.response.Result;
-import com.wsw.patrickstar.api.domain.Task;
+import com.wsw.patrickstar.task.entity.Task;
 import com.wsw.patrickstar.task.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;

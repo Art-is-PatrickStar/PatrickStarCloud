@@ -1,7 +1,5 @@
 package com.wsw.patrickstar.common.utils;
 
-import org.springframework.stereotype.Component;
-
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -12,7 +10,6 @@ import javax.crypto.spec.SecretKeySpec;
  * @Date: Created in 14:38 2021/2/20
  * @Description: 对称加密---AES加密
  */
-@Component
 public class AESSecurity {
     // 加密算法
     private static final String algorithm = "AES";

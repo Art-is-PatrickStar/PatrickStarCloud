@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * @Author WangSongWen
  * @Date: Created in 14:00 2021/2/4
- * @Description: patrickstar-task-service 自定义异常类
+ * @Description: 自定义异常类
  */
 public class CloudServiceException extends RuntimeException implements Serializable {
     private static final long serialVersionUID = 6094159908069439356L;

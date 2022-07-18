@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.task.message;
 
-import com.wsw.patrickstar.common.entity.TaskMessage;
+import com.wsw.patrickstar.task.entity.TaskMessage;
 import com.wsw.patrickstar.common.enums.TopicEnum;
 import com.wsw.patrickstar.common.utils.SerializeUtils;
 import lombok.extern.slf4j.Slf4j;

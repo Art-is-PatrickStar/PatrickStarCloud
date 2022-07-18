@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.api.factory;
 
-import com.wsw.patrickstar.api.domain.Recepienter;
+import com.wsw.patrickstar.api.model.dto.RecepienterDTO;
 import com.wsw.patrickstar.api.service.RecepienterCloudService;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ public class RecepienterCloudServiceFallBackFactory implements FallbackFactory<R
         log.error("Recepienter服务调用失败: {}", throwable.getMessage());
         return new RecepienterCloudService() {
             @Override
-            public int create(Recepienter recepienter) {
+            public int create(RecepienterDTO recepienter) {
                 return 0;
             }
         };

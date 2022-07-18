@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.recepienter.repository;
 
-import com.wsw.patrickstar.api.domain.Recepienter;
+import com.wsw.patrickstar.recepienter.entity.Recepienter;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

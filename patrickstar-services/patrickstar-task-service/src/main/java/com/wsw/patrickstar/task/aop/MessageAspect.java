@@ -1,9 +1,9 @@
 package com.wsw.patrickstar.task.aop;
 
 import com.alibaba.fastjson.JSONObject;
-import com.wsw.patrickstar.api.domain.Task;
 import com.wsw.patrickstar.common.exception.CloudServiceException;
 import com.wsw.patrickstar.common.enums.OperationType;
+import com.wsw.patrickstar.task.entity.Task;
 import com.wsw.patrickstar.task.message.AsyncSendMessage;
 import com.wsw.patrickstar.task.redis.RedisLock;
 import com.wsw.patrickstar.task.service.RedisService;

@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.recepienter.controller;
 
-import com.wsw.patrickstar.api.domain.Recepienter;
+import com.wsw.patrickstar.recepienter.entity.Recepienter;
 import com.wsw.patrickstar.recepienter.service.RecepienterService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

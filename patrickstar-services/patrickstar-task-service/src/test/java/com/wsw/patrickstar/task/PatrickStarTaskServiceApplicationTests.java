@@ -1,9 +1,9 @@
 package com.wsw.patrickstar.task;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.wsw.patrickstar.api.domain.Task;
-import com.wsw.patrickstar.common.entity.TaskMessage;
+import com.wsw.patrickstar.task.entity.TaskMessage;
 import com.wsw.patrickstar.common.enums.TopicEnum;
+import com.wsw.patrickstar.task.entity.Task;
 import com.wsw.patrickstar.task.mapper.TaskMapper;
 import com.wsw.patrickstar.task.message.KafkaMessageService;
 import com.wsw.patrickstar.task.minio.MinioUtil;

@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.api.factory;
 
-import com.wsw.patrickstar.api.domain.Task;
+import com.wsw.patrickstar.api.model.dto.TaskDTO;
 import com.wsw.patrickstar.api.service.TaskCloudService;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ public class TaskCloudServiceFallBackFactory implements FallbackFactory<TaskClou
         log.error("Task服务调用失败: {}", throwable.getMessage());
         return new TaskCloudService() {
             @Override
-            public Task selectTask(Long taskId) {
+            public TaskDTO selectTask(Long taskId) {
                 return null;
             }
         };

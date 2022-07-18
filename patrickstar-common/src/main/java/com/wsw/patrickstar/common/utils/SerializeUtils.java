@@ -1,7 +1,7 @@
 package com.wsw.patrickstar.common.utils;
 
 import com.alibaba.fastjson.JSON;
-import com.wsw.patrickstar.common.entity.BaseEntity;
+import com.wsw.patrickstar.common.base.BaseEntity;
 
 import java.util.List;
 

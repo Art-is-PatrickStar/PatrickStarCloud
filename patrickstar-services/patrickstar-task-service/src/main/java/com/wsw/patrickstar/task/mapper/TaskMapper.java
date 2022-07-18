@@ -1,7 +1,7 @@
 package com.wsw.patrickstar.task.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wsw.patrickstar.api.domain.Task;
+import com.wsw.patrickstar.task.entity.Task;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

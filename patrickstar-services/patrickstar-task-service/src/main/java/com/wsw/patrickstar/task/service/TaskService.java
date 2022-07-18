@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.task.service;
 
-import com.wsw.patrickstar.api.domain.Task;
+import com.wsw.patrickstar.task.entity.Task;
 
 import java.util.List;
 

@@ -2,10 +2,9 @@ package com.wsw.patrickstar.task.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.wsw.patrickstar.api.domain.Recepienter;
-import com.wsw.patrickstar.api.domain.Task;
 import com.wsw.patrickstar.api.service.RecepienterCloudService;
 import com.wsw.patrickstar.common.exception.CloudServiceException;
+import com.wsw.patrickstar.task.entity.Task;
 import com.wsw.patrickstar.task.mapper.TaskMapper;
 import com.wsw.patrickstar.task.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
@@ -50,9 +49,9 @@ public class TaskServiceImpl implements TaskService {
         result = taskMapper.insert(task);
         // 同步调用
         // 调用recepienter服务添加领取人员信息
-        Recepienter recepienter = Recepienter.builder().taskId(task.getTaskId()).taskName(task.getTaskName())
-                .name(task.getRecepientName()).remark(new Date().toString()).build();
-        result = recepienterCloudService.create(recepienter);
+//        Recepienter recepienter = Recepienter.builder().taskId(task.getTaskId()).taskName(task.getTaskName())
+//                .name(task.getRecepientName()).remark(new Date().toString()).build();
+//        result = recepienterCloudService.create(recepienter);
         return result;
     }
 
