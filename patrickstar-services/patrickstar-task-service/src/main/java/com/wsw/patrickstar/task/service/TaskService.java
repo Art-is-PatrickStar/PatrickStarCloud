@@ -1,8 +1,8 @@
 package com.wsw.patrickstar.task.service;
 
-import com.wsw.patrickstar.task.entity.Task;
-
-import java.util.List;
+import com.wsw.patrickstar.api.model.dto.TaskDTO;
+import com.wsw.patrickstar.api.model.dto.TaskRequestDTO;
+import com.wsw.patrickstar.common.base.PageInfo;
 
 /**
  * @Author WangSongWen
@@ -10,23 +10,13 @@ import java.util.List;
  * @Description:
  */
 public interface TaskService {
-    int createTask(Task task);
+    void createTask(TaskDTO taskDTO);
 
-    int updateTaskById(Task task);
+    void updateTask(TaskDTO taskDTO);
 
-    int updateTaskByName(Task task);
+    void deleteTaskByTaskId(Long taskId);
 
-    int updateTaskStatusByTaskId(Task task);
+    PageInfo<TaskDTO> selectTask(TaskRequestDTO taskRequestDTO);
 
-    int deleteTaskByTaskId(Long taskId);
-
-    int deleteTaskByTaskName(String taskName);
-
-    Task selectTaskById(Long taskId);
-
-    List<Task> selectTaskByName(String taskName);
-
-    List<Task> selectTaskByStatus(char taskStatus);
-
-    // ...
+    TaskDTO selectTaskByTaskId(Long taskId);
 }

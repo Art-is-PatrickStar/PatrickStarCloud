@@ -2,7 +2,8 @@ package com.wsw.patrickstar.api.service;
 
 import com.wsw.patrickstar.api.factory.RecepienterCloudServiceFallBackFactory;
 import com.wsw.patrickstar.api.model.constant.CloudServiceNameConstants;
-import com.wsw.patrickstar.api.model.dto.RecepienterDTO;
+import com.wsw.patrickstar.api.model.dto.TaskRecordDTO;
+import com.wsw.patrickstar.api.response.Result;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
  */
 @FeignClient(contextId = "recepienterCloudService", value = CloudServiceNameConstants.RECEPIENTER_SERVICE, fallbackFactory = RecepienterCloudServiceFallBackFactory.class)
 public interface RecepienterCloudService {
-    @PostMapping("/recepienter/create")
-    int create(@RequestBody RecepienterDTO recepienter);
+    @PostMapping("/recepienter/createTaskRecord")
+    Result<Void> createTaskRecord(@RequestBody TaskRecordDTO taskRecordDTO);
 }

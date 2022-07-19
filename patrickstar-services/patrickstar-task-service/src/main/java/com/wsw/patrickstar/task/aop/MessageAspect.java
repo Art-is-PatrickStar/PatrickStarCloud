@@ -3,7 +3,7 @@ package com.wsw.patrickstar.task.aop;
 import com.alibaba.fastjson.JSONObject;
 import com.wsw.patrickstar.common.exception.CloudServiceException;
 import com.wsw.patrickstar.common.enums.OperationType;
-import com.wsw.patrickstar.task.entity.Task;
+import com.wsw.patrickstar.task.entity.TaskEntity;
 import com.wsw.patrickstar.task.message.AsyncSendMessage;
 import com.wsw.patrickstar.task.redis.RedisLock;
 import com.wsw.patrickstar.task.service.RedisService;
@@ -52,7 +52,7 @@ public class MessageAspect {
     public Object sendAddMessage(ProceedingJoinPoint joinPoint) throws Throwable {
         Object result;
         Object[] args = joinPoint.getArgs();
-        Task task = (Task) args[0];
+        TaskEntity task = (TaskEntity) args[0];
         // 发送消息到数据同步服务
         // 防止消息重复发送 Redis分布式锁
         RedisLock redisLock = redisService.tryLock(REDIS_LOCK_KEY + ":sendAddMessage");
@@ -82,7 +82,7 @@ public class MessageAspect {
     public Object sendUpdateMessage(ProceedingJoinPoint joinPoint) throws Throwable {
         Object result;
         Object[] args = joinPoint.getArgs();
-        Task task = (Task) args[0];
+        TaskEntity task = (TaskEntity) args[0];
         RedisLock redisLock = redisService.tryLock(REDIS_LOCK_KEY + ":sendUpdateMessage");
         try {
             if (!redisLock.isLockSuccessed()) {

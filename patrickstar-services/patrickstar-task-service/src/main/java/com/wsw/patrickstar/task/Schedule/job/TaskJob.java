@@ -1,8 +1,10 @@
 package com.wsw.patrickstar.task.Schedule.job;
 
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
-import com.wsw.patrickstar.task.entity.Task;
+import com.wsw.patrickstar.api.model.dto.TaskDTO;
+import com.wsw.patrickstar.task.entity.TaskEntity;
 import com.wsw.patrickstar.task.mapper.TaskMapper;
+import com.wsw.patrickstar.task.mapstruct.ITaskConvert;
 import com.wsw.patrickstar.task.service.TaskService;
 import com.xxl.job.core.context.XxlJobHelper;
 import lombok.extern.slf4j.Slf4j;
@@ -26,25 +28,22 @@ public class TaskJob {
     private TaskMapper taskMapper;
 
     public void execute(String param) throws Exception {
-        Task task = null;
+        TaskDTO taskDTO = null;
         long taskId;
         if (StringUtils.isNotBlank(param)) {
             taskId = Long.parseLong(param);
-            task = taskService.selectTaskById(taskId);
+            taskDTO = taskService.selectTaskByTaskId(taskId);
         } else {
-            Optional<Task> firstTask = new LambdaQueryChainWrapper<>(taskMapper)
-                    .orderByDesc(Task::getUpdateTime)
+            Optional<TaskEntity> firstTask = new LambdaQueryChainWrapper<>(taskMapper)
+                    .orderByDesc(TaskEntity::getUpdateTime)
                     .list()
                     .stream()
                     .findFirst();
-            /*LambdaQueryWrapper<Task> lqw = new LambdaQueryWrapper<>();
-            lqw.orderByDesc(Task::getModifyDate);
-            Optional<Task> firstTask = taskMapper.selectList(lqw).stream().findFirst();*/
             if (firstTask.isPresent()) {
-                task = firstTask.get();
+                taskDTO = ITaskConvert.INSTANCE.entityToDto(firstTask.get());
             }
         }
-        log.info("task = {}", task);
+        log.info("taskDTO = {}", taskDTO);
         XxlJobHelper.handleSuccess();
     }
 }

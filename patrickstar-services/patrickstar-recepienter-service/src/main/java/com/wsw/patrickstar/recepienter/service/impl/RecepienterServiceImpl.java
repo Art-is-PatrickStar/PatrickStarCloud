@@ -1,8 +1,12 @@
 package com.wsw.patrickstar.recepienter.service.impl;
 
-import com.wsw.patrickstar.recepienter.entity.Recepienter;
-import com.wsw.patrickstar.recepienter.service.RecepienterService;
+import com.wsw.patrickstar.api.model.dto.TaskRecordDTO;
+import com.wsw.patrickstar.api.response.ResultStatusEnums;
+import com.wsw.patrickstar.common.exception.CloudServiceException;
+import com.wsw.patrickstar.recepienter.entity.TaskRecordEntity;
+import com.wsw.patrickstar.recepienter.mapstruct.IRecepienterConvert;
 import com.wsw.patrickstar.recepienter.repository.RecepienterRepository;
+import com.wsw.patrickstar.recepienter.service.RecepienterService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -20,14 +24,13 @@ public class RecepienterServiceImpl implements RecepienterService {
     private RecepienterRepository recepienterRepository;
 
     @Override
-    public int create(Recepienter recepienter) {
+    public void createTaskRecord(TaskRecordDTO taskRecordDTO) {
         try {
-            recepienterRepository.save(recepienter);
+            TaskRecordEntity taskRecordEntity = IRecepienterConvert.INSTANCE.dtoToEntity(taskRecordDTO);
+            recepienterRepository.save(taskRecordEntity);
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("新增领取者异常: " + e.getMessage());
-            return 0;
+            throw new CloudServiceException(ResultStatusEnums.OP_LOG_SAVE_FAILD.getMsg(), e);
         }
-        return 1;
     }
 }

@@ -1,7 +1,11 @@
 package com.wsw.patrickstar.task.controller;
 
+import com.wsw.patrickstar.api.model.dto.TaskDTO;
+import com.wsw.patrickstar.api.model.dto.TaskRequestDTO;
 import com.wsw.patrickstar.api.response.Result;
-import com.wsw.patrickstar.task.entity.Task;
+import com.wsw.patrickstar.api.response.ResultStatusEnums;
+import com.wsw.patrickstar.common.base.PageInfo;
+import com.wsw.patrickstar.task.entity.TaskEntity;
 import com.wsw.patrickstar.task.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -28,104 +32,68 @@ public class TaskController {
     private TaskService taskService;
 
     @PostMapping("/create")
-    @ResponseBody
-    public Result<String> createTask(@RequestBody Task task) {
-        Result<String> result = Result.createFailResult();
-        int i = taskService.createTask(task);
-        if (i > 0) {
-            result = Result.createSuccessResult("创建任务成功!");
+    public Result<Void> createTask(@RequestBody TaskDTO taskDTO) {
+        Result<Void> result = Result.createFailResult();
+        try {
+            taskService.createTask(taskDTO);
+            result = Result.createSuccessResult();
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            log.error(e.getMessage());
         }
         return result;
     }
 
-    @PutMapping("/update/byid")
-    @ResponseBody
-    public Result<String> updateTaskById(@RequestBody Task task) {
-        Result<String> result = Result.createFailResult();
-        int i = taskService.updateTaskById(task);
-        if (i > 0) {
-            result = Result.createSuccessResult("更新任务成功!");
+    @PutMapping("/update")
+    public Result<Void> updateTask(@RequestBody TaskDTO taskDTO) {
+        Result<Void> result = Result.createFailResult();
+        try {
+            taskService.updateTask(taskDTO);
+            result = Result.createSuccessResult();
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            log.error(e.getMessage());
         }
         return result;
     }
 
-    @PutMapping("/update/byname")
-    @ResponseBody
-    public Result<String> updateTaskByName(@RequestBody Task task) {
-        Result<String> result = Result.createFailResult();
-        int i = taskService.updateTaskByName(task);
-        if (i > 0) {
-            result = Result.createSuccessResult("更新任务成功!");
+    @DeleteMapping("/delete")
+    public Result<Void> deleteTaskByTaskId(@RequestParam("taskId") Long taskId) {
+        Result<Void> result = Result.createFailResult();
+        try {
+            taskService.deleteTaskByTaskId(taskId);
+            result = Result.createSuccessResult();
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            log.error(e.getMessage());
         }
         return result;
     }
 
-    @PutMapping("/updatestatus/byid")
-    @ResponseBody
-    public Result<String> updateTaskStatusByTaskId(@RequestBody Task task) {
-        Result<String> result = Result.createFailResult();
-        int i = taskService.updateTaskStatusByTaskId(task);
-        if (i > 0) {
-            result = Result.createSuccessResult("更新任务成功!");
+    @PostMapping("/select")
+    public Result<PageInfo<TaskDTO>> selectTask(@RequestBody TaskRequestDTO taskRequestDTO) {
+        Result<PageInfo<TaskDTO>> result = Result.createFailResult();
+        try {
+            result = Result.createSuccessResult(taskService.selectTask(taskRequestDTO));
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            log.error(e.getMessage());
         }
         return result;
     }
 
-    @DeleteMapping("/delete/byid")
-    @ResponseBody
-    public Result<String> deleteTaskByTaskId(@RequestParam("taskId") Long taskId) {
-        Result<String> result = Result.createFailResult();
-        int i = taskService.deleteTaskByTaskId(taskId);
-        if (i > 0) {
-            result = Result.createSuccessResult("删除任务成功!");
+    @GetMapping("/select/byTaskId")
+    public Result<TaskDTO> selectTaskByTaskId(@RequestParam Long taskId) {
+        Result<TaskDTO> result = Result.createFailResult();
+        if (taskId == null) {
+            return Result.createFailResult(ResultStatusEnums.VALIDATE_FAILED);
         }
-        return result;
-    }
-
-    @DeleteMapping("/delete/byname")
-    @ResponseBody
-    public Result<String> deleteTaskByTaskName(@RequestParam("taskName") String taskName) {
-        Result<String> result = Result.createFailResult();
-        int i = taskService.deleteTaskByTaskName(taskName);
-        if (i > 0) {
-            result = Result.createSuccessResult("删除任务成功!");
+        try {
+            result = Result.createSuccessResult(taskService.selectTaskByTaskId(taskId));
+        } catch (Exception e) {
+            result.setMsg(e.getMessage());
+            log.error(e.getMessage());
         }
-        return result;
-    }
-
-    @GetMapping("/select/byid/{taskId}")
-    @ResponseBody
-    public Result<Task> selectTaskById(@PathVariable("taskId") Long taskId) {
-        Result<Task> result = Result.createFailResult();
-        Task task = taskService.selectTaskById(taskId);
-        result = Result.createSuccessResult(task);
-        return result;
-    }
-
-    @GetMapping("/select/byid")
-    @ResponseBody
-    public Result<Task> selectTask(@RequestParam("taskId") Long taskId) {
-        Result<Task> result = Result.createFailResult();
-        Task task = taskService.selectTaskById(taskId);
-        result = Result.createSuccessResult(task);
-        return result;
-    }
-
-    @GetMapping("/select/byname")
-    @ResponseBody
-    public Result<List<Task>> selectTaskByName(@RequestParam("taskName") String taskName) {
-        Result<List<Task>> result = Result.createFailResult();
-        List<Task> tasks = taskService.selectTaskByName(taskName);
-        result = Result.createSuccessResult(tasks);
-        return result;
-    }
-
-    @GetMapping("/select/bystatus/{taskStatus}")
-    @ResponseBody
-    public Result<List<Task>> selectTaskByStatus(@PathVariable("taskStatus") char taskStatus) {
-        Result<List<Task>> result = Result.createFailResult();
-        List<Task> tasks = taskService.selectTaskByStatus(taskStatus);
-        result = Result.createSuccessResult(tasks);
         return result;
     }
 }

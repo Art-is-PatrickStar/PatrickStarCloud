@@ -1,10 +1,13 @@
 package com.wsw.patrickstar.common.enums;
 
+import lombok.Getter;
+
 /**
  * @Author: wangsongwen
  * @Date: 2021/11/17 8:59
  * @Description: TODO
  */
+@Getter
 public enum TopicEnum {
     TASK_TO_TASK("task_to_task", "task topic");
 
@@ -17,14 +20,6 @@ public enum TopicEnum {
     TopicEnum(String topicId, String topicDesc) {
         this.topicId = topicId;
         this.topicDesc = topicDesc;
-    }
-
-    public String getTopicId() {
-        return topicId;
-    }
-
-    public String getTopicDesc() {
-        return topicDesc;
     }
 
     public static TopicEnum getByTopicId(String topicId) {

@@ -11,9 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableDiscoveryClient
 @EnableScheduling
 public class PatrickStarTaskServiceApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(PatrickStarTaskServiceApplication.class, args);
     }
-
 }

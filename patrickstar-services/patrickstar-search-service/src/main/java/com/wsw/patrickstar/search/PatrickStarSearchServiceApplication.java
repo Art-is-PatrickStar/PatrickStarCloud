@@ -9,9 +9,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 @EnableDiscoveryClient
 public class PatrickStarSearchServiceApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(PatrickStarSearchServiceApplication.class, args);
     }
-
 }

@@ -1,7 +1,7 @@
 package com.wsw.patrickstar.recepienter.service;
 
 
-import com.wsw.patrickstar.recepienter.entity.Recepienter;
+import com.wsw.patrickstar.api.model.dto.TaskRecordDTO;
 
 /**
  * @Author WangSongWen
@@ -10,10 +10,11 @@ import com.wsw.patrickstar.recepienter.entity.Recepienter;
  */
 public interface RecepienterService {
     /**
-     * 新增领取者
-     *
-     * @param recepienter
-     * @return
+     * @description: 新增任务记录
+     * @author: wangsongwen
+     * @date: 2022/7/19 13:19
+     * @param: [taskRecordDTO]
+     * @return: void
      */
-    int create(Recepienter recepienter);
+    void createTaskRecord(TaskRecordDTO taskRecordDTO);
 }

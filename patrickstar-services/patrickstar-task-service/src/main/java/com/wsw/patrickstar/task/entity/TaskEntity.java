@@ -5,14 +5,11 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.Date;
 import java.util.Objects;
@@ -25,48 +22,54 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Accessors(chain = true)
-@Document(indexName = "task", type = "_doc")
 @TableName("task")
-public class Task {
-    @Id
+@ApiModel("任务信息实体")
+public class TaskEntity {
     @TableId(type = IdType.AUTO)
-    private Long id; // 主键
+    @ApiModelProperty(value = "主键")
+    private Long id;
 
     @TableField
-    private Long taskId;  // 任务唯一性ID
+    @ApiModelProperty(value = "任务唯一性ID")
+    private Long taskId;
 
     @TableField
-    @Field(type = FieldType.Text, analyzer = "ik_max_word")
-    private String taskName;  // 任务名称
+    @ApiModelProperty(value = "任务名称")
+    private String taskName;
 
     @TableField
-    private String taskCaption;  // 任务描述
+    @ApiModelProperty(value = "任务描述")
+    private String taskCaption;
 
     @TableField
-    private String extend;  // 扩展字段
+    @ApiModelProperty(value = "扩展字段")
+    private String extend;
 
     @TableField
-    private String createUser;  // 创建人员
+    @ApiModelProperty(value = "创建人员")
+    private String createUser;
 
     @TableField
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
-    private Date createTime;  // 创建时间
+    @ApiModelProperty(value = "创建时间")
+    private Date createTime;
 
     @TableField
-    private String updateUser;  // 更新人员
+    @ApiModelProperty(value = "更新人员")
+    private String updateUser;
 
     @TableField
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
-    private Date updateTime;  // 更新时间
+    @ApiModelProperty(value = "更新时间")
+    private Date updateTime;
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (!(obj instanceof Task))
+        if (!(obj instanceof TaskEntity))
             return false;
-        Task task = (Task) obj;
+        TaskEntity task = (TaskEntity) obj;
         return Objects.equals(getId(), task.getId()) &&
                 Objects.equals(getTaskId(), task.getTaskId()) &&
                 Objects.equals(getTaskName(), task.getTaskName()) &&

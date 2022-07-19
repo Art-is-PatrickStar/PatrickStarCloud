@@ -3,7 +3,7 @@ package com.wsw.patrickstar.task;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wsw.patrickstar.task.entity.TaskMessage;
 import com.wsw.patrickstar.common.enums.TopicEnum;
-import com.wsw.patrickstar.task.entity.Task;
+import com.wsw.patrickstar.task.entity.TaskEntity;
 import com.wsw.patrickstar.task.mapper.TaskMapper;
 import com.wsw.patrickstar.task.message.KafkaMessageService;
 import com.wsw.patrickstar.task.minio.MinioUtil;
@@ -27,7 +27,7 @@ class PatrickStarTaskServiceApplicationTests {
     private final String bucketName = "wsw";
 
     public void selectTask(char taskStatus) {
-        QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<TaskEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("task_status", taskStatus);
         List<Map<String, Object>> taskMapList = taskMapper.selectMaps(queryWrapper);
         for (Map<String, Object> taskMap : taskMapList) {

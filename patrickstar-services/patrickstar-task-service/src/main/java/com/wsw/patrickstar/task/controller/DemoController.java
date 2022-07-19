@@ -2,7 +2,7 @@ package com.wsw.patrickstar.task.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wsw.patrickstar.api.response.Result;
-import com.wsw.patrickstar.task.entity.Task;
+import com.wsw.patrickstar.task.entity.TaskEntity;
 import com.wsw.patrickstar.task.mapper.TaskMapper;
 import com.wsw.patrickstar.task.mapper.UserMapper;
 import org.apache.catalina.User;
@@ -42,30 +42,30 @@ public class DemoController {
     }
 
     @GetMapping("/select/bytime1")
-    public Result<List<Task>> selectTaskByTime1(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) {
-        Result<List<Task>> result = Result.createFailResult();
-        List<Task> tasks = taskMapper.selectTaskByTime1(startDate, endDate);
+    public Result<List<TaskEntity>> selectTaskByTime1(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) {
+        Result<List<TaskEntity>> result = Result.createFailResult();
+        List<TaskEntity> tasks = taskMapper.selectTaskByTime1(startDate, endDate);
         result = Result.createSuccessResult(tasks);
         return result;
     }
 
     @GetMapping("/select/bytime2")
-    public Result<List<Task>> selectTaskByTime2(@RequestParam("date") String date) throws Exception {
-        Result<List<Task>> result = Result.createFailResult();
+    public Result<List<TaskEntity>> selectTaskByTime2(@RequestParam("date") String date) throws Exception {
+        Result<List<TaskEntity>> result = Result.createFailResult();
         Date createDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(date);
-        List<Task> tasks = taskMapper.selectTaskByTime2(createDate);
+        List<TaskEntity> tasks = taskMapper.selectTaskByTime2(createDate);
         result = Result.createSuccessResult(tasks);
         return result;
     }
 
     @GetMapping("/select/bytime3")
-    public Result<List<Task>> selectTaskByTime3(@RequestParam("timeList") List<String> timeList) throws Exception {
-        Result<List<Task>> result = Result.createFailResult();
+    public Result<List<TaskEntity>> selectTaskByTime3(@RequestParam("timeList") List<String> timeList) throws Exception {
+        Result<List<TaskEntity>> result = Result.createFailResult();
         List<Date> timeList1 = new ArrayList<>();
         for (String time : timeList) {
             timeList1.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(time));
         }
-        List<Task> tasks = taskMapper.selectTaskByTime3(timeList1);
+        List<TaskEntity> tasks = taskMapper.selectTaskByTime3(timeList1);
         result = Result.createSuccessResult(tasks);
         return result;
     }

@@ -2,10 +2,20 @@ package com.wsw.patrickstar.task.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.wsw.patrickstar.api.model.dto.TaskDTO;
+import com.wsw.patrickstar.api.model.dto.TaskRecordDTO;
+import com.wsw.patrickstar.api.model.dto.TaskRequestDTO;
 import com.wsw.patrickstar.api.service.RecepienterCloudService;
+import com.wsw.patrickstar.common.base.PageInfo;
+import com.wsw.patrickstar.common.enums.TaskStatusEnum;
+import com.wsw.patrickstar.common.enums.TaskTypeEnum;
 import com.wsw.patrickstar.common.exception.CloudServiceException;
-import com.wsw.patrickstar.task.entity.Task;
+import com.wsw.patrickstar.task.entity.TaskEntity;
 import com.wsw.patrickstar.task.mapper.TaskMapper;
+import com.wsw.patrickstar.task.mapstruct.ITaskConvert;
 import com.wsw.patrickstar.task.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
@@ -17,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @Author WangSongWen
@@ -35,89 +44,81 @@ import java.util.List;
 @Slf4j
 @Service
 @CacheConfig(cacheNames = "task", cacheManager = "taskCacheManager")
-public class TaskServiceImpl implements TaskService {
+public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> implements TaskService {
     @Resource
     private TaskMapper taskMapper;
     @Resource
     private RecepienterCloudService recepienterCloudService;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public int createTask(Task task) throws CloudServiceException {
-        int result;
-        // 添加任务
-        result = taskMapper.insert(task);
-        // 同步调用
-        // 调用recepienter服务添加领取人员信息
-//        Recepienter recepienter = Recepienter.builder().taskId(task.getTaskId()).taskName(task.getTaskName())
-//                .name(task.getRecepientName()).remark(new Date().toString()).build();
-//        result = recepienterCloudService.create(recepienter);
-        return result;
+    @Transactional(rollbackFor = {CloudServiceException.class, Exception.class})
+    public void createTask(TaskDTO taskDTO) throws CloudServiceException {
+        try {
+            TaskEntity taskEntity = ITaskConvert.INSTANCE.dtoToEntity(taskDTO);
+            // 添加任务
+            this.save(taskEntity);
+            // 同步调用
+            // 调用recepienter服务添加任务记录
+            TaskRecordDTO taskRecordDTO = TaskRecordDTO.builder()
+                    .taskId(taskEntity.getTaskId())
+                    .taskType(TaskTypeEnum.PRODUCT.getCode())
+                    .taskStatus(TaskStatusEnum.TODO.getCode())
+                    .createUser("")
+                    .createTime(new Date().toString())
+                    .updateUser("")
+                    .updateTime(new Date().toString())
+                    .build();
+            recepienterCloudService.createTaskRecord(taskRecordDTO);
+        } catch (Exception e) {
+            throw new CloudServiceException(e);
+        }
     }
 
     @Override
-    @CachePut(key = "#task.taskId", unless = "#result == null")
-    public int updateTaskById(Task task) throws CloudServiceException {
-        return taskMapper.updateById(task);
-    }
-
-    @Override
-    @CachePut(key = "#task.taskId", unless = "#result == null")
-    public int updateTaskByName(Task task) throws CloudServiceException {
-        int result;
-        UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("task_name", task.getTaskName());
-        result = taskMapper.update(task, updateWrapper);
-        return result;
-    }
-
-    @Override
-    @CachePut(key = "#task.taskId", unless = "#result == null")
-    public int updateTaskStatusByTaskId(Task task) throws CloudServiceException {
-        int result;
-        UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.set("task_status", task.getTaskStatus())
-                .eq("task_id", task.getTaskId());
-        result = taskMapper.update(task, updateWrapper);
-        return result;
+    @CachePut(key = "#taskDTO.taskId", unless = "#result == null")
+    public void updateTask(TaskDTO taskDTO) throws CloudServiceException {
+        try {
+            TaskEntity taskEntity = ITaskConvert.INSTANCE.dtoToEntity(taskDTO);
+            UpdateWrapper<TaskEntity> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("task_id", taskDTO.getTaskId());
+            this.update(taskEntity, updateWrapper);
+        } catch (Exception e) {
+            throw new CloudServiceException(e);
+        }
     }
 
     @Override
     @CacheEvict(key = "#p0", allEntries = false)
-    public int deleteTaskByTaskId(Long taskId) throws CloudServiceException {
-        return taskMapper.deleteById(taskId);
-    }
-
-    // 这个方法没有实现数据同步！
-    @Override
-    @CacheEvict(key = "#p0", allEntries = false)
-    public int deleteTaskByTaskName(String taskName) throws CloudServiceException {
-        int result;
-        QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("task_name", taskName);
-        result = taskMapper.delete(queryWrapper);
-        return result;
+    public void deleteTaskByTaskId(Long taskId) throws CloudServiceException {
+        try {
+            QueryWrapper<TaskEntity> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("task_id", taskId);
+            this.baseMapper.delete(queryWrapper);
+        } catch (Exception e) {
+            throw new CloudServiceException(e);
+        }
     }
 
     @Override
-    @Cacheable(key = "#p0", unless = "#result == null")
-    public Task selectTaskById(Long taskId) throws CloudServiceException {
-        return taskMapper.selectById(taskId);
-    }
-
-    @Override
-    @Cacheable(key = "#p0", unless = "#result == null")
-    public List<Task> selectTaskByName(String taskName) throws CloudServiceException {
-        QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("task_name", taskName);
-        return taskMapper.selectList(queryWrapper);
+    @Cacheable(key = "#taskRequestDTO.taskId", unless = "#result == null")
+    public PageInfo<TaskDTO> selectTask(TaskRequestDTO taskRequestDTO) throws CloudServiceException {
+        try {
+            Page<?> page = new Page<>(taskRequestDTO.getStart(), taskRequestDTO.getLength());
+            IPage<TaskEntity> taskEntityIPage = taskMapper.selectTask(page, taskRequestDTO);
+            return PageInfo.fromIPage(taskEntityIPage.convert(ITaskConvert.INSTANCE::entityToDto));
+        } catch (Exception e) {
+            throw new CloudServiceException(e);
+        }
     }
 
     @Override
     @Cacheable(key = "#p0", unless = "#result == null")
-    public List<Task> selectTaskByStatus(char taskStatus) throws CloudServiceException {
-        QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("task_status", taskStatus);
-        return taskMapper.selectList(queryWrapper);
+    public TaskDTO selectTaskByTaskId(Long taskId) throws CloudServiceException {
+        try {
+            TaskEntity taskEntity = this.lambdaQuery().eq(TaskEntity::getTaskId, taskId).one();
+            return ITaskConvert.INSTANCE.entityToDto(taskEntity);
+        } catch (Exception e) {
+            throw new CloudServiceException(e);
+        }
     }
 }

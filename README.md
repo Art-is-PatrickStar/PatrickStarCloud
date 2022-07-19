@@ -37,8 +37,8 @@ Java1.8
 ```text
 patrickstar-gateway -> 4000
 patrickstar-auth -> 3000
-patrickstar-task-service -> 4001
-patrickstar-recepienter-service -> 4002
+patrickstar-taskEntity-service -> 4001
+patrickstar-taskRecord-service -> 4002
 patrickstar-search-service -> 4003
 ```
 
@@ -73,11 +73,11 @@ cd bin -> .\startup.cmd
 
 ### 使用Consul/Nacos作为配置中心管理配置文件
 
-配置文件格式Consul: config/patrickstar-task-service/data
+配置文件格式Consul: config/patrickstar-taskEntity-service/data
 
-配置文件格式Nacos: {微服务名称}-{环境}.{文件格式} 例如: patrickstar-task-service-dev.yaml
+配置文件格式Nacos: {微服务名称}-{环境}.{文件格式} 例如: patrickstar-taskEntity-service-dev.yaml
 
-#### 1. patrickstar-task-service配置文件
+#### 1. patrickstar-taskEntity-service配置文件
 
 ```yaml
 spring:
@@ -90,7 +90,7 @@ spring:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
         # 数据库url连接
-        jdbcUrl: jdbc:mysql://***:3306/patrickstar-task?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+        jdbcUrl: jdbc:mysql://***:3306/patrickstar-taskEntity?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
         #数据库用户名
         username: ***
         # 数据库密码
@@ -106,7 +106,7 @@ spring:
     # 配置分表规则
     sharding:
       tables:
-        task:
+        taskEntity:
           actual-data-nodes: ds0.task_$->{2020..2021}
           # 配置分表策略
           table-strategy:
@@ -235,7 +235,7 @@ xxl:
     accessToken:
     ### xxl-job executor appname
     executor:
-      appname: patrick-star-wsw-task-excutor
+      appname: patrick-star-wsw-taskEntity-excutor
       ### xxl-job executor registry-address: default use address to registry , otherwise use ip:port if address is null
       address:
       ### xxl-job executor server-info
@@ -335,13 +335,13 @@ jwt:
   secretKey: ***
 ```
 
-#### 4. patrickstar-recepienter-service配置文件
+#### 4. patrickstar-taskRecord-service配置文件
 
 ```yaml
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/patrickstar-recepienter?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://***:3306/patrickstar-taskRecord?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: ***
     password: ***
     hikari:
@@ -376,7 +376,7 @@ spring:
         enabled: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/patrickstar-task?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://***:3306/patrickstar-taskEntity?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: ***
     password: ***
     hikari:
@@ -416,10 +416,10 @@ management:
 
 ### 访问服务
 
-通过4000端口的gateway网关暴露服务,通过网关访问具体服务即可,比如访问patrickstar-task-service微服务:
+通过4000端口的gateway网关暴露服务,通过网关访问具体服务即可,比如访问patrickstar-taskEntity-service微服务:
 
 ```text
-http://localhost:4000/patrickstar-task-service/task/***
+http://localhost:4000/patrickstar-taskEntity-service/taskEntity/***
 ```
 
 ### 认证
@@ -438,7 +438,7 @@ DB ES 双写, ES 只做搜索功能, 使用RabbitMQ队列处理数据同步
 input {
   jdbc {
 	# mysql jdbc connection string to our backup databse
-	jdbc_connection_string => "jdbc:mysql://***:3306/patrickstar-task"
+	jdbc_connection_string => "jdbc:mysql://***:3306/patrickstar-taskEntity"
 	# the user we wish to excute our statement as
 	jdbc_user => "***"
 	jdbc_password => "***"
@@ -449,7 +449,7 @@ input {
 	jdbc_paging_enabled => "true"
 	jdbc_page_size => "10000"
 	# 以下对应着要执行的sql的绝对路径
-	statement_filepath => "E:/logstash-7.10.1/mysql/task.sql"
+	statement_filepath => "E:/logstash-7.10.1/mysql/taskEntity.sql"
 	# 定时字段 各字段含义（由左至右）分、时、天、月、年，全部为*默认含义为每分钟都更新
 	schedule => "* * * * *"
 	# 设定ES索引类型
@@ -477,7 +477,7 @@ output {
 	#ESIP地址与端口
 	hosts => "127.0.0.1:9200"
 	# ES索引名称（自己定义的）
-	index => "task"
+	index => "taskEntity"
 	# 自增ID编号
 	document_id => "%{taskId}"
   }
@@ -487,12 +487,12 @@ output {
   }
 }
 ```
-**task.sql**
+**taskEntity.sql**
 ```sql
 select task_id as taskId, task_name as taskName, task_caption as taskCaption, create_date as createDate, 
 task_status as taskStatus, recepient_id as recepientId, recepient_name as recepientName, tester_id as testerId, 
 tester_name as testerName, archive, modify_date as modifyDate
-from task
+from taskEntity
 ```
 启动:
 >bin/logstash -f ../logstash-7.10.1/mysql/mysql.conf
