@@ -41,6 +41,7 @@
         <spring.cloud.alibaba.version>2.1.0.RELEASE</spring.cloud.alibaba.version>
         <mybatis-spring-boot-starter.version>2.1.1</mybatis-spring-boot-starter.version>
         <mybatis-plus.version>3.4.2</mybatis-plus.version>
+        <dynamic-datasource.version>3.5.1</dynamic-datasource.version>
         <spring.boot.admin.version>2.1.6</spring.boot.admin.version>
         <commons-lang3.version>3.11</commons-lang3.version>
         <commons-collections4.version>4.4</commons-collections4.version>
@@ -51,7 +52,7 @@
         <xxl-job-core.version>2.3.0</xxl-job-core.version>
         <slf4j-api.version>1.7.30</slf4j-api.version>
         <minio.version>7.1.0</minio.version>
-        <sharding-jdbc.version>4.0.0-RC1</sharding-jdbc.version>
+        <sharding-jdbc.version>4.1.1</sharding-jdbc.version>
         <fastjson.version>1.2.83</fastjson.version>
         <jakarta.validation.version>2.0.2</jakarta.validation.version>
         <swagger.version>2.9.2</swagger.version>
@@ -101,6 +102,11 @@
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson</artifactId>
                 <version>${redisson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+                <version>${dynamic-datasource.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.mybatis.spring.boot</groupId>
