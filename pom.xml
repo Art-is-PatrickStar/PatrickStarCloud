@@ -52,7 +52,7 @@
         <xxl-job-core.version>2.3.0</xxl-job-core.version>
         <slf4j-api.version>1.7.30</slf4j-api.version>
         <minio.version>7.1.0</minio.version>
-        <sharding-jdbc.version>4.1.1</sharding-jdbc.version>
+        <sharding-jdbc.version>4.0.0-RC1</sharding-jdbc.version>
         <fastjson.version>1.2.83</fastjson.version>
         <jakarta.validation.version>2.0.2</jakarta.validation.version>
         <swagger.version>2.9.2</swagger.version>
