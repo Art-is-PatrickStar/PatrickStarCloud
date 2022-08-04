@@ -28,17 +28,21 @@ Java1.8
 5. 服务限流降级 Hystrix/Sentinel
 6. 网关 Gateway
 7. 缓存中间件 Redis
-8. 消息中间件 RabbitMQ
+8. 消息中间件 RabbitMQ Kafka
 9. 搜索引擎 ElasticSearch
+10. 分布式调度 xxl-job
+11. 文件存储 minio
 ```
 
 ## 项目结构
 
 ```text
+patrickstar-api
+patrickstar-common
 patrickstar-gateway -> 4000
 patrickstar-auth -> 3000
-patrickstar-taskEntity-service -> 4001
-patrickstar-taskRecord-service -> 4002
+patrickstar-task-service -> 4001
+patrickstar-recepienter-service -> 4002
 patrickstar-search-service -> 4003
 ```
 
@@ -51,82 +55,38 @@ patrickstar-search-service -> 4003
 1. consul保存k/v配置启动
 cd consul ->  .\consul agent -server -bootstrap-expect 1 -data-dir E:\consul\data -node=consulServer1 -bind 127.0.0.1 -ui -rejoin  -client 0.0.0.0
 
-2. RabbitMQ
-省略
-3. Redis
+2. RabbitMQ Kafka Redis xxl-job minio ES
 省略
 
 or
 
 最新版本即可
 1. Nacos
-cd bin -> .\startup.cmd
+cd bin -> .\startup.cmd -m standalone
 
 2. Sentinel(jar包)
 自定义端口启动 -> java -jar .\sentinel-dashboard-1.8.0.jar --server.port=9090
 
-3. RabbitMQ
-省略
-4. Redis
+3. RabbitMQ Kafka Redis xxl-job minio ES
 省略
 ```
 
 ### 使用Consul/Nacos作为配置中心管理配置文件
 
-配置文件格式Consul: config/patrickstar-taskEntity-service/data
+配置文件格式Consul: config/patrickstar-task-service/data
 
-配置文件格式Nacos: {微服务名称}-{环境}.{文件格式} 例如: patrickstar-taskEntity-service-dev.yaml
+配置文件格式Nacos: {微服务名称}-{环境}.{文件格式} 例如: patrickstar-task-service-dev.yaml
 
-#### 1. patrickstar-taskEntity-service配置文件
+#### 1. patrickstar-task-service配置文件
 
 ```yaml
 spring:
-  shardingsphere:
-    datasource:
-      names: ds0
-      # 配置数据源
-      ds0:
-        # 数据库连接池类名称
-        type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        # 数据库url连接
-        jdbcUrl: jdbc:mysql://***:3306/patrickstar-taskEntity?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-        #数据库用户名
-        username: ***
-        # 数据库密码
-        password: ***
-        hikari:
-          minimum-idle: 5
-          max-lifetime: 1800000
-          maximum-pool-size: 15
-          auto-commit: true
-          idle-timeout: 30000
-          pool-name: DatebookHikariCP
-          connection-timeout: 30000
-    # 配置分表规则
-    sharding:
-      tables:
-        taskEntity:
-          actual-data-nodes: ds0.task_$->{2020..2021}
-          # 配置分表策略
-          table-strategy:
-            standard:
-              #分片列名称
-              sharding-column: create_date
-              #分片算法行表达式
-              precise-algorithm-class-name: com.wsw.patrickstar.algorithm.PreciseYearTableShardingAlgorithm
-              range-algorithm-class-name: com.wsw.patrickstar.algorithm.RangeYearTableShardingAlgorithm
-          # 主键策略 雪花算法
-          key-generator:
-            column: task_id
-            type: SNOWFLAKE
-      defaultDataSourceName: ds0
-    # 打开sql控制台输出日志
-    props:
-      sql:
-        show: true
+  datasource:
+    dynamic:
+      primary: taskDataSource
+
   redis:
-    host: ***
+    host: 127.0.0.1
     port: 6379
     lettuce:
       pool:
@@ -138,6 +98,7 @@ spring:
         max-idle: 8
         # 连接池中的最小空闲连接 默认为 0
         min-idle: 0
+
   rabbitmq:
     host: 127.0.0.1
     port: 5672
@@ -149,8 +110,14 @@ spring:
       simple:
         # 消费端手动ack消息
         acknowledge-mode: manual
-        # 是否支持重试
-        retry.enabled: true
+        concurrency: 1
+        max-concurrency: 4
+        retry:
+          enabled: true
+          max-attempts: 3
+        prefetch: 1
+    virtual-host: /
+
   kafka:
     listener:
       # 批量监听开启
@@ -190,6 +157,7 @@ spring:
       acks: -1
       # 当producer接收到error ACK,或者没有接收到ACK时,允许消息重发的次数
       retries: 3
+
   mail:
     host: smtp.qq.com
     username: 2544894086@qq.com
@@ -207,23 +175,52 @@ spring:
               true
         debug: false
 
+#多数据源配置
+datasource:
+  task:
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/patrickstar-task?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false&allowMultiQueries=true&serverTimezone=Asia/Shanghai&&rewriteBatchedStatements=true
+    username: root
+    password: 
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  recepienter:
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/patrickstar-recepienter?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false&allowMultiQueries=true&serverTimezone=Asia/Shanghai&&rewriteBatchedStatements=true
+    username: root
+    password: 
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+sharding-rules:
+  task:
+    tables:
+      task:
+        actualDataNodes: ds0.task_$->{[20220701, 20220801]}
+        tableStrategy:
+          standard:
+            shardingColumn: add_time
+            preciseAlgorithmClassName: com.wsw.patrickstar.task.algorithm.CustomShardingAlgorithm
+            rangeAlgorithmClassName: com.wsw.patrickstar.task.algorithm.CustomShardingAlgorithm
+
+sharding-props:
+  task:
+    max:
+      connections:
+        size:
+          per:
+            query: 50
+    sql:
+      show: true
+
 mybatis:
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.wsw.patrickstar.entity
-
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 redisson:
   client:
-    address: redis://***:6379
-    
+    address: redis://127.0.0.1:6379
+
 minio:
-  url: http://***:9000
-  accessKey: ***
-  secretKey: ***
-  bucketName: test
+  url: http://127.0.0.1:9000
+  accessKey: admin
+  secretKey: wsw19980801
+  bucketName: wsw
 
 # xxl-job配置
 xxl:
@@ -235,7 +232,7 @@ xxl:
     accessToken:
     ### xxl-job executor appname
     executor:
-      appname: patrick-star-wsw-taskEntity-excutor
+      appname: patrick-star-wsw-task-excutor
       ### xxl-job executor registry-address: default use address to registry , otherwise use ip:port if address is null
       address:
       ### xxl-job executor server-info
@@ -250,16 +247,16 @@ management:
   endpoints:
     web:
       exposure:
-        include: '*' 
+        include: '*'
 ```
 
-#### 2. patrickstar-auth配置文件
+#### 2. patrickstar-auth-service配置文件
 
 ```yaml
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/patrickstar-user?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/patrickstar-user?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: ***
     password: ***
     hikari:
@@ -276,7 +273,7 @@ spring:
     show-sql: true
 
   redis:
-    host: ***
+    host: 127.0.0.1
     port: 6379
     lettuce:
       pool:
@@ -303,22 +300,8 @@ management:
 
 ```yaml
 spring:
-  datasource:
-    type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/patrickstar-user?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: ***
-    password: ***
-    hikari:
-      minimum-idle: 5
-      max-lifetime: 1800000
-      maximum-pool-size: 15
-      auto-commit: true
-      idle-timeout: 30000
-      pool-name: DatebookHikariCP
-      connection-timeout: 30000
-
   redis:
-    host: ***
+    host: 127.0.0.1
     port: 6379
     lettuce:
       pool:
@@ -335,13 +318,13 @@ jwt:
   secretKey: ***
 ```
 
-#### 4. patrickstar-taskRecord-service配置文件
+#### 4. patrickstar-recepienter-service配置文件
 
 ```yaml
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/patrickstar-taskRecord?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/patrickstar-recepienter?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false&allowMultiQueries=true&serverTimezone=Asia/Shanghai&&rewriteBatchedStatements=true
     username: ***
     password: ***
     hikari:
@@ -352,6 +335,7 @@ spring:
       idle-timeout: 30000
       pool-name: DatebookHikariCP
       connection-timeout: 30000
+
   jpa:
     hibernate:
       ddl-auto: none
@@ -376,7 +360,7 @@ spring:
         enabled: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/patrickstar-taskEntity?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/patrickstar-task?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: ***
     password: ***
     hikari:
@@ -416,10 +400,10 @@ management:
 
 ### 访问服务
 
-通过4000端口的gateway网关暴露服务,通过网关访问具体服务即可,比如访问patrickstar-taskEntity-service微服务:
+通过4000端口的gateway网关暴露服务,通过网关访问具体服务即可,比如访问patrickstar-task-service微服务:
 
 ```text
-http://localhost:4000/patrickstar-taskEntity-service/taskEntity/***
+http://localhost:4000/patrickstar-task-service/task/***
 ```
 
 ### 认证
@@ -487,12 +471,12 @@ output {
   }
 }
 ```
-**taskEntity.sql**
+**task.sql**
 ```sql
 select task_id as taskId, task_name as taskName, task_caption as taskCaption, create_date as createDate, 
 task_status as taskStatus, recepient_id as recepientId, recepient_name as recepientName, tester_id as testerId, 
 tester_name as testerName, archive, modify_date as modifyDate
-from taskEntity
+from task
 ```
 启动:
 >bin/logstash -f ../logstash-7.10.1/mysql/mysql.conf
