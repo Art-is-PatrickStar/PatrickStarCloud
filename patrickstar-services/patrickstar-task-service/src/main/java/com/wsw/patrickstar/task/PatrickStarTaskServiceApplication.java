@@ -8,9 +8,9 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@EnableFeignClients
-@EnableDiscoveryClient
 @EnableScheduling
+@EnableDiscoveryClient
+@EnableFeignClients("com.wsw")
 @SpringBootApplication(exclude = {SpringBootConfiguration.class, DataSourceAutoConfiguration.class})
 public class PatrickStarTaskServiceApplication {
     public static void main(String[] args) {

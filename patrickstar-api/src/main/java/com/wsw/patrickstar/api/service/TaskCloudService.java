@@ -16,5 +16,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(contextId = "taskCloudService", value = CloudServiceNameConstants.TASK_SERVICE, fallbackFactory = TaskCloudServiceFallBackFactory.class)
 public interface TaskCloudService {
     @GetMapping("/select/byTaskId")
-    Result<TaskDTO> selectTaskByTaskId(@RequestParam Long taskId);
+    Result<TaskDTO> selectTaskByTaskId(@RequestParam("taskId") Long taskId);
 }

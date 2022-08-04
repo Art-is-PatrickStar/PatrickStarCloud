@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients
+@EnableFeignClients("com.wsw")
 public class PatrickStarRecepienterServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(PatrickStarRecepienterServiceApplication.class, args);
