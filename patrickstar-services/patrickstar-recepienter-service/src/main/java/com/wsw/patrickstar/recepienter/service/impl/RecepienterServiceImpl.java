@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * @Author WangSongWen
@@ -27,10 +28,11 @@ public class RecepienterServiceImpl implements RecepienterService {
     public void createTaskRecord(TaskRecordDTO taskRecordDTO) {
         try {
             TaskRecordEntity taskRecordEntity = IRecepienterConvert.INSTANCE.dtoToEntity(taskRecordDTO);
+            taskRecordEntity.setCreateTime(new Date());
+            taskRecordEntity.setUpdateTime(new Date());
             recepienterRepository.save(taskRecordEntity);
         } catch (Exception e) {
-            log.error("新增领取者异常: " + e.getMessage());
-            throw new CloudServiceException(ResultStatusEnums.OP_LOG_SAVE_FAILD.getMsg(), e);
+            throw new CloudServiceException(ResultStatusEnums.TASK_RECORD_INSERT_FAILD.getMsg(), e);
         }
     }
 }

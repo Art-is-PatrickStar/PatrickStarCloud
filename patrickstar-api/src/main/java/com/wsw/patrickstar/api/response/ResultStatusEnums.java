@@ -13,6 +13,7 @@ public enum ResultStatusEnums {
     FORBIDDEN(403, "没有相关权限", 0),
 
     OP_LOG_SAVE_FAILD(1000, "操作日志插入失败", 0),
+    TASK_RECORD_INSERT_FAILD(1001, "新增任务记录失败", 0),
     ;
 
     private final Integer status;

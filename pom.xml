@@ -57,6 +57,7 @@
         <jakarta.validation.version>2.0.2</jakarta.validation.version>
         <swagger.version>2.9.2</swagger.version>
         <guava.version>29.0-jre</guava.version>
+        <mapstruct.version>1.4.2.Final</mapstruct.version>
     </properties>
 
     <distributionManagement>
@@ -231,6 +232,17 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+            <!-- mapstruct 对象转换 -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${mapstruct.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

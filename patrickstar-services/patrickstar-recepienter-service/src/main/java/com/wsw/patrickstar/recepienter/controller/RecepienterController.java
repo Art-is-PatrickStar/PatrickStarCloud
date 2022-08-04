@@ -36,7 +36,7 @@ public class RecepienterController {
             result = Result.createSuccessResult();
         } catch (Exception e) {
             result.setMsg(e.getMessage());
-            log.error(e.getMessage());
+            log.error(e.toString());
         }
         return result;
     }

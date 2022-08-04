@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
  * @Date: Created in 13:48 2021/2/26
  * @Description: xxl-job config <from xuxueli xxl-job>
  */
-@Configuration
+//@Configuration
 public class XxlJobConfig {
     private final Logger logger = LoggerFactory.getLogger(XxlJobConfig.class);
 

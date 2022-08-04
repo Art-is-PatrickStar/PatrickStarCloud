@@ -9,15 +9,20 @@ import com.wsw.patrickstar.api.model.dto.TaskDTO;
 import com.wsw.patrickstar.api.model.dto.TaskRecordDTO;
 import com.wsw.patrickstar.api.model.dto.TaskRequestDTO;
 import com.wsw.patrickstar.api.service.RecepienterCloudService;
+import com.wsw.patrickstar.common.annotation.OpLog;
 import com.wsw.patrickstar.common.base.PageInfo;
+import com.wsw.patrickstar.common.enums.ModuleTypeEnum;
+import com.wsw.patrickstar.common.enums.OperationType;
 import com.wsw.patrickstar.common.enums.TaskStatusEnum;
 import com.wsw.patrickstar.common.enums.TaskTypeEnum;
 import com.wsw.patrickstar.common.exception.CloudServiceException;
+import com.wsw.patrickstar.common.utils.SnowflakeUtils;
 import com.wsw.patrickstar.task.entity.TaskEntity;
 import com.wsw.patrickstar.task.mapper.TaskMapper;
 import com.wsw.patrickstar.task.mapstruct.ITaskConvert;
 import com.wsw.patrickstar.task.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -49,12 +54,20 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> impleme
     private TaskMapper taskMapper;
     @Resource
     private RecepienterCloudService recepienterCloudService;
+    @Value("${snowf.workId}")
+    private long workId;
 
+    //存在远程调用，添加此注解会失败
+    //@OpLog(opType = OperationType.ADD, type = ModuleTypeEnum.TASK, typeId = "taskId")
     @Override
     @Transactional(rollbackFor = {CloudServiceException.class, Exception.class})
     public void createTask(TaskDTO taskDTO) throws CloudServiceException {
         try {
+            //赋值任务id
+            taskDTO.setTaskId(SnowflakeUtils.genId(workId));
             TaskEntity taskEntity = ITaskConvert.INSTANCE.dtoToEntity(taskDTO);
+            taskEntity.setCreateTime(new Date());
+            taskEntity.setUpdateTime(new Date());
             // 添加任务
             this.save(taskEntity);
             // 同步调用
@@ -63,10 +76,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> impleme
                     .taskId(taskEntity.getTaskId())
                     .taskType(TaskTypeEnum.PRODUCT.getCode())
                     .taskStatus(TaskStatusEnum.TODO.getCode())
-                    .createUser("")
-                    .createTime(new Date().toString())
-                    .updateUser("")
-                    .updateTime(new Date().toString())
+                    .createUser(taskEntity.getCreateUser())
+                    .createTime(taskEntity.getCreateTime().toString())
+                    .updateUser(taskEntity.getUpdateUser())
+                    .updateTime(taskEntity.getUpdateTime().toString())
                     .build();
             recepienterCloudService.createTaskRecord(taskRecordDTO);
         } catch (Exception e) {

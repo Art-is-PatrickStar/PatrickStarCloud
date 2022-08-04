@@ -69,7 +69,7 @@ public class AuthController {
             result = Result.createSuccessResult(map);
         } catch (Exception e) {
             result.setMsg(e.getMessage());
-            log.error(e.getMessage(), e.getCause());
+            log.error("" + e);
         }
         return result;
     }
@@ -100,7 +100,7 @@ public class AuthController {
             result = Result.createSuccessResult(resultMap);
         } catch (Exception e) {
             result.setMsg(e.getMessage());
-            log.error(e.getMessage(), e.getCause());
+            log.error("" + e);
         }
         return result;
     }

@@ -12,7 +12,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * @Author WangSongWen
@@ -62,22 +61,4 @@ public class TaskEntity {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     @ApiModelProperty(value = "更新时间")
     private Date updateTime;
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!(obj instanceof TaskEntity))
-            return false;
-        TaskEntity task = (TaskEntity) obj;
-        return Objects.equals(getId(), task.getId()) &&
-                Objects.equals(getTaskId(), task.getTaskId()) &&
-                Objects.equals(getTaskName(), task.getTaskName()) &&
-                Objects.equals(getTaskCaption(), task.getTaskCaption()) &&
-                Objects.equals(getExtend(), task.getExtend()) &&
-                Objects.equals(getCreateUser(), task.getCreateUser()) &&
-                Objects.equals(getCreateTime(), task.getCreateTime()) &&
-                Objects.equals(getUpdateUser(), task.getUpdateUser()) &&
-                Objects.equals(getUpdateTime(), task.getUpdateTime());
-    }
 }

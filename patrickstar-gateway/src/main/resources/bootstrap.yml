@@ -42,7 +42,7 @@ spring:
           enabled: false  # 是否与服务发现组件进行结合，通过 serviceId 转发到具体的服务实例。默认为false
       # 路由规则配置
       routes:
-        # main主服务
+        # task服务
         - id: patrickstar-task-service  # 路由ID
           # gateway自动从consul获取patrickstar-task-service可用节点进行转发
           # 默认会将所有gateway uri转发
@@ -57,6 +57,13 @@ spring:
           uri: lb://patrickstar-auth-service
           predicates:
             - Path=/patrickstar-auth-service/**
+          filters:
+            - StripPrefix=1
+        # 认证中心
+        - id: patrickstar-recepienter-service
+          uri: lb://patrickstar-recepienter-service
+          predicates:
+            - Path=/patrickstar-recepienter-service/**
           filters:
             - StripPrefix=1
 

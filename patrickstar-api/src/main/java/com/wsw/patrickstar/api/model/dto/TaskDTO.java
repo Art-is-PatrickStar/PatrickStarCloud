@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 /**
@@ -21,10 +21,10 @@ public class TaskDTO implements Serializable {
     private Long id;
 
     @ApiModelProperty(value = "任务唯一性ID")
-    @NotNull(message = "任务id不能为空")
     private Long taskId;
 
     @ApiModelProperty(value = "任务名称")
+    @NotBlank(message = "任务名称不能为空")
     private String taskName;
 
     @ApiModelProperty(value = "任务描述")
