@@ -38,4 +38,16 @@ public class TaskRequestDTO extends PageParam implements Serializable {
 
     @ApiModelProperty(value = "更新人员")
     private String updateUser;
+
+    @ApiModelProperty(value = "创建时间-开始")
+    private String createTimeStart;
+
+    @ApiModelProperty(value = "创建时间-结束")
+    private String createTimeEnd;
+
+    @ApiModelProperty(value = "更新时间-开始")
+    private String updateTimeStart;
+
+    @ApiModelProperty(value = "更新时间-结束")
+    private String updateTimeEnd;
 }

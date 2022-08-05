@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.wsw.patrickstar.api.model.dto.OpLogDTO;
 import com.wsw.patrickstar.common.annotation.OpLog;
 import com.wsw.patrickstar.common.enums.OperationType;
-import com.wsw.patrickstar.common.utils.CompareUtil;
+import com.wsw.patrickstar.common.utils.CompareUtils;
 import com.wsw.patrickstar.common.utils.SpringUtils;
 import com.wsw.patrickstar.task.service.TaskOperationLogService;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +56,7 @@ public class OpLogAspect {
                 result = pjp.proceed();
                 Object newValue = getResult(pjp, opLog);
                 //过滤忽略字段，比较实体的变化字段
-                String operateContent = CompareUtil.compareFields(oldValue, newValue, opLog.ignoreFields());
+                String operateContent = CompareUtils.compareFields(oldValue, newValue, opLog.ignoreFields());
                 if (StringUtils.isEmpty(operateContent)) {
                     operateContent = "无变化";
                 }

@@ -1,7 +1,5 @@
 package com.wsw.patrickstar.task.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,19 +8,18 @@ import com.wsw.patrickstar.api.model.dto.TaskRecordDTO;
 import com.wsw.patrickstar.api.model.dto.TaskRequestDTO;
 import com.wsw.patrickstar.api.response.Result;
 import com.wsw.patrickstar.api.service.RecepienterCloudService;
-import com.wsw.patrickstar.common.annotation.OpLog;
 import com.wsw.patrickstar.common.base.PageInfo;
-import com.wsw.patrickstar.common.enums.ModuleTypeEnum;
-import com.wsw.patrickstar.common.enums.OperationType;
 import com.wsw.patrickstar.common.enums.TaskStatusEnum;
 import com.wsw.patrickstar.common.enums.TaskTypeEnum;
 import com.wsw.patrickstar.common.exception.CloudServiceException;
+import com.wsw.patrickstar.common.utils.DateUtils;
 import com.wsw.patrickstar.common.utils.SnowflakeUtils;
 import com.wsw.patrickstar.task.entity.TaskEntity;
 import com.wsw.patrickstar.task.mapper.TaskMapper;
 import com.wsw.patrickstar.task.mapstruct.ITaskConvert;
 import com.wsw.patrickstar.task.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -58,8 +55,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> impleme
     @Value("${snowf.workId}")
     private long workId;
 
-    //存在远程调用，添加此注解会失败
-    //@OpLog(opType = OperationType.ADD, type = ModuleTypeEnum.TASK, typeId = "taskId")
     @Override
     @Transactional(rollbackFor = {CloudServiceException.class, Exception.class})
     public void createTask(TaskDTO taskDTO) throws CloudServiceException {
@@ -105,21 +100,27 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> impleme
 
     @Override
     @CacheEvict(key = "#p0", allEntries = false)
-    public void deleteTaskByTaskId(Long taskId) throws CloudServiceException {
+    public void deleteTask(Long taskId) throws CloudServiceException {
         try {
-            QueryWrapper<TaskEntity> queryWrapper = new QueryWrapper<>();
+            this.baseMapper.deleteById(taskId);
+            /*QueryWrapper<TaskEntity> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("task_id", taskId);
-            this.baseMapper.delete(queryWrapper);
+            this.baseMapper.delete(queryWrapper);*/
         } catch (Exception e) {
             throw new CloudServiceException(e);
         }
     }
 
     @Override
-    @Cacheable(key = "#taskRequestDTO.taskId", unless = "#result == null")
     public PageInfo<TaskDTO> selectTask(TaskRequestDTO taskRequestDTO) throws CloudServiceException {
         try {
             Page<?> page = new Page<>(taskRequestDTO.getStart(), taskRequestDTO.getLength());
+            if (StringUtils.isNotBlank(taskRequestDTO.getCreateTimeStart()) && StringUtils.isBlank(taskRequestDTO.getCreateTimeEnd())) {
+                taskRequestDTO.setCreateTimeEnd(DateUtils.dateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS_SSS, new Date()));
+            }
+            if (StringUtils.isNotBlank(taskRequestDTO.getUpdateTimeStart()) && StringUtils.isBlank(taskRequestDTO.getUpdateTimeEnd())) {
+                taskRequestDTO.setUpdateTimeEnd(DateUtils.dateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS_SSS, new Date()));
+            }
             IPage<TaskEntity> taskEntityIPage = taskMapper.selectTask(page, taskRequestDTO);
             return PageInfo.fromIPage(taskEntityIPage.convert(ITaskConvert.INSTANCE::entityToDto));
         } catch (Exception e) {

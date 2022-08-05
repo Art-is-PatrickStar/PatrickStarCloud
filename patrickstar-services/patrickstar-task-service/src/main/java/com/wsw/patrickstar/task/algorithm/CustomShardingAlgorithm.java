@@ -1,8 +1,9 @@
 package com.wsw.patrickstar.task.algorithm;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import com.google.common.collect.Range;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
@@ -10,7 +11,6 @@ import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingValue;
 import org.springframework.stereotype.Component;
 
-import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -21,7 +21,6 @@ import java.util.*;
 @Slf4j
 @Component
 public class CustomShardingAlgorithm implements PreciseShardingAlgorithm<Date>, RangeShardingAlgorithm<Date> {
-
     private final static String YYYYMMDD = "yyyyMMdd";
 
     List<Integer> cacheList;
@@ -133,16 +132,15 @@ public class CustomShardingAlgorithm implements PreciseShardingAlgorithm<Date>, 
         }
         Date date = null;
         if (obj instanceof String) {
-            try {
-                date = DateUtils.parseDate(obj.toString(), YYYYMMDD);
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
+            DateTime dateTime = DateUtil.parseDate(obj.toString());
+            if (Objects.nonNull(dateTime)) {
+                date = dateTime.toJdkDate();
             }
         } else if (obj instanceof Date) {
             date = (Date) obj;
         }
         if (Objects.nonNull(date)) {
-            return Integer.parseInt(DateFormatUtils.format(date, YYYYMMDD));
+            return Integer.parseInt(DateUtil.format(date, YYYYMMDD));
         }
         return 0;
     }

@@ -58,6 +58,7 @@
         <swagger.version>2.9.2</swagger.version>
         <guava.version>29.0-jre</guava.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
+        <hutool-all.version>5.7.22</hutool-all.version>
     </properties>
 
     <distributionManagement>
@@ -243,6 +244,11 @@
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct-processor</artifactId>
                 <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool-all.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -13,7 +13,7 @@ import java.util.List;
  * @Author: wangsongwen
  * @Date: 2022/7/19 11:17
  */
-public class CompareUtil {
+public class CompareUtils {
     /**
      * @description: 比较两个实体属性值，返回字段的差异信息
      * @author: wangsongwen

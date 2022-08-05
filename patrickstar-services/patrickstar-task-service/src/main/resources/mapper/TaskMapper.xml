@@ -2,8 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.wsw.patrickstar.task.mapper.TaskMapper">
     <resultMap id="BaseResultMap" type="com.wsw.patrickstar.task.entity.TaskEntity">
-        <id column="id" property="id" jdbcType="BIGINT"/>
-        <result column="task_id" property="taskId" jdbcType="BIGINT"/>
+        <id column="task_id" property="taskId" jdbcType="BIGINT"/>
         <result column="task_name" property="taskName" jdbcType="VARCHAR"/>
         <result column="task_caption" property="taskCaption" jdbcType="VARCHAR"/>
         <result column="extend" property="extend" jdbcType="VARCHAR"/>
@@ -14,7 +13,6 @@
     </resultMap>
 
     <sql id="baseColumn">
-        id,
         task_id,
         task_name,
         task_caption,
@@ -25,28 +23,35 @@
         update_time
     </sql>
 
-    <select id="selectTask" resultMap="BaseResultMap">
-        select
+    <select id="selectTask" parameterType="com.wsw.patrickstar.api.model.dto.TaskRequestDTO"
+            resultType="com.wsw.patrickstar.task.entity.TaskEntity">
+        SELECT
         <include refid="baseColumn"/>
-        from task
+        FROM task
         <where>
             <if test="query.taskId != null">
-                and task_id = #{query.taskId,jdbcType=BIGINT}
+                AND task_id = #{query.taskId, jdbcType=BIGINT}
+            </if>
+            <if test="query.createTimeStart != null and query.createTimeStart != '' and query.createTimeEnd != null and query.createTimeEnd != ''">
+                AND create_time BETWEEN #{query.createTimeStart, jdbcType=DATE} AND #{query.createTimeEnd, jdbcType=DATE}
+            </if>
+            <if test="query.updateTimeStart != null and query.updateTimeStart != '' and query.updateTimeEnd != null and query.updateTimeEnd != ''">
+                AND update_time BETWEEN #{query.updateTimeStart, jdbcType=DATE} AND #{query.updateTimeEnd, jdbcType=DATE}
             </if>
             <if test="query.taskName != null and query.taskName != ''">
-                and task_name = #{query.taskName,jdbcType=VARCHAR}
+                AND task_name = #{query.taskName, jdbcType=VARCHAR}
             </if>
             <if test="query.taskCaption != null and query.taskCaption != ''">
-                and task_caption = #{query.taskCaption,jdbcType=VARCHAR}
+                AND task_caption = #{query.taskCaption, jdbcType=VARCHAR}
             </if>
             <if test="query.createUser != null and query.createUser != ''">
-                and create_user = #{query.createUser,jdbcType=VARCHAR}
+                AND create_user = #{query.createUser, jdbcType=VARCHAR}
             </if>
             <if test="query.updateUser != null and query.updateUser != ''">
-                and update_user = #{query.updateUser,jdbcType=VARCHAR}
+                AND update_user = #{query.updateUser, jdbcType=VARCHAR}
             </if>
         </where>
-        order by updated_time desc
+        ORDER BY update_time DESC
     </select>
 
     <select id="selectTaskByTime1" parameterType="java.lang.String" resultMap="BaseResultMap">

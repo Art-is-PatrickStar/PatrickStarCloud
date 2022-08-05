@@ -16,7 +16,7 @@ public interface TaskService extends IService<TaskEntity> {
 
     void updateTask(TaskDTO taskDTO);
 
-    void deleteTaskByTaskId(Long taskId);
+    void deleteTask(Long taskId);
 
     PageInfo<TaskDTO> selectTask(TaskRequestDTO taskRequestDTO);
 

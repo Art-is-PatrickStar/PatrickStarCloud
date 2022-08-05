@@ -39,6 +39,7 @@ public class TaskController {
 
     @ApiOperation("创建任务")
     @PostMapping("/create")
+    @OpLog(opType = OperationType.ADD, type = ModuleTypeEnum.TASK, typeId = "taskId")
     public Result<Void> createTask(@RequestBody @Valid TaskDTO taskDTO) {
         Result<Void> result = Result.createFailResult();
         try {
@@ -68,10 +69,14 @@ public class TaskController {
 
     @ApiOperation("删除任务")
     @DeleteMapping("/delete")
-    public Result<Void> deleteTaskByTaskId(@RequestParam("taskId") Long taskId) {
+    @OpLog(opType = OperationType.DELETE, type = ModuleTypeEnum.TASK, typeId = "taskId")
+    public Result<Void> deleteTask(@RequestBody TaskDTO taskDTO) {
         Result<Void> result = Result.createFailResult();
+        if (taskDTO.getTaskId() == null) {
+            return Result.createFailResult(ResultStatusEnums.VALIDATE_FAILED);
+        }
         try {
-            taskService.deleteTaskByTaskId(taskId);
+            taskService.deleteTask(taskDTO.getTaskId());
             result = Result.createSuccessResult();
         } catch (Exception e) {
             result.setMsg(e.getMessage());

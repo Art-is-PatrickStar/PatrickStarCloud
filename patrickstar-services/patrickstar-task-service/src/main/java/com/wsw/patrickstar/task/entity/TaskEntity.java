@@ -45,7 +45,6 @@ public class TaskEntity {
     private String createUser;
 
     @TableField
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
 
@@ -54,7 +53,6 @@ public class TaskEntity {
     private String updateUser;
 
     @TableField
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     @ApiModelProperty(value = "更新时间")
     private Date updateTime;
 }
