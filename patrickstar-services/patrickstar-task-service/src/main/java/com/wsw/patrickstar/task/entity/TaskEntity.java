@@ -24,11 +24,7 @@ import java.util.Date;
 @TableName("task")
 @ApiModel("任务信息实体")
 public class TaskEntity {
-    @TableId(type = IdType.AUTO)
-    @ApiModelProperty(value = "主键")
-    private Long id;
-
-    @TableField
+    @TableId(value = "task_id", type = IdType.INPUT)
     @ApiModelProperty(value = "任务唯一性ID")
     private Long taskId;
 

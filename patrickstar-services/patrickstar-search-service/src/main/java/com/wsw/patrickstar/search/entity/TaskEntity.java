@@ -27,9 +27,6 @@ import java.util.Date;
 @ApiModel("任务信息实体")
 public class TaskEntity {
     @Id
-    @ApiModelProperty(value = "主键")
-    private Long id;
-
     @ApiModelProperty(value = "任务唯一性ID")
     private Long taskId;
 

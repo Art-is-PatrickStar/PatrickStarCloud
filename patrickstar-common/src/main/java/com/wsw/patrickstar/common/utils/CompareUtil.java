@@ -21,7 +21,7 @@ public class CompareUtil {
      * @param: [obj1, obj2, ignoreArr]
      * @return: java.lang.String
      */
-    public static String compareFields(Object obj1, Object obj2, String[] ignoreArr) {
+    public static String compareFields(Object obj1, Object obj2, String[] ignoreArr) throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
         try {
             List<String> ignoreList = null;
@@ -64,8 +64,7 @@ public class CompareUtil {
             }
             return stringBuilder.toString();
         } catch (Exception e) {
-            e.printStackTrace();
-            return "";
+            throw new Exception("实体比较异常: " + e);
         }
     }
 }

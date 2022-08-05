@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wsw.patrickstar.api.model.dto.TaskDTO;
 import com.wsw.patrickstar.api.model.dto.TaskRecordDTO;
 import com.wsw.patrickstar.api.model.dto.TaskRequestDTO;
+import com.wsw.patrickstar.api.response.Result;
 import com.wsw.patrickstar.api.service.RecepienterCloudService;
 import com.wsw.patrickstar.common.annotation.OpLog;
 import com.wsw.patrickstar.common.base.PageInfo;
@@ -77,11 +78,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> impleme
                     .taskType(TaskTypeEnum.PRODUCT.getCode())
                     .taskStatus(TaskStatusEnum.TODO.getCode())
                     .createUser(taskEntity.getCreateUser())
-                    .createTime(taskEntity.getCreateTime().toString())
                     .updateUser(taskEntity.getUpdateUser())
-                    .updateTime(taskEntity.getUpdateTime().toString())
                     .build();
-            recepienterCloudService.createTaskRecord(taskRecordDTO);
+            Result<Void> result = recepienterCloudService.createTaskRecord(taskRecordDTO);
+            if (!result.getSuccess()) {
+                throw new Exception("Recepienter微服务调用失败!");
+            }
         } catch (Exception e) {
             throw new CloudServiceException(e);
         }
@@ -92,9 +94,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> impleme
     public void updateTask(TaskDTO taskDTO) throws CloudServiceException {
         try {
             TaskEntity taskEntity = ITaskConvert.INSTANCE.dtoToEntity(taskDTO);
-            UpdateWrapper<TaskEntity> updateWrapper = new UpdateWrapper<>();
+            this.updateById(taskEntity);
+            /*UpdateWrapper<TaskEntity> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("task_id", taskDTO.getTaskId());
-            this.update(taskEntity, updateWrapper);
+            this.update(taskEntity, updateWrapper);*/
         } catch (Exception e) {
             throw new CloudServiceException(e);
         }

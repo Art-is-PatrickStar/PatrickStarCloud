@@ -12,7 +12,7 @@ import java.util.List;
  * @Author: wangsongwen
  * @Date: 2022/7/19 11:03
  */
-@Mapper
+@Mapper(uses = DateMapper.class)
 public interface ITaskOperationLogConvert {
     ITaskOperationLogConvert INSTANCE = Mappers.getMapper(ITaskOperationLogConvert.class);
 

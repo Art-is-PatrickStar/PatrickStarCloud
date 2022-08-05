@@ -72,7 +72,7 @@ public class OpLogAspect {
             taskOperationLogService.saveLog(opLogDTO);
             return result;
         } catch (Exception e) {
-            throw new Exception(e.getMessage());
+            throw new Exception(e);
         }
     }
 

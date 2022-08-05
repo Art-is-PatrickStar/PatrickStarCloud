@@ -20,9 +20,6 @@ import java.io.Serializable;
 public class TaskRequestDTO extends PageParam implements Serializable {
     private static final long serialVersionUID = -9175721821194835689L;
 
-    @ApiModelProperty(value = "主键")
-    private Long id;
-
     @ApiModelProperty(value = "任务唯一性ID")
     @NotNull(message = "任务id不能为空")
     private Long taskId;

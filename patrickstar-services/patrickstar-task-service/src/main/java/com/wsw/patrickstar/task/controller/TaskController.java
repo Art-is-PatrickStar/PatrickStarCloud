@@ -53,7 +53,7 @@ public class TaskController {
 
     @ApiOperation("更新任务")
     @PutMapping("/update")
-    @OpLog(opType = OperationType.UPDATE, type = ModuleTypeEnum.TASK, typeId = "id", serviceClass = TaskService.class, ignoreFields = {"createdTime", "updatedTime"})
+    @OpLog(opType = OperationType.UPDATE, type = ModuleTypeEnum.TASK, typeId = "taskId", serviceClass = TaskService.class, ignoreFields = {"createTime", "updateTime"})
     public Result<Void> updateTask(@RequestBody TaskDTO taskDTO) {
         Result<Void> result = Result.createFailResult();
         try {

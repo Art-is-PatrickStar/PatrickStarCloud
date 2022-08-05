@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
  * @Description:
  * @Author: wangsongwen
@@ -47,5 +49,5 @@ public class TaskOperationLog {
 
     @TableField
     @ApiModelProperty(value = "创建时间")
-    private String createdTime;
+    private Date createdTime;
 }

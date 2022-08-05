@@ -17,9 +17,6 @@ import java.io.Serializable;
 public class TaskDTO implements Serializable {
     private static final long serialVersionUID = -3114148300594531891L;
 
-    @ApiModelProperty(value = "主键")
-    private Long id;
-
     @ApiModelProperty(value = "任务唯一性ID")
     private Long taskId;
 

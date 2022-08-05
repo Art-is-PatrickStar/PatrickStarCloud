@@ -3,6 +3,7 @@ package com.wsw.patrickstar.common.utils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
@@ -11,12 +12,14 @@ import java.util.Map;
  * @Author: wangsongwen
  * @Date: 2022/7/19 11:22
  */
+@Component
 public class SpringUtils implements ApplicationContextAware {
     protected static ApplicationContext CONTEXT;
 
     public SpringUtils() {
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         CONTEXT = applicationContext;
     }
