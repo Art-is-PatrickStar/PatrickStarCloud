@@ -8,8 +8,8 @@ import com.wsw.patrickstar.common.annotation.OpLog;
 import com.wsw.patrickstar.common.base.PageInfo;
 import com.wsw.patrickstar.common.enums.ModuleTypeEnum;
 import com.wsw.patrickstar.common.enums.OperationType;
+import com.wsw.patrickstar.common.exception.BusinessException;
 import com.wsw.patrickstar.task.service.TaskService;
-import com.wsw.patrickstar.task.service.impl.TaskServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -41,14 +41,8 @@ public class TaskController {
     @PostMapping("/create")
     @OpLog(opType = OperationType.ADD, type = ModuleTypeEnum.TASK, typeId = "taskId")
     public Result<Void> createTask(@RequestBody @Valid TaskDTO taskDTO) {
-        Result<Void> result = Result.createFailResult();
-        try {
-            taskService.createTask(taskDTO);
-            result = Result.createSuccessResult();
-        } catch (Exception e) {
-            result.setMsg(e.getMessage());
-            log.error("" + e);
-        }
+        Result<Void> result = Result.createSuccessResult();
+        taskService.createTask(taskDTO);
         return result;
     }
 
@@ -56,14 +50,8 @@ public class TaskController {
     @PutMapping("/update")
     @OpLog(opType = OperationType.UPDATE, type = ModuleTypeEnum.TASK, typeId = "taskId", serviceClass = TaskService.class, ignoreFields = {"createTime", "updateTime"})
     public Result<Void> updateTask(@RequestBody TaskDTO taskDTO) {
-        Result<Void> result = Result.createFailResult();
-        try {
-            taskService.updateTask(taskDTO);
-            result = Result.createSuccessResult();
-        } catch (Exception e) {
-            result.setMsg(e.getMessage());
-            log.error(e.getMessage());
-        }
+        Result<Void> result = Result.createSuccessResult();
+        taskService.updateTask(taskDTO);
         return result;
     }
 
@@ -71,46 +59,30 @@ public class TaskController {
     @DeleteMapping("/delete")
     @OpLog(opType = OperationType.DELETE, type = ModuleTypeEnum.TASK, typeId = "taskId")
     public Result<Void> deleteTask(@RequestBody TaskDTO taskDTO) {
-        Result<Void> result = Result.createFailResult();
+        Result<Void> result = Result.createSuccessResult();
         if (taskDTO.getTaskId() == null) {
-            return Result.createFailResult(ResultStatusEnums.VALIDATE_FAILED);
+            throw new BusinessException(ResultStatusEnums.VALIDATE_FAILED);
         }
-        try {
-            taskService.deleteTask(taskDTO.getTaskId());
-            result = Result.createSuccessResult();
-        } catch (Exception e) {
-            result.setMsg(e.getMessage());
-            log.error(e.getMessage());
-        }
+        taskService.deleteTask(taskDTO.getTaskId());
         return result;
     }
 
     @ApiOperation("分页查询任务")
     @PostMapping("/select")
     public Result<PageInfo<TaskDTO>> selectTask(@RequestBody TaskRequestDTO taskRequestDTO) {
-        Result<PageInfo<TaskDTO>> result = Result.createFailResult();
-        try {
-            result = Result.createSuccessResult(taskService.selectTask(taskRequestDTO));
-        } catch (Exception e) {
-            result.setMsg(e.getMessage());
-            log.error(e.getMessage());
-        }
+        Result<PageInfo<TaskDTO>> result = Result.createSuccessResult();
+        result.value(taskService.selectTask(taskRequestDTO));
         return result;
     }
 
     @ApiOperation("根据任务id查询任务")
     @GetMapping("/select/byTaskId")
     public Result<TaskDTO> selectTaskByTaskId(@RequestParam Long taskId) {
-        Result<TaskDTO> result = Result.createFailResult();
+        Result<TaskDTO> result = Result.createSuccessResult();
         if (taskId == null) {
-            return Result.createFailResult(ResultStatusEnums.VALIDATE_FAILED);
+            throw new BusinessException(ResultStatusEnums.VALIDATE_FAILED);
         }
-        try {
-            result = Result.createSuccessResult(taskService.selectTaskByTaskId(taskId));
-        } catch (Exception e) {
-            result.setMsg(e.getMessage());
-            log.error(e.getMessage());
-        }
+        result.value(taskService.selectTaskByTaskId(taskId));
         return result;
     }
 }

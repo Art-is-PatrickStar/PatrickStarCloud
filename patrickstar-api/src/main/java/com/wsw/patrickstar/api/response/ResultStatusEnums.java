@@ -6,14 +6,22 @@ package com.wsw.patrickstar.api.response;
  * @Description: 枚举一些常用的API操作码
  */
 public enum ResultStatusEnums {
+    //系统级
     SUCCESS(200, "操作成功", 0),
     FAILED(500, "操作失败", 0),
-    VALIDATE_FAILED(404, "参数检验失败", 0),
-    UNAUTHORIZED(401, "暂未登录或token已经过期", 0),
-    FORBIDDEN(403, "没有相关权限", 0),
+    UNAUTHORIZED(401, "非法访问", 0),
+    FORBIDDEN(403, "没有权限", 0),
+    VALIDATE_FAILED(404, "请求资源不存在", 0),
+    SYSTEM_EXCEPTION(405, "系统异常", 0),
+    SQL_ERROR_EXCEPTION(406, "SQL语法异常", 0),
+    MICRO_SERVICE_EXCEPTION(407, "微服务异常", 0),
 
-    OP_LOG_SAVE_FAILD(1000, "操作日志插入失败", 0),
-    TASK_RECORD_INSERT_FAILD(1001, "新增任务记录失败", 0),
+    //参数校验级
+    PARAMS_EXCEPTION(5000, "请求参数校验异常", 0),
+
+    //业务级
+    OP_LOG_SAVE_FAILD(6000, "操作日志插入失败", 0),
+    TASK_RECORD_INSERT_FAILD(6001, "新增任务记录失败", 0),
     ;
 
     private final Integer status;

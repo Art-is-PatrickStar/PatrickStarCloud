@@ -1,8 +1,6 @@
 package com.wsw.patrickstar.recepienter.service.impl;
 
 import com.wsw.patrickstar.api.model.dto.TaskRecordDTO;
-import com.wsw.patrickstar.api.response.ResultStatusEnums;
-import com.wsw.patrickstar.common.exception.CloudServiceException;
 import com.wsw.patrickstar.recepienter.entity.TaskRecordEntity;
 import com.wsw.patrickstar.recepienter.mapstruct.IRecepienterConvert;
 import com.wsw.patrickstar.recepienter.repository.RecepienterRepository;
@@ -26,13 +24,9 @@ public class RecepienterServiceImpl implements RecepienterService {
 
     @Override
     public void createTaskRecord(TaskRecordDTO taskRecordDTO) {
-        try {
-            TaskRecordEntity taskRecordEntity = IRecepienterConvert.INSTANCE.dtoToEntity(taskRecordDTO);
-            taskRecordEntity.setCreateTime(new Date());
-            taskRecordEntity.setUpdateTime(new Date());
-            recepienterRepository.save(taskRecordEntity);
-        } catch (Exception e) {
-            throw new CloudServiceException(ResultStatusEnums.TASK_RECORD_INSERT_FAILD.getMsg(), e);
-        }
+        TaskRecordEntity taskRecordEntity = IRecepienterConvert.INSTANCE.dtoToEntity(taskRecordDTO);
+        taskRecordEntity.setCreateTime(new Date());
+        taskRecordEntity.setUpdateTime(new Date());
+        recepienterRepository.save(taskRecordEntity);
     }
 }

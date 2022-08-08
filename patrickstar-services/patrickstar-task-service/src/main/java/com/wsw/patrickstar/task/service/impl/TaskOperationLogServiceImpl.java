@@ -2,8 +2,6 @@ package com.wsw.patrickstar.task.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wsw.patrickstar.api.model.dto.OpLogDTO;
-import com.wsw.patrickstar.api.response.ResultStatusEnums;
-import com.wsw.patrickstar.common.exception.CloudServiceException;
 import com.wsw.patrickstar.task.entity.TaskOperationLog;
 import com.wsw.patrickstar.task.mapper.TaskOperationLogMapper;
 import com.wsw.patrickstar.task.mapstruct.ITaskOperationLogConvert;
@@ -19,11 +17,7 @@ import org.springframework.stereotype.Service;
 public class TaskOperationLogServiceImpl extends ServiceImpl<TaskOperationLogMapper, TaskOperationLog> implements TaskOperationLogService {
     @Override
     public void saveLog(OpLogDTO opLogDTO) {
-        try {
-            TaskOperationLog taskOperationLog = ITaskOperationLogConvert.INSTANCE.dtoToEntity(opLogDTO);
-            this.save(taskOperationLog);
-        } catch (Exception e) {
-            throw new CloudServiceException(ResultStatusEnums.OP_LOG_SAVE_FAILD.getMsg(), e);
-        }
+        TaskOperationLog taskOperationLog = ITaskOperationLogConvert.INSTANCE.dtoToEntity(opLogDTO);
+        this.save(taskOperationLog);
     }
 }

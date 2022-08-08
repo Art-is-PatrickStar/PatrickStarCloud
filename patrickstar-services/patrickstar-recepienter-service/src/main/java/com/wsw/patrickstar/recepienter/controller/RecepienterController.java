@@ -30,14 +30,8 @@ public class RecepienterController {
     @ApiOperation("创建任务记录")
     @PostMapping("/createTaskRecord")
     public Result<Void> createTaskRecord(@RequestBody @Valid TaskRecordDTO taskRecordDTO) {
-        Result<Void> result = Result.createFailResult();
-        try {
-            recepienterService.createTaskRecord(taskRecordDTO);
-            result = Result.createSuccessResult();
-        } catch (Exception e) {
-            result.setMsg(e.getMessage());
-            log.error(e.toString());
-        }
+        Result<Void> result = Result.createSuccessResult();
+        recepienterService.createTaskRecord(taskRecordDTO);
         return result;
     }
 }

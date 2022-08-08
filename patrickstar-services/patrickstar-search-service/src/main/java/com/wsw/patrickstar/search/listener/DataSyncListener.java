@@ -7,7 +7,7 @@ import com.wsw.patrickstar.api.model.dto.TaskDTO;
 import com.wsw.patrickstar.api.response.Result;
 import com.wsw.patrickstar.api.service.TaskCloudService;
 import com.wsw.patrickstar.common.constant.RabbitConstants;
-import com.wsw.patrickstar.common.exception.CloudServiceException;
+import com.wsw.patrickstar.common.exception.BusinessException;
 import com.wsw.patrickstar.search.service.ElasticService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
@@ -65,11 +65,11 @@ public class DataSyncListener {
                             log.info("新增数据同步至ElasticSearch成功!");
                         } catch (Exception e) {
                             log.error("新增数据同步至ElasticSearch失败! " + e.getMessage());
-                            throw new CloudServiceException(e.getMessage(), e.getCause());
+                            throw new Exception("新增数据同步至ElasticSearch失败");
                         }
                     } else {
                         log.error("数据未成功新增至数据库,数据同步服务不执行!");
-                        throw new CloudServiceException("数据未成功新增至数据库,数据同步服务不执行!");
+                        throw new Exception("数据未成功新增至数据库,数据同步服务不执行!");
                     }
                     break;
                 case "DELETE":
@@ -80,11 +80,11 @@ public class DataSyncListener {
                             log.info("删除数据同步至ElasticSearch成功!");
                         } catch (Exception e) {
                             log.error("删除数据同步至ElasticSearch失败! " + e.getMessage());
-                            throw new CloudServiceException(e.getMessage(), e.getCause());
+                            throw new Exception("删除数据同步至ElasticSearch失败");
                         }
                     } else {
                         log.error("数据未成功从数据库中删除或不在es中,数据同步服务不执行!");
-                        throw new CloudServiceException("数据未成功从数据库中删除或不在es中,数据同步服务不执行!");
+                        throw new Exception("数据未成功从数据库中删除或不在es中,数据同步服务不执行!");
                     }
                     break;
                 case "UPDATE":
@@ -95,11 +95,11 @@ public class DataSyncListener {
                             log.info("更新数据同步至ElasticSearch成功!");
                         } catch (Exception e) {
                             log.error("更新数据同步至ElasticSearch失败! " + e.getMessage());
-                            throw new CloudServiceException(e.getMessage(), e.getCause());
+                            throw new Exception("更新数据同步至ElasticSearch失败");
                         }
                     } else {
                         log.error("数据未成功更新至数据库中,数据同步服务不执行!");
-                        throw new CloudServiceException("数据未成功更新至数据库中,数据同步服务不执行!");
+                        throw new Exception("数据未成功更新至数据库中,数据同步服务不执行!");
                     }
                     break;
                 default:
