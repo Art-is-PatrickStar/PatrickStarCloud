@@ -12,6 +12,16 @@
     </parent>
 
     <dependencies>
+        <!-- patrickstar-api -->
+        <dependency>
+            <groupId>com.wsw</groupId>
+            <artifactId>patrickstar-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
