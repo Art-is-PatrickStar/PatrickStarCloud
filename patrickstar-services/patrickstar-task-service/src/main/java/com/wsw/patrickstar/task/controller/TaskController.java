@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.Objects;
 
 /**
  * @Author WangSongWen
@@ -83,6 +84,28 @@ public class TaskController {
             throw new BusinessException(ResultStatusEnums.VALIDATE_FAILED);
         }
         result.value(taskService.selectTaskByTaskId(taskId));
+        return result;
+    }
+
+    @ApiOperation("历史任务处理")
+    @PostMapping("/hisResource/process")
+    public Result<Void> hisResourceProcess(@RequestBody TaskRequestDTO taskRequestDTO) {
+        Result<Void> result = Result.createSuccessResult();
+        if (Objects.isNull(taskRequestDTO)) {
+            throw new BusinessException(ResultStatusEnums.VALIDATE_FAILED);
+        }
+        taskService.hisResourceProcess(taskRequestDTO);
+        return result;
+    }
+
+    @ApiOperation("批量处理任务")
+    @PostMapping("/batch/process")
+    public Result<Void> taskBatchProcess(@RequestBody TaskRequestDTO taskRequestDTO) {
+        Result<Void> result = Result.createSuccessResult();
+        if (Objects.isNull(taskRequestDTO)) {
+            throw new BusinessException(ResultStatusEnums.VALIDATE_FAILED);
+        }
+        taskService.taskBatchProcess(taskRequestDTO);
         return result;
     }
 }

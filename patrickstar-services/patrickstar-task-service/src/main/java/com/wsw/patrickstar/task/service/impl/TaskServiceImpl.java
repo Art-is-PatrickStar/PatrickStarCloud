@@ -1,5 +1,6 @@
 package com.wsw.patrickstar.task.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -18,6 +19,8 @@ import com.wsw.patrickstar.common.utils.SnowflakeUtils;
 import com.wsw.patrickstar.task.entity.TaskEntity;
 import com.wsw.patrickstar.task.mapper.TaskMapper;
 import com.wsw.patrickstar.task.mapstruct.ITaskConvert;
+import com.wsw.patrickstar.task.redis.RedisLock;
+import com.wsw.patrickstar.task.service.RedisService;
 import com.wsw.patrickstar.task.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +33,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.*;
 
 /**
  * @Author WangSongWen
@@ -53,8 +59,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> impleme
     private TaskMapper taskMapper;
     @Resource
     private RecepienterCloudService recepienterCloudService;
+    @Resource
+    private RedisService redisService;
     @Value("${snowf.workId}")
     private long workId;
+    //分页大小
+    private static final int PAGE_SIZE = 200;
 
     @Override
     @Transactional(rollbackFor = {BusinessException.class, Exception.class})
@@ -118,5 +128,91 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> impleme
     public TaskDTO selectTaskByTaskId(Long taskId) {
         TaskEntity taskEntity = this.lambdaQuery().eq(TaskEntity::getTaskId, taskId).one();
         return ITaskConvert.INSTANCE.entityToDto(taskEntity);
+    }
+
+    @Override
+    public void hisResourceProcess(TaskRequestDTO taskRequestDTO) {
+        //考虑用户点击频繁，设置分布式锁
+        RedisLock redisLock = redisService.tryLock(taskRequestDTO.getTaskCaption());
+        if (!redisLock.isLockSuccessed()) {
+            throw new BusinessException(ResultStatusEnums.CLICK_FREQUENT);
+        }
+        //异步执行(使用默认内置线程池ForkJoinPool.commonPool(), 也可自定义线程池)
+        CompletableFuture.runAsync(() -> {
+            List<TaskEntity> taskEntities = this.lambdaQuery()
+                    .between(TaskEntity::getUpdateTime, taskRequestDTO.getUpdateTimeStart(), taskRequestDTO.getUpdateTimeEnd())
+                    .list();
+            //处理
+            System.out.println(taskEntities);
+        });
+    }
+
+    @Override
+    public void taskBatchProcess(TaskRequestDTO taskRequestDTO) {
+        //获取总数
+        Integer count = this.lambdaQuery()
+                .between(TaskEntity::getUpdateTime, taskRequestDTO.getUpdateTimeStart(), taskRequestDTO.getUpdateTimeEnd())
+                .count();
+        //获取页数
+        int pageCount = count % PAGE_SIZE == 0 ? count / PAGE_SIZE : (count / PAGE_SIZE) + 1;
+        log.info("taskBatchProcess方法执行, count: {}, pageCount: {}.", count, pageCount);
+        //任务列表
+        List<Callable<List<TaskEntity>>> tasks = new ArrayList<>();
+        //固定线程池
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        //加入任务列表
+        for (int i = 1; i <= pageCount; i++) {
+            tasks.add(new ThreadQuery(i, taskRequestDTO.getUpdateTimeStart(), taskRequestDTO.getUpdateTimeEnd(), this.baseMapper));
+        }
+        try {
+            //多线程执行
+            List<Future<List<TaskEntity>>> futures = executorService.invokeAll(tasks);
+            if (CollectionUtil.isNotEmpty(futures)) {
+                for (Future<List<TaskEntity>> future : futures) {
+                    List<TaskEntity> taskEntities = future.get();
+                    if (CollectionUtil.isNotEmpty(taskEntities)) {
+                        executorService.execute(() -> {
+                            //处理
+                            System.out.println(taskEntities);
+                        });
+                    }
+                }
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException("多线程future执行出错: " + e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException("多线程future.get()执行出错: " + e);
+        } finally {
+            executorService.shutdown();
+        }
+    }
+
+    //分页查询数据内部类
+    public static class ThreadQuery implements Callable<List<TaskEntity>> {
+        private final int pageIndex;
+        private final String beginUpdateTime;
+        private final String endUpdateTime;
+        private final TaskMapper taskMapper;
+
+        public ThreadQuery(int pageIndex, String beginUpdateTime, String endUpdateTime, TaskMapper taskMapper) {
+            this.pageIndex = pageIndex;
+            this.beginUpdateTime = beginUpdateTime;
+            this.endUpdateTime = endUpdateTime;
+            this.taskMapper = taskMapper;
+        }
+
+        @Override
+        public List<TaskEntity> call() throws Exception {
+            try {
+                Page<TaskEntity> page = new Page<>(pageIndex, PAGE_SIZE);
+                TaskRequestDTO requestDTO = new TaskRequestDTO();
+                requestDTO.setUpdateTimeStart(beginUpdateTime);
+                requestDTO.setUpdateTimeEnd(endUpdateTime);
+                IPage<TaskEntity> iPage = taskMapper.selectTask(page, requestDTO);
+                return iPage.getRecords();
+            } catch (Exception e) {
+                throw new Exception("分页查询数据异常: " + e);
+            }
+        }
     }
 }

@@ -15,6 +15,7 @@ public enum ResultStatusEnums {
     SYSTEM_EXCEPTION(405, "系统异常", 0),
     SQL_ERROR_EXCEPTION(406, "SQL语法异常", 0),
     MICRO_SERVICE_EXCEPTION(407, "微服务异常", 0),
+    CLICK_FREQUENT(408, "请勿频繁点击", 0),
 
     //参数校验级
     PARAMS_EXCEPTION(5000, "请求参数校验异常", 0),

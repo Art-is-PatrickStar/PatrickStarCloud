@@ -21,4 +21,8 @@ public interface TaskService extends IService<TaskEntity> {
     PageInfo<TaskDTO> selectTask(TaskRequestDTO taskRequestDTO);
 
     TaskDTO selectTaskByTaskId(Long taskId);
+
+    void hisResourceProcess(TaskRequestDTO taskRequestDTO);
+
+    void taskBatchProcess(TaskRequestDTO taskRequestDTO);
 }
