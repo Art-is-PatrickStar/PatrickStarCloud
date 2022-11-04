@@ -16,7 +16,6 @@
         <module>patrickstar-services</module>
     </modules>
 
-    <!-- 统一管理jar包版本 -->
     <properties>
         <java.version>1.8</java.version>
         <!--maven插件版本-->
@@ -32,6 +31,8 @@
         <maven-dependency-plugin.version>3.3.0</maven-dependency-plugin.version>
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
         <jib-maven-plugin.version>3.2.1</jib-maven-plugin.version>
+        <!--二方库版本-->
+        <!--三方库版本-->
         <junit.version>4.12</junit.version>
         <log4j.version>1.2.17</log4j.version>
         <lombok.version>1.16.18</lombok.version>
@@ -48,14 +49,15 @@
         <commons-pool2.version>2.8.1</commons-pool2.version>
         <jjwt.version>0.11.2</jjwt.version>
         <java-jwt.version>3.12.0</java-jwt.version>
-        <redisson.version>3.13.4</redisson.version>
+        <redisson.version>3.17.0</redisson.version>
+        <jedis.version>3.7.0</jedis.version>
         <xxl-job-core.version>2.3.0</xxl-job-core.version>
         <slf4j-api.version>1.7.30</slf4j-api.version>
         <minio.version>7.1.0</minio.version>
         <sharding-jdbc.version>4.0.0-RC1</sharding-jdbc.version>
         <fastjson.version>1.2.83</fastjson.version>
         <jakarta.validation.version>2.0.2</jakarta.validation.version>
-        <swagger.version>2.9.2</swagger.version>
+        <swagger.version>3.0.0</swagger.version>
         <guava.version>29.0-jre</guava.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
         <hutool-all.version>5.7.22</hutool-all.version>
@@ -68,7 +70,6 @@
         </site>
     </distributionManagement>
 
-    <!-- 子模块继承之后，提供作用：锁定版本 + 子module不用写groupId和version -->
     <dependencyManagement>
         <dependencies>
             <!--spring boot 2.2.2-->
@@ -106,6 +107,16 @@
                 <version>${redisson.version}</version>
             </dependency>
             <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>${jedis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>${commons-pool2.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
                 <version>${dynamic-datasource.version}</version>
@@ -136,17 +147,10 @@
                 <version>${lombok.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-pool2</artifactId>
-                <version>${commons-pool2.version}</version>
-            </dependency>
-            <!-- spring boot admin client -->
-            <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-starter-client</artifactId>
                 <version>${spring.boot.admin.version}</version>
             </dependency>
-            <!-- spring boot admin server -->
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-starter-server</artifactId>
@@ -175,7 +179,7 @@
             </dependency>
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
+                <artifactId>jjwt-jackson</artifactId>
                 <version>${jjwt.version}</version>
                 <scope>runtime</scope>
             </dependency>
@@ -221,12 +225,7 @@
             </dependency>
             <dependency>
                 <groupId>io.springfox</groupId>
-                <artifactId>springfox-swagger2</artifactId>
-                <version>${swagger.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-swagger-ui</artifactId>
+                <artifactId>springfox-boot-starter</artifactId>
                 <version>${swagger.version}</version>
             </dependency>
             <dependency>
@@ -234,7 +233,6 @@
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
             </dependency>
-            <!-- mapstruct 对象转换 -->
             <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
