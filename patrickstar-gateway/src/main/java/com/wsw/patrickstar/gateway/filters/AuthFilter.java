@@ -29,8 +29,8 @@ import java.util.Arrays;
  * @Date: Created in 10:51 2021/1/14
  * @Description:
  */
-@Component
 @Slf4j
+@Component
 public class AuthFilter implements GlobalFilter, Ordered {
     @Value("${jwt.secretKey}")
     private String secretKey; // token密钥

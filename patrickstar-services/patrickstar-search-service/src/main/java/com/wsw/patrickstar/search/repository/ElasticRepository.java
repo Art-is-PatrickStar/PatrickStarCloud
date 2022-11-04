@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.search.repository;
 
-import com.wsw.patrickstar.api.domain.Task;
+import com.wsw.patrickstar.search.entity.TaskEntity;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
  * @Description:
  */
 @Repository
-public interface ElasticRepository extends ElasticsearchRepository<Task, Long> {
+public interface ElasticRepository extends ElasticsearchRepository<TaskEntity, Long> {
 
 }

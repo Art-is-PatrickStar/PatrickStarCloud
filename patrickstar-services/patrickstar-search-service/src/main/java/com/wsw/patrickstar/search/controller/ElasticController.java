@@ -1,16 +1,13 @@
 package com.wsw.patrickstar.search.controller;
 
-import com.wsw.patrickstar.api.domain.Task;
+import com.wsw.patrickstar.api.model.dto.TaskDTO;
 import com.wsw.patrickstar.api.response.Result;
 import com.wsw.patrickstar.search.service.ElasticService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @Author WangSongWen
@@ -19,21 +16,17 @@ import java.util.Optional;
  */
 @Slf4j
 @RestController
-@RequestMapping("/es/task")
+@RequestMapping("/es")
 public class ElasticController {
     @Resource
     private ElasticService elasticService;
 
-    @GetMapping("/get/{taskId}")
-    public Result<Task> getEsTaskById(@PathVariable Long taskId) {
-        Result<Task> result = Result.createFailResult();
+    @GetMapping("/searchTask")
+    public Result<List<TaskDTO>> searchTask(@RequestParam String keyWord) {
+        Result<List<TaskDTO>> result = Result.createFailResult();
         try {
-            Optional<Task> taskOptional = elasticService.getEsTaskById(taskId);
-            Task task = null;
-            if (taskOptional.isPresent()) {
-                task = taskOptional.get();
-            }
-            result = Result.createSuccessResult(task);
+            List<TaskDTO> taskDTOS = elasticService.searchTask(keyWord);
+            result = Result.createSuccessResult(taskDTOS);
         } catch (Exception e) {
             result.setMsg(e.getMessage());
             log.error(e.getMessage(), e.getCause());
@@ -41,14 +34,12 @@ public class ElasticController {
         return result;
     }
 
-    @GetMapping("/get/all")
-    public Result<List<Task>> getAllEsTask() {
-        Result<List<Task>> result = Result.createFailResult();
+    @GetMapping("/getEsTaskById/{taskId}")
+    public Result<TaskDTO> getEsTaskById(@PathVariable Long taskId) {
+        Result<TaskDTO> result = Result.createFailResult();
         try {
-            Iterable<Task> taskIterable = elasticService.getAllEsTask();
-            List<Task> taskList = new ArrayList<>();
-            taskIterable.forEach(taskList::add);
-            result = Result.createSuccessResult(taskList);
+            TaskDTO taskDTO = elasticService.getEsTaskById(taskId);
+            result = Result.createSuccessResult(taskDTO);
         } catch (Exception e) {
             result.setMsg(e.getMessage());
             log.error(e.getMessage(), e.getCause());
@@ -56,13 +47,12 @@ public class ElasticController {
         return result;
     }
 
-    @GetMapping("/search")
-    public Result<List<Task>> search(@RequestParam String keyWord) {
-        Result<List<Task>> result = Result.createFailResult();
+    @GetMapping("/getAllEsTask")
+    public Result<List<TaskDTO>> getAllEsTask() {
+        Result<List<TaskDTO>> result = Result.createFailResult();
         try {
-            Page<Task> taskPage = elasticService.search(keyWord);
-            List<Task> taskList = taskPage.getContent();
-            result = Result.createSuccessResult(taskList);
+            List<TaskDTO> taskDTOS = elasticService.getAllEsTask();
+            result = Result.createSuccessResult(taskDTOS);
         } catch (Exception e) {
             result.setMsg(e.getMessage());
             log.error(e.getMessage(), e.getCause());

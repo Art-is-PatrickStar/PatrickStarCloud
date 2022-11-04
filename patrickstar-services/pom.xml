@@ -7,7 +7,7 @@
 
     <parent>
         <groupId>com.wsw</groupId>
-        <artifactId>PatrickStarCloud</artifactId>
+        <artifactId>patrickstar-cloud</artifactId>
         <version>1.0.0</version>
     </parent>
 
@@ -17,6 +17,7 @@
         <module>patrickstar-task-service</module>
         <module>patrickstar-recepienter-service</module>
         <module>patrickstar-search-service</module>
+        <module>patrickstar-auth-service</module>
     </modules>
 
 </project>

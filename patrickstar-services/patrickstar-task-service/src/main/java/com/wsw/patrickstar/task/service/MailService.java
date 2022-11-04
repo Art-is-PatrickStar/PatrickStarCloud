@@ -1,6 +1,5 @@
 package com.wsw.patrickstar.task.service;
 
-import com.wsw.patrickstar.common.exception.CloudServiceException;
 import org.springframework.mail.SimpleMailMessage;
 
 /**
@@ -9,5 +8,5 @@ import org.springframework.mail.SimpleMailMessage;
  * @Description:
  */
 public interface MailService {
-    void sendMail(SimpleMailMessage simpleMailMessage) throws CloudServiceException;
+    void sendMail(SimpleMailMessage simpleMailMessage) throws Exception;
 }

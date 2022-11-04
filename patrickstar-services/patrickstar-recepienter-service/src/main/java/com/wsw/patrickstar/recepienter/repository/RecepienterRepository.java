@@ -1,6 +1,6 @@
 package com.wsw.patrickstar.recepienter.repository;
 
-import com.wsw.patrickstar.api.domain.Recepienter;
+import com.wsw.patrickstar.recepienter.entity.TaskRecordEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
  * @Description:
  */
 @Repository
-public interface RecepienterRepository extends JpaRepository<Recepienter, Long> {
+public interface RecepienterRepository extends JpaRepository<TaskRecordEntity, Long> {
 //    @Modifying
 //    @Transactional
 //    @Query(value = "insert into recepienter (task_id, task_name, name, remark) values (?1, ?2, ?3, ?4)", nativeQuery = true)

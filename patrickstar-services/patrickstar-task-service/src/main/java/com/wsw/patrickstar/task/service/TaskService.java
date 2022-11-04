@@ -1,32 +1,28 @@
 package com.wsw.patrickstar.task.service;
 
-import com.wsw.patrickstar.api.domain.Task;
-
-import java.util.List;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.wsw.patrickstar.api.model.dto.TaskDTO;
+import com.wsw.patrickstar.api.model.dto.TaskRequestDTO;
+import com.wsw.patrickstar.common.base.PageInfo;
+import com.wsw.patrickstar.task.entity.TaskEntity;
 
 /**
  * @Author WangSongWen
  * @Date: Created in 14:19 2020/11/9
  * @Description:
  */
-public interface TaskService {
-    int createTask(Task task);
+public interface TaskService extends IService<TaskEntity> {
+    void createTask(TaskDTO taskDTO);
 
-    int updateTaskById(Task task);
+    void updateTask(TaskDTO taskDTO);
 
-    int updateTaskByName(Task task);
+    void deleteTask(Long taskId);
 
-    int updateTaskStatusByTaskId(Task task);
+    PageInfo<TaskDTO> selectTask(TaskRequestDTO taskRequestDTO);
 
-    int deleteTaskByTaskId(Long taskId);
+    TaskDTO selectTaskByTaskId(Long taskId);
 
-    int deleteTaskByTaskName(String taskName);
+    void hisResourceProcess(TaskRequestDTO taskRequestDTO);
 
-    Task selectTaskById(Long taskId);
-
-    List<Task> selectTaskByName(String taskName);
-
-    List<Task> selectTaskByStatus(char taskStatus);
-
-    // ...
+    void taskBatchProcess(TaskRequestDTO taskRequestDTO);
 }

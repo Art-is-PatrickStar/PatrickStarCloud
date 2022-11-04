@@ -1,7 +1,5 @@
 package com.wsw.patrickstar.common.utils;
 
-import org.springframework.stereotype.Component;
-
 import javax.crypto.Cipher;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -13,7 +11,6 @@ import java.security.PublicKey;
  * @Date: Created in 14:38 2021/2/20
  * @Description: 非对称加密---RSA加密
  */
-@Component
 public class RSASecurity {
     // 加密算法
     private static final String algorithm = "RSA";

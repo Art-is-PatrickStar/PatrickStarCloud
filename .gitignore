@@ -3,3 +3,4 @@
 *.imi
 *.iml
 **/*.iml
+**/myLogs/**

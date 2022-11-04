@@ -1,6 +1,5 @@
 package com.wsw.patrickstar.task.service.impl;
 
-import com.wsw.patrickstar.common.exception.CloudServiceException;
 import com.wsw.patrickstar.task.service.MailService;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -19,11 +18,11 @@ public class MailServiceImpl implements MailService {
     private JavaMailSender javaMailSender;
 
     @Override
-    public void sendMail(SimpleMailMessage simpleMailMessage) throws CloudServiceException {
+    public void sendMail(SimpleMailMessage simpleMailMessage) throws Exception {
         try {
             javaMailSender.send(simpleMailMessage);
-        } catch (CloudServiceException e) {
-            throw new CloudServiceException("发送邮件异常: " + e.getMessage());
+        } catch (Exception e) {
+            throw new Exception("发送邮件异常: " + e.getMessage());
         }
     }
 }

@@ -1,14 +1,30 @@
 package com.wsw.patrickstar.task.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.wsw.patrickstar.api.domain.Recepienter;
-import com.wsw.patrickstar.api.domain.Task;
+import cn.hutool.core.collection.CollectionUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.wsw.patrickstar.api.model.dto.TaskDTO;
+import com.wsw.patrickstar.api.model.dto.TaskRecordDTO;
+import com.wsw.patrickstar.api.model.dto.TaskRequestDTO;
+import com.wsw.patrickstar.api.response.Result;
+import com.wsw.patrickstar.api.response.ResultStatusEnums;
 import com.wsw.patrickstar.api.service.RecepienterCloudService;
-import com.wsw.patrickstar.common.exception.CloudServiceException;
+import com.wsw.patrickstar.common.base.PageInfo;
+import com.wsw.patrickstar.common.enums.TaskStatusEnum;
+import com.wsw.patrickstar.common.enums.TaskTypeEnum;
+import com.wsw.patrickstar.common.exception.BusinessException;
+import com.wsw.patrickstar.common.utils.DateUtils;
+import com.wsw.patrickstar.common.utils.SnowflakeUtils;
+import com.wsw.patrickstar.task.entity.TaskEntity;
 import com.wsw.patrickstar.task.mapper.TaskMapper;
+import com.wsw.patrickstar.task.mapstruct.ITaskConvert;
+import com.wsw.patrickstar.task.redis.RedisLock;
+import com.wsw.patrickstar.task.service.RedisService;
 import com.wsw.patrickstar.task.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -17,8 +33,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.*;
 
 /**
  * @Author WangSongWen
@@ -36,89 +54,165 @@ import java.util.List;
 @Slf4j
 @Service
 @CacheConfig(cacheNames = "task", cacheManager = "taskCacheManager")
-public class TaskServiceImpl implements TaskService {
+public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> implements TaskService {
     @Resource
     private TaskMapper taskMapper;
     @Resource
     private RecepienterCloudService recepienterCloudService;
+    @Resource
+    private RedisService redisService;
+    @Value("${snowf.workId}")
+    private long workId;
+    //分页大小
+    private static final int PAGE_SIZE = 200;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public int createTask(Task task) throws CloudServiceException {
-        int result;
+    @Transactional(rollbackFor = {BusinessException.class, Exception.class})
+    public void createTask(TaskDTO taskDTO) {
+        //赋值任务id
+        taskDTO.setTaskId(SnowflakeUtils.genId(workId));
+        TaskEntity taskEntity = ITaskConvert.INSTANCE.dtoToEntity(taskDTO);
+        taskEntity.setCreateTime(new Date());
+        taskEntity.setUpdateTime(new Date());
         // 添加任务
-        result = taskMapper.insert(task);
+        this.save(taskEntity);
         // 同步调用
-        // 调用recepienter服务添加领取人员信息
-        Recepienter recepienter = Recepienter.builder().taskId(task.getTaskId()).taskName(task.getTaskName())
-                .name(task.getRecepientName()).remark(new Date().toString()).build();
-        result = recepienterCloudService.create(recepienter);
-        return result;
+        // 调用recepienter服务添加任务记录
+        TaskRecordDTO taskRecordDTO = TaskRecordDTO.builder()
+                .taskId(taskEntity.getTaskId())
+                .taskType(TaskTypeEnum.PRODUCT.getCode())
+                .taskStatus(TaskStatusEnum.TODO.getCode())
+                .createUser(taskEntity.getCreateUser())
+                .updateUser(taskEntity.getUpdateUser())
+                .build();
+        Result<Void> result = recepienterCloudService.createTaskRecord(taskRecordDTO);
+        if (!result.getSuccess()) {
+            throw new BusinessException(ResultStatusEnums.MICRO_SERVICE_EXCEPTION);
+        }
     }
 
     @Override
-    @CachePut(key = "#task.taskId", unless = "#result == null")
-    public int updateTaskById(Task task) throws CloudServiceException {
-        return taskMapper.updateById(task);
-    }
-
-    @Override
-    @CachePut(key = "#task.taskId", unless = "#result == null")
-    public int updateTaskByName(Task task) throws CloudServiceException {
-        int result;
-        UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("task_name", task.getTaskName());
-        result = taskMapper.update(task, updateWrapper);
-        return result;
-    }
-
-    @Override
-    @CachePut(key = "#task.taskId", unless = "#result == null")
-    public int updateTaskStatusByTaskId(Task task) throws CloudServiceException {
-        int result;
-        UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.set("task_status", task.getTaskStatus())
-                .eq("task_id", task.getTaskId());
-        result = taskMapper.update(task, updateWrapper);
-        return result;
+    @CachePut(key = "#taskDTO.taskId", unless = "#result == null")
+    public void updateTask(TaskDTO taskDTO) {
+        TaskEntity taskEntity = ITaskConvert.INSTANCE.dtoToEntity(taskDTO);
+        this.updateById(taskEntity);
+            /*UpdateWrapper<TaskEntity> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("task_id", taskDTO.getTaskId());
+            this.update(taskEntity, updateWrapper);*/
     }
 
     @Override
     @CacheEvict(key = "#p0", allEntries = false)
-    public int deleteTaskByTaskId(Long taskId) throws CloudServiceException {
-        return taskMapper.deleteById(taskId);
-    }
-
-    // 这个方法没有实现数据同步！
-    @Override
-    @CacheEvict(key = "#p0", allEntries = false)
-    public int deleteTaskByTaskName(String taskName) throws CloudServiceException {
-        int result;
-        QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("task_name", taskName);
-        result = taskMapper.delete(queryWrapper);
-        return result;
+    public void deleteTask(Long taskId) {
+        this.baseMapper.deleteById(taskId);
+            /*QueryWrapper<TaskEntity> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("task_id", taskId);
+            this.baseMapper.delete(queryWrapper);*/
     }
 
     @Override
-    @Cacheable(key = "#p0", unless = "#result == null")
-    public Task selectTaskById(Long taskId) throws CloudServiceException {
-        return taskMapper.selectById(taskId);
-    }
-
-    @Override
-    @Cacheable(key = "#p0", unless = "#result == null")
-    public List<Task> selectTaskByName(String taskName) throws CloudServiceException {
-        QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("task_name", taskName);
-        return taskMapper.selectList(queryWrapper);
+    public PageInfo<TaskDTO> selectTask(TaskRequestDTO taskRequestDTO) {
+        Page<?> page = new Page<>(taskRequestDTO.getStart(), taskRequestDTO.getLength());
+        if (StringUtils.isNotBlank(taskRequestDTO.getCreateTimeStart()) && StringUtils.isBlank(taskRequestDTO.getCreateTimeEnd())) {
+            taskRequestDTO.setCreateTimeEnd(DateUtils.dateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS_SSS, new Date()));
+        }
+        if (StringUtils.isNotBlank(taskRequestDTO.getUpdateTimeStart()) && StringUtils.isBlank(taskRequestDTO.getUpdateTimeEnd())) {
+            taskRequestDTO.setUpdateTimeEnd(DateUtils.dateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS_SSS, new Date()));
+        }
+        IPage<TaskEntity> taskEntityIPage = taskMapper.selectTask(page, taskRequestDTO);
+        return PageInfo.fromIPage(taskEntityIPage.convert(ITaskConvert.INSTANCE::entityToDto));
     }
 
     @Override
     @Cacheable(key = "#p0", unless = "#result == null")
-    public List<Task> selectTaskByStatus(char taskStatus) throws CloudServiceException {
-        QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("task_status", taskStatus);
-        return taskMapper.selectList(queryWrapper);
+    public TaskDTO selectTaskByTaskId(Long taskId) {
+        TaskEntity taskEntity = this.lambdaQuery().eq(TaskEntity::getTaskId, taskId).one();
+        return ITaskConvert.INSTANCE.entityToDto(taskEntity);
+    }
+
+    @Override
+    public void hisResourceProcess(TaskRequestDTO taskRequestDTO) {
+        //考虑用户点击频繁，设置分布式锁
+        RedisLock redisLock = redisService.tryLock(taskRequestDTO.getTaskCaption());
+        if (!redisLock.isLockSuccessed()) {
+            throw new BusinessException(ResultStatusEnums.CLICK_FREQUENT);
+        }
+        //异步执行(使用默认内置线程池ForkJoinPool.commonPool(), 也可自定义线程池)
+        CompletableFuture.runAsync(() -> {
+            List<TaskEntity> taskEntities = this.lambdaQuery()
+                    .between(TaskEntity::getUpdateTime, taskRequestDTO.getUpdateTimeStart(), taskRequestDTO.getUpdateTimeEnd())
+                    .list();
+            //处理
+            System.out.println(taskEntities);
+        });
+    }
+
+    @Override
+    public void taskBatchProcess(TaskRequestDTO taskRequestDTO) {
+        //获取总数
+        Integer count = this.lambdaQuery()
+                .between(TaskEntity::getUpdateTime, taskRequestDTO.getUpdateTimeStart(), taskRequestDTO.getUpdateTimeEnd())
+                .count();
+        //获取页数
+        int pageCount = count % PAGE_SIZE == 0 ? count / PAGE_SIZE : (count / PAGE_SIZE) + 1;
+        log.info("taskBatchProcess方法执行, count: {}, pageCount: {}.", count, pageCount);
+        //任务列表
+        List<Callable<List<TaskEntity>>> tasks = new ArrayList<>();
+        //固定线程池
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        //加入任务列表
+        for (int i = 1; i <= pageCount; i++) {
+            tasks.add(new ThreadQuery(i, taskRequestDTO.getUpdateTimeStart(), taskRequestDTO.getUpdateTimeEnd(), this.baseMapper));
+        }
+        try {
+            //多线程执行
+            List<Future<List<TaskEntity>>> futures = executorService.invokeAll(tasks);
+            if (CollectionUtil.isNotEmpty(futures)) {
+                for (Future<List<TaskEntity>> future : futures) {
+                    List<TaskEntity> taskEntities = future.get();
+                    if (CollectionUtil.isNotEmpty(taskEntities)) {
+                        executorService.execute(() -> {
+                            //处理
+                            System.out.println(taskEntities);
+                        });
+                    }
+                }
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException("多线程future执行出错: " + e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException("多线程future.get()执行出错: " + e);
+        } finally {
+            executorService.shutdown();
+        }
+    }
+
+    //分页查询数据内部类
+    public static class ThreadQuery implements Callable<List<TaskEntity>> {
+        private final int pageIndex;
+        private final String beginUpdateTime;
+        private final String endUpdateTime;
+        private final TaskMapper taskMapper;
+
+        public ThreadQuery(int pageIndex, String beginUpdateTime, String endUpdateTime, TaskMapper taskMapper) {
+            this.pageIndex = pageIndex;
+            this.beginUpdateTime = beginUpdateTime;
+            this.endUpdateTime = endUpdateTime;
+            this.taskMapper = taskMapper;
+        }
+
+        @Override
+        public List<TaskEntity> call() throws Exception {
+            try {
+                Page<TaskEntity> page = new Page<>(pageIndex, PAGE_SIZE);
+                TaskRequestDTO requestDTO = new TaskRequestDTO();
+                requestDTO.setUpdateTimeStart(beginUpdateTime);
+                requestDTO.setUpdateTimeEnd(endUpdateTime);
+                IPage<TaskEntity> iPage = taskMapper.selectTask(page, requestDTO);
+                return iPage.getRecords();
+            } catch (Exception e) {
+                throw new Exception("分页查询数据异常: " + e);
+            }
+        }
     }
 }

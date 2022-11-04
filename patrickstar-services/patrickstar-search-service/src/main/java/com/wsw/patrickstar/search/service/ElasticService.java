@@ -1,9 +1,8 @@
 package com.wsw.patrickstar.search.service;
 
-import com.wsw.patrickstar.api.domain.Task;
-import org.springframework.data.domain.Page;
+import com.wsw.patrickstar.api.model.dto.TaskDTO;
 
-import java.util.Optional;
+import java.util.List;
 
 /**
  * @Author WangSongWen
@@ -11,15 +10,15 @@ import java.util.Optional;
  * @Description:
  */
 public interface ElasticService {
-    Page<Task> search(String keyWord);
+    List<TaskDTO> searchTask(String keyWord);
 
-    Optional<Task> getEsTaskById(Long taskId);
+    TaskDTO getEsTaskById(Long taskId);
 
-    Iterable<Task> getAllEsTask();
+    List<TaskDTO> getAllEsTask();
 
-    void addEsTask(Task task);
+    void addEsTask(TaskDTO taskDTO);
 
     void deleteEsTaskById(Long taskId);
 
-    void updateEsTask(Task task);
+    void updateEsTask(TaskDTO taskDTO);
 }

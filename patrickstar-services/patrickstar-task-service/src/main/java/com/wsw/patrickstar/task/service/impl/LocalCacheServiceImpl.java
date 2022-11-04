@@ -29,7 +29,7 @@ public class LocalCacheServiceImpl {
             .initialCapacity(3).maximumSize(5).build(new CacheLoader<String, List<Map<String, Object>>>() {
                 @Override
                 public List<Map<String, Object>> load(String configKey) {
-                    String sql = "select * from task";
+                    String sql = "select * from task_20220701";
                     List<Map<String, Object>> taskMapList = jdbcTemplate.queryForList(sql);
                     if (CollectionUtils.isEmpty(taskMapList)) {
                         return null;

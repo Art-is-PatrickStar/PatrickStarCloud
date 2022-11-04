@@ -30,13 +30,17 @@ Java1.8
 5. 服务限流降级 Hystrix/Sentinel
 6. 网关 Gateway
 7. 缓存中间件 Redis
-8. 消息中间件 RabbitMQ
+8. 消息中间件 RabbitMQ Kafka
 9. 搜索引擎 ElasticSearch
+10. 分布式调度 xxl-job
+11. 文件存储 minio
 ```
 
 ## 项目结构
 
 ```text
+patrickstar-api
+patrickstar-common
 patrickstar-gateway -> 4000
 patrickstar-auth -> 3000
 patrickstar-task-service -> 4001
@@ -53,23 +57,19 @@ patrickstar-search-service -> 4003
 1. consul保存k/v配置启动
 cd consul ->  .\consul agent -server -bootstrap-expect 1 -data-dir E:\consul\data -node=consulServer1 -bind 127.0.0.1 -ui -rejoin  -client 0.0.0.0
 
-2. RabbitMQ
-省略
-3. Redis
+2. RabbitMQ Kafka Redis xxl-job minio ES
 省略
 
 or
 
 最新版本即可
 1. Nacos
-cd bin -> .\startup.cmd
+cd bin -> .\startup.cmd -m standalone
 
 2. Sentinel(jar包)
 自定义端口启动 -> java -jar .\sentinel-dashboard-1.8.0.jar --server.port=9090
 
-3. RabbitMQ
-省略
-4. Redis
+3. RabbitMQ Kafka Redis xxl-job minio ES
 省略
 ```
 
@@ -83,52 +83,12 @@ cd bin -> .\startup.cmd
 
 ```yaml
 spring:
-  shardingsphere:
-    datasource:
-      names: ds0
-      # 配置数据源
-      ds0:
-        # 数据库连接池类名称
-        type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        # 数据库url连接
-        jdbcUrl: jdbc:mysql://***:3306/patrickstar-task?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-        #数据库用户名
-        username: ***
-        # 数据库密码
-        password: ***
-        hikari:
-          minimum-idle: 5
-          max-lifetime: 1800000
-          maximum-pool-size: 15
-          auto-commit: true
-          idle-timeout: 30000
-          pool-name: DatebookHikariCP
-          connection-timeout: 30000
-    # 配置分表规则
-    sharding:
-      tables:
-        task:
-          actual-data-nodes: ds0.task_$->{2020..2021}
-          # 配置分表策略
-          table-strategy:
-            standard:
-              #分片列名称
-              sharding-column: create_date
-              #分片算法行表达式
-              precise-algorithm-class-name: com.wsw.patrickstar.algorithm.PreciseYearTableShardingAlgorithm
-              range-algorithm-class-name: com.wsw.patrickstar.algorithm.RangeYearTableShardingAlgorithm
-          # 主键策略 雪花算法
-          key-generator:
-            column: task_id
-            type: SNOWFLAKE
-      defaultDataSourceName: ds0
-    # 打开sql控制台输出日志
-    props:
-      sql:
-        show: true
+  datasource:
+    dynamic:
+      primary: taskDataSource
+
   redis:
-    host: ***
+    host: 127.0.0.1
     port: 6379
     lettuce:
       pool:
@@ -140,6 +100,7 @@ spring:
         max-idle: 8
         # 连接池中的最小空闲连接 默认为 0
         min-idle: 0
+
   rabbitmq:
     host: 127.0.0.1
     port: 5672
@@ -151,8 +112,14 @@ spring:
       simple:
         # 消费端手动ack消息
         acknowledge-mode: manual
-        # 是否支持重试
-        retry.enabled: true
+        concurrency: 1
+        max-concurrency: 4
+        retry:
+          enabled: true
+          max-attempts: 3
+        prefetch: 1
+    virtual-host: /
+
   kafka:
     listener:
       # 批量监听开启
@@ -192,6 +159,7 @@ spring:
       acks: -1
       # 当producer接收到error ACK,或者没有接收到ACK时,允许消息重发的次数
       retries: 3
+
   mail:
     host: smtp.qq.com
     username: 2544894086@qq.com
@@ -209,23 +177,52 @@ spring:
               true
         debug: false
 
+#多数据源配置
+datasource:
+  task:
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/patrickstar-task?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false&allowMultiQueries=true&serverTimezone=Asia/Shanghai&&rewriteBatchedStatements=true
+    username: root
+    password: 
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  recepienter:
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/patrickstar-recepienter?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false&allowMultiQueries=true&serverTimezone=Asia/Shanghai&&rewriteBatchedStatements=true
+    username: root
+    password: 
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+sharding-rules:
+  task:
+    tables:
+      task:
+        actualDataNodes: ds0.task_$->{[20220701, 20220801]}
+        tableStrategy:
+          standard:
+            shardingColumn: add_time
+            preciseAlgorithmClassName: com.wsw.patrickstar.task.algorithm.CustomShardingAlgorithm
+            rangeAlgorithmClassName: com.wsw.patrickstar.task.algorithm.CustomShardingAlgorithm
+
+sharding-props:
+  task:
+    max:
+      connections:
+        size:
+          per:
+            query: 50
+    sql:
+      show: true
+
 mybatis:
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.wsw.patrickstar.entity
-
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 redisson:
   client:
-    address: redis://***:6379
-    
+    address: redis://127.0.0.1:6379
+
 minio:
-  url: http://***:9000
-  accessKey: ***
-  secretKey: ***
-  bucketName: test
+  url: http://127.0.0.1:9000
+  accessKey: admin
+  secretKey: wsw19980801
+  bucketName: wsw
 
 # xxl-job配置
 xxl:
@@ -252,16 +249,16 @@ management:
   endpoints:
     web:
       exposure:
-        include: '*' 
+        include: '*'
 ```
 
-#### 2. patrickstar-auth配置文件
+#### 2. patrickstar-auth-service配置文件
 
 ```yaml
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/patrickstar-user?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/patrickstar-user?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: ***
     password: ***
     hikari:
@@ -278,7 +275,7 @@ spring:
     show-sql: true
 
   redis:
-    host: ***
+    host: 127.0.0.1
     port: 6379
     lettuce:
       pool:
@@ -305,22 +302,8 @@ management:
 
 ```yaml
 spring:
-  datasource:
-    type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/patrickstar-user?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: ***
-    password: ***
-    hikari:
-      minimum-idle: 5
-      max-lifetime: 1800000
-      maximum-pool-size: 15
-      auto-commit: true
-      idle-timeout: 30000
-      pool-name: DatebookHikariCP
-      connection-timeout: 30000
-
   redis:
-    host: ***
+    host: 127.0.0.1
     port: 6379
     lettuce:
       pool:
@@ -343,7 +326,7 @@ jwt:
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/patrickstar-recepienter?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/patrickstar-recepienter?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false&allowMultiQueries=true&serverTimezone=Asia/Shanghai&&rewriteBatchedStatements=true
     username: ***
     password: ***
     hikari:
@@ -354,6 +337,7 @@ spring:
       idle-timeout: 30000
       pool-name: DatebookHikariCP
       connection-timeout: 30000
+
   jpa:
     hibernate:
       ddl-auto: none
@@ -378,7 +362,7 @@ spring:
         enabled: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://***:3306/patrickstar-task?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/patrickstar-task?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: ***
     password: ***
     hikari:
@@ -440,7 +424,7 @@ DB ES 双写, ES 只做搜索功能, 使用RabbitMQ队列处理数据同步
 input {
   jdbc {
 	# mysql jdbc connection string to our backup databse
-	jdbc_connection_string => "jdbc:mysql://***:3306/patrickstar-task"
+	jdbc_connection_string => "jdbc:mysql://***:3306/patrickstar-taskEntity"
 	# the user we wish to excute our statement as
 	jdbc_user => "***"
 	jdbc_password => "***"
@@ -451,7 +435,7 @@ input {
 	jdbc_paging_enabled => "true"
 	jdbc_page_size => "10000"
 	# 以下对应着要执行的sql的绝对路径
-	statement_filepath => "E:/logstash-7.10.1/mysql/task.sql"
+	statement_filepath => "E:/logstash-7.10.1/mysql/taskEntity.sql"
 	# 定时字段 各字段含义（由左至右）分、时、天、月、年，全部为*默认含义为每分钟都更新
 	schedule => "* * * * *"
 	# 设定ES索引类型
@@ -479,7 +463,7 @@ output {
 	#ESIP地址与端口
 	hosts => "127.0.0.1:9200"
 	# ES索引名称（自己定义的）
-	index => "task"
+	index => "taskEntity"
 	# 自增ID编号
 	document_id => "%{taskId}"
   }
@@ -503,3 +487,62 @@ from task
 ![image](https://user-images.githubusercontent.com/34562805/106107277-b2995200-6181-11eb-84be-525a802b03ac.png)
 ![image](https://user-images.githubusercontent.com/34562805/106107351-ccd33000-6181-11eb-9bba-f2a19b9c0fa7.png)
 ![image](https://user-images.githubusercontent.com/34562805/106107426-e2485a00-6181-11eb-9199-f01a12490a3a.png)
+
+###数据库脚本
+1.建库: patrickstar-user
+
+建表: user
+
+CREATE TABLE `user` (
+`id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+`user_id` bigint NOT NULL COMMENT '用户id',
+`username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户名',
+`password` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '密码',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+2.建库: patrickstar-recepienter
+
+建表: task_record
+
+CREATE TABLE `task_record` (
+`id` bigint NOT NULL AUTO_INCREMENT,
+`task_id` bigint NOT NULL COMMENT '任务唯一性ID',
+`task_type` int NOT NULL DEFAULT '1' COMMENT '任务类型 1-生产 2-测试 3-稽核',
+`task_status` int NOT NULL DEFAULT '1' COMMENT '任务状态 1-待处理 2-处理中 3-处理完成',
+`extend` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '扩展字段',
+`create_user` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '创建人员',
+`create_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
+`update_user` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '更新人员',
+`update_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '更新时间',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+3.建库: patrickstar-task
+
+建表: task_operation_log
+
+CREATE TABLE `task_operation_log` (
+`id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+`module_type` varchar(50) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '模块名',
+`module_id` varchar(50) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '模块id',
+`operate_type` varchar(50) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '操作类型',
+`operate_content` varchar(2000) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '操作内容',
+`created_user` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '创建人员',
+`created_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+建表: task 按月分表 (2022-07-01 2022-08-01 2022-09-01...)
+
+CREATE TABLE `task_xxx` (
+`task_id` bigint NOT NULL COMMENT '任务唯一性ID',
+`task_name` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '任务名称',
+`task_caption` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '任务描述',
+`extend` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '扩展字段',
+`create_user` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '创建人员',
+`create_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
+`update_user` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '更新人员',
+`update_time` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '更新时间',
+PRIMARY KEY (`task_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

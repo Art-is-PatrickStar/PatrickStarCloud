@@ -46,14 +46,8 @@ public class Result<T> implements Serializable {
         return ret;
     }
 
-    public static <W> Result<W> createSuccessResult(String msg) {
-        Result<W> ret = new Result<W>();
-        ret.setSuccess(true);
-        ret.setStatus(ResultStatusEnums.SUCCESS.getStatus());
-        ret.setMsg(msg);
-        ret.startTime = System.currentTimeMillis();
-        ret.timeConsume = System.currentTimeMillis() - ret.startTime;
-        return ret;
+    public static <W> Result<W> createSuccessResult() {
+        return createSuccessResult(null);
     }
 
     public static <T> Result<T> createSuccessResult(T val) {
