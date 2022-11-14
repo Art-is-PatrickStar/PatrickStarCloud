@@ -15,6 +15,7 @@
 
     <modules>
         <module>patrickstar-rabbitmq</module>
+        <module>patrickstar-redis</module>
     </modules>
 
 </project>
