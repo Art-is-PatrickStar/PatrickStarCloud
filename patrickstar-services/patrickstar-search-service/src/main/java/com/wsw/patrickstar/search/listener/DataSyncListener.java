@@ -1,5 +1,6 @@
 package com.wsw.patrickstar.search.listener;
 
+import cn.hutool.core.map.MapUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.rabbitmq.client.Channel;
@@ -7,10 +8,8 @@ import com.wsw.patrickstar.api.model.dto.TaskDTO;
 import com.wsw.patrickstar.api.response.Result;
 import com.wsw.patrickstar.api.service.TaskCloudService;
 import com.wsw.patrickstar.common.constant.RabbitConstants;
-import com.wsw.patrickstar.common.exception.BusinessException;
 import com.wsw.patrickstar.search.service.ElasticService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.MapUtils;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -41,15 +40,15 @@ public class DataSyncListener {
             String messageBody = new String(message.getBody());
             Map<String, Object> messageMap = JSONObject.parseObject(messageBody, new TypeReference<Map<String, Object>>() {
             });
-            if (MapUtils.isEmpty(messageMap)) {
+            if (MapUtil.isEmpty(messageMap)) {
                 log.error("数据同步服务接收到的消息为空, 无法同步!");
                 channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
                 return;
             }
             log.info("数据同步服务接收到了消息: " + JSONObject.toJSONString(messageMap));
             // 获取数据操作类型
-            String operationType = MapUtils.getString(messageMap, "operationType");
-            Long taskId = MapUtils.getLong(messageMap, "taskId");
+            String operationType = MapUtil.getStr(messageMap, "operationType");
+            Long taskId = MapUtil.getLong(messageMap, "taskId");
             TaskDTO taskDTO = null, esTask;
             Result<TaskDTO> result = taskCloudService.selectTaskByTaskId(taskId);
             if (result.getStatus() == 200 && result.getData() != null) {
