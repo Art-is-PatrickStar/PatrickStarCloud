@@ -19,8 +19,6 @@ import com.wsw.patrickstar.common.utils.SnowflakeUtils;
 import com.wsw.patrickstar.task.entity.TaskEntity;
 import com.wsw.patrickstar.task.mapper.TaskMapper;
 import com.wsw.patrickstar.task.mapstruct.ITaskConvert;
-import com.wsw.patrickstar.task.redis.RedisLock;
-import com.wsw.patrickstar.task.service.RedisService;
 import com.wsw.patrickstar.task.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -53,14 +51,14 @@ import java.util.concurrent.*;
  */
 @Slf4j
 @Service
-@CacheConfig(cacheNames = "task", cacheManager = "taskCacheManager")
+@CacheConfig(cacheNames = "task", cacheManager = "redisCacheManager")
 public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> implements TaskService {
     @Resource
     private TaskMapper taskMapper;
     @Resource
     private RecepienterCloudService recepienterCloudService;
-    @Resource
-    private RedisService redisService;
+//    @Resource
+//    private RedisService redisService;
     @Value("${snowf.workId}")
     private long workId;
     //分页大小
@@ -133,10 +131,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> impleme
     @Override
     public void hisResourceProcess(TaskRequestDTO taskRequestDTO) {
         //考虑用户点击频繁，设置分布式锁
-        RedisLock redisLock = redisService.tryLock(taskRequestDTO.getTaskCaption());
-        if (!redisLock.isLockSuccessed()) {
-            throw new BusinessException(ResultStatusEnums.CLICK_FREQUENT);
-        }
+//        RedisLock redisLock = redisService.tryLock(taskRequestDTO.getTaskCaption());
+//        if (!redisLock.isLockSuccessed()) {
+//            throw new BusinessException(ResultStatusEnums.CLICK_FREQUENT);
+//        }
         //异步执行(使用默认内置线程池ForkJoinPool.commonPool(), 也可自定义线程池)
         CompletableFuture.runAsync(() -> {
             List<TaskEntity> taskEntities = this.lambdaQuery()

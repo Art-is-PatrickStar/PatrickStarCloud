@@ -1,4 +1,4 @@
-package com.wsw.patrickstar.task.redis;
+package com.wsw.patrickstar.redis.deprecated;
 
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  * @Description: redis分布式锁
  */
 @Slf4j
-@Component
+@Deprecated
 public class RedisDistributedLock {
     @Resource
     private RedissonClient redissonClient;
@@ -36,6 +36,7 @@ public class RedisDistributedLock {
         try {
             lockSuccessed = rLock.tryLock(waitTime, leaseTime, unit);
         } catch (InterruptedException e) {
+            log.error("RedisDistributedLock tryLock() failed, objectName=" + objectName, e);
             return FAILURE_LOCK;
         }
         if (lockSuccessed) {

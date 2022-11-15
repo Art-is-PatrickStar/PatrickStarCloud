@@ -1,4 +1,4 @@
-package com.wsw.patrickstar.task.redis;
+package com.wsw.patrickstar.redis.deprecated;
 
 import org.redisson.api.RLock;
 
@@ -7,6 +7,7 @@ import org.redisson.api.RLock;
  * @Date 2021/7/25 23:34
  * @Description: 获取redis锁的封装对象
  */
+@Deprecated
 public class RedisLock {
     private RLock rLock;
     private boolean lockSuccessed = false;
