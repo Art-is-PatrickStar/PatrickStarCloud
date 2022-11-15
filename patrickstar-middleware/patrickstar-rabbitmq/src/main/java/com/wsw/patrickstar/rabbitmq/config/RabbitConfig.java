@@ -4,6 +4,7 @@ import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,20 +15,25 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class RabbitConfig {
-    private static final String WSW_TEST_MESSAGE_EXCHANGE_NAME = "wsw_test_message_exchange";
-    private static final String WSW_TEST_MESSAGE_QUEUE_NAME = "wsw_test_message_queue";
-    private static final String WSW_TEST_MESSAGE_ROUTING_KEY = "wsw_test_message_routing_key";
-    private static final String WSW_TEST_MESSAGE_EXCHANGE_DLQ_NAME = "wsw_test_message_dlq_exchange";
-    private static final String WSW_TEST_MESSAGE_QUEUE_DLQ_NAME = "wsw_test_message_dlq_queue";
+    @Value("${task.exchange}")
+    private String TASK_EXCHANGE;
+    @Value("${task.queue}")
+    private String TASK_QUEUE;
+    @Value("${task.routing.key}")
+    private String TASK_ROUTING_KEY;
+    @Value("${task.dlq.exchange}")
+    private String TASK_DLQ_EXCHANGE;
+    @Value("${task.dlq.queue}")
+    private String TASK_DLQ_QUEUE;
 
     /**
      * @Description: 声明Direct交换机 支持持久化
      * @Author: wangsongwen
      * @DateTime: 2021/10/14 11:25
      */
-    @Bean("directExchange1")
-    public Exchange directExchange1() {
-        return ExchangeBuilder.directExchange(WSW_TEST_MESSAGE_EXCHANGE_NAME).durable(true).build();
+    @Bean("taskExchange")
+    public Exchange taskExchange() {
+        return ExchangeBuilder.directExchange(TASK_EXCHANGE).durable(true).build();
     }
 
     /**
@@ -35,11 +41,11 @@ public class RabbitConfig {
      * @Author: wangsongwen
      * @DateTime: 2021/10/14 11:25
      */
-    @Bean("directQueue1")
-    public Queue directQueue1() {
-        return QueueBuilder.durable(WSW_TEST_MESSAGE_QUEUE_NAME)
-                .withArgument("x-dead-letter-exchange", WSW_TEST_MESSAGE_EXCHANGE_DLQ_NAME)
-                .withArgument("x-dead-letter-routing-key", WSW_TEST_MESSAGE_QUEUE_DLQ_NAME).build();
+    @Bean("taskQueue")
+    public Queue taskQueue() {
+        return QueueBuilder.durable(TASK_QUEUE)
+                .withArgument("x-dead-letter-exchange", TASK_DLQ_EXCHANGE)
+                .withArgument("x-dead-letter-routing-key", TASK_DLQ_QUEUE).build();
     }
 
     /**
@@ -47,9 +53,9 @@ public class RabbitConfig {
      * @Author: wangsongwen
      * @DateTime: 2021/10/14 11:25
      */
-    @Bean("directBinding1")
-    public Binding directBinding1(@Qualifier("directQueue1") Queue queue, @Qualifier("directExchange1") Exchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(WSW_TEST_MESSAGE_ROUTING_KEY).noargs();
+    @Bean("taskBinding")
+    public Binding taskBinding(@Qualifier("taskQueue") Queue queue, @Qualifier("taskExchange") Exchange exchange) {
+        return BindingBuilder.bind(queue).to(exchange).with(TASK_ROUTING_KEY).noargs();
     }
 
     /**
@@ -57,9 +63,9 @@ public class RabbitConfig {
      * @Author: wangsongwen
      * @DateTime: 2021/10/14 11:24
      */
-    @Bean("dlqDirectExchange1")
-    public Exchange dlqDirectExchange1() {
-        return ExchangeBuilder.directExchange(WSW_TEST_MESSAGE_EXCHANGE_DLQ_NAME).durable(true).build();
+    @Bean("taskDlqExchange")
+    public Exchange taskDlqExchange() {
+        return ExchangeBuilder.directExchange(TASK_DLQ_EXCHANGE).durable(true).build();
     }
 
     /**
@@ -67,9 +73,9 @@ public class RabbitConfig {
      * @Author: wangsongwen
      * @DateTime: 2021/10/14 11:24
      */
-    @Bean("dlqDirectQueue1")
-    public Queue dlqDirectQueue1() {
-        return QueueBuilder.durable(WSW_TEST_MESSAGE_QUEUE_DLQ_NAME).build();
+    @Bean("taskDlqQueue")
+    public Queue taskDlqQueue() {
+        return QueueBuilder.durable(TASK_DLQ_QUEUE).build();
     }
 
     /**
@@ -77,9 +83,9 @@ public class RabbitConfig {
      * @Author: wangsongwen
      * @DateTime: 2021/10/14 11:24
      */
-    @Bean("dlqDirectBinding1")
-    public Binding dlqDirectBinding1(@Qualifier("dlqDirectQueue1") Queue queue, @Qualifier("dlqDirectExchange1") Exchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(WSW_TEST_MESSAGE_QUEUE_DLQ_NAME).noargs();
+    @Bean("taskDlqBinding")
+    public Binding taskDlqBinding(@Qualifier("taskDlqQueue") Queue queue, @Qualifier("taskDlqExchange") Exchange exchange) {
+        return BindingBuilder.bind(queue).to(exchange).with(TASK_DLQ_QUEUE).noargs();
     }
 
     @Bean(name = "consumerBatchContainerFactory")

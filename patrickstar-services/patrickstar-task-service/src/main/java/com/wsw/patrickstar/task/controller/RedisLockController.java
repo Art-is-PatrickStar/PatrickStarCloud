@@ -1,4 +1,4 @@
-package com.wsw.patrickstar.redis.controller;
+package com.wsw.patrickstar.task.controller;
 
 import com.wsw.patrickstar.redis.lock.RedisDistributedLock;
 import com.wsw.patrickstar.redis.service.RedisService;

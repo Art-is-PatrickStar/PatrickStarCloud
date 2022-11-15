@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class RabbitBatchConsumer {
-    @RabbitListener(queues = "wsw_test_message_queue", containerFactory = "consumerBatchContainerFactory")
+    @RabbitListener(queues = "task_queue", containerFactory = "consumerBatchContainerFactory")
     public void message(List<Message> messages, Channel channel) throws Exception {
         try {
             List<String> messageBodys = messages.stream().map(e -> new String(e.getBody())).collect(Collectors.toList());

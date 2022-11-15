@@ -12,22 +12,6 @@
     </parent>
 
     <dependencies>
-        <!-- Nacos discovery-->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-        </dependency>
-        <!-- nacos config -->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-        </dependency>
-        <!-- patrickstar-api -->
-        <dependency>
-            <groupId>com.wsw</groupId>
-            <artifactId>patrickstar-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!-- patrickstar-common -->
         <dependency>
             <groupId>com.wsw</groupId>
@@ -48,18 +32,9 @@
             <artifactId>redisson</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
