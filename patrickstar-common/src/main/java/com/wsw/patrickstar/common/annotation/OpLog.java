@@ -2,7 +2,7 @@ package com.wsw.patrickstar.common.annotation;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.wsw.patrickstar.common.enums.ModuleTypeEnum;
-import com.wsw.patrickstar.common.enums.OperationType;
+import com.wsw.patrickstar.common.enums.OperationTypeEnum;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -20,7 +20,7 @@ public @interface OpLog {
     /**
      * 操作类型
      */
-    OperationType opType() default OperationType.ADD;
+    OperationTypeEnum opType() default OperationTypeEnum.ADD;
 
     /**
      * 日志类型
@@ -28,9 +28,14 @@ public @interface OpLog {
     ModuleTypeEnum type() default ModuleTypeEnum.TASK;
 
     /**
-     * 日志类型对应的主键id
+     * 日志类型实体对应的主键id
      */
     String typeId() default "";
+
+    /**
+     * 日志类型被记录的类型实体键
+     */
+    String moduleId() default "";
 
     /**
      * service类

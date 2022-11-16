@@ -4,6 +4,7 @@ import com.wsw.patrickstar.api.response.Result;
 import com.wsw.patrickstar.api.response.ResultStatusEnums;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -33,12 +34,12 @@ public class GlobalExceptionHandler {
     /**
      * SQL语法异常处理
      */
-//    @ResponseStatus(HttpStatus.OK)
-//    @ExceptionHandler(value = BadSqlGrammarException.class)
-//    public Result badSqlGrammarHandler(BadSqlGrammarException e) {
-//        log.error("全局异常 - badSqlGrammarHandler: []", e);
-//        return Result.createFailResult(ResultStatusEnums.SQL_ERROR_EXCEPTION);
-//    }
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(value = BadSqlGrammarException.class)
+    public Result badSqlGrammarHandler(BadSqlGrammarException e) {
+        log.error("全局异常 - badSqlGrammarHandler: []", e);
+        return Result.createFailResult(ResultStatusEnums.SQL_ERROR_EXCEPTION);
+    }
 
     /**
      * 默认异常处理

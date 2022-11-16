@@ -7,6 +7,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Description:
@@ -43,6 +44,9 @@ public class CompareUtils {
                     Object o1 = readMethod.invoke(obj1);
                     // 在obj2上调用get方法等同于获得obj2的属性值
                     Object o2 = readMethod.invoke(obj2);
+                    if (Objects.isNull(o1) || Objects.isNull(o2)) {
+                        continue;
+                    }
                     if (!o1.equals(o2)) {
                         try {
                             //根据属性名获取swagger注解的注释从而获取属性的中文名
@@ -64,7 +68,7 @@ public class CompareUtils {
             }
             return stringBuilder.toString();
         } catch (Exception e) {
-            throw new Exception("实体比较异常: " + e);
+            throw new Exception("compareFields方法执行异常: " + e);
         }
     }
 }

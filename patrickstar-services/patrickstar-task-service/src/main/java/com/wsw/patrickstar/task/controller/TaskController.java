@@ -7,7 +7,7 @@ import com.wsw.patrickstar.api.response.ResultStatusEnums;
 import com.wsw.patrickstar.common.annotation.OpLog;
 import com.wsw.patrickstar.common.base.PageInfo;
 import com.wsw.patrickstar.common.enums.ModuleTypeEnum;
-import com.wsw.patrickstar.common.enums.OperationType;
+import com.wsw.patrickstar.common.enums.OperationTypeEnum;
 import com.wsw.patrickstar.common.exception.BusinessException;
 import com.wsw.patrickstar.task.service.TaskService;
 import io.swagger.annotations.Api;
@@ -40,7 +40,7 @@ public class TaskController {
 
     @ApiOperation("创建任务")
     @PostMapping("/create")
-    @OpLog(opType = OperationType.ADD, type = ModuleTypeEnum.TASK, typeId = "taskId")
+    @OpLog(opType = OperationTypeEnum.ADD, type = ModuleTypeEnum.TASK, typeId = "taskId")
     public Result<Void> createTask(@RequestBody @Valid TaskDTO taskDTO) {
         Result<Void> result = Result.createSuccessResult();
         taskService.createTask(taskDTO);
@@ -49,7 +49,7 @@ public class TaskController {
 
     @ApiOperation("更新任务")
     @PutMapping("/update")
-    @OpLog(opType = OperationType.UPDATE, type = ModuleTypeEnum.TASK, typeId = "taskId", serviceClass = TaskService.class, ignoreFields = {"createTime", "updateTime"})
+    @OpLog(opType = OperationTypeEnum.UPDATE, type = ModuleTypeEnum.TASK, typeId = "taskId", serviceClass = TaskService.class, ignoreFields = {"createTime", "updateTime"})
     public Result<Void> updateTask(@RequestBody TaskDTO taskDTO) {
         Result<Void> result = Result.createSuccessResult();
         taskService.updateTask(taskDTO);
@@ -58,7 +58,7 @@ public class TaskController {
 
     @ApiOperation("删除任务")
     @DeleteMapping("/delete")
-    @OpLog(opType = OperationType.DELETE, type = ModuleTypeEnum.TASK, typeId = "taskId")
+    @OpLog(opType = OperationTypeEnum.DELETE, type = ModuleTypeEnum.TASK, typeId = "taskId")
     public Result<Void> deleteTask(@RequestBody TaskDTO taskDTO) {
         Result<Void> result = Result.createSuccessResult();
         if (taskDTO.getTaskId() == null) {

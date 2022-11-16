@@ -14,7 +14,7 @@ import springfox.documentation.oas.annotations.EnableOpenApi;
 @EnableOpenApi
 @EnableScheduling
 @EnableDiscoveryClient
-@EnableAspectJAutoProxy
+//@EnableAspectJAutoProxy
 @EnableFeignClients("com.wsw")
 @ComponentScan(basePackages = {"com.wsw"})
 @SpringBootApplication(exclude = {SpringBootConfiguration.class, DataSourceAutoConfiguration.class})

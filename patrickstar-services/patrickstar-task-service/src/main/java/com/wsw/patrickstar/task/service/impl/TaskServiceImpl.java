@@ -1,6 +1,7 @@
 package com.wsw.patrickstar.task.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -14,8 +15,10 @@ import com.wsw.patrickstar.common.base.PageInfo;
 import com.wsw.patrickstar.common.enums.TaskStatusEnum;
 import com.wsw.patrickstar.common.enums.TaskTypeEnum;
 import com.wsw.patrickstar.common.exception.BusinessException;
+import com.wsw.patrickstar.common.exception.LockAcquireFailException;
 import com.wsw.patrickstar.common.utils.DateUtils;
 import com.wsw.patrickstar.common.utils.SnowflakeUtils;
+import com.wsw.patrickstar.redis.lock.RedisDistributedLock;
 import com.wsw.patrickstar.task.entity.TaskEntity;
 import com.wsw.patrickstar.task.mapper.TaskMapper;
 import com.wsw.patrickstar.task.mapstruct.ITaskConvert;
@@ -57,8 +60,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> impleme
     private TaskMapper taskMapper;
     @Resource
     private RecepienterCloudService recepienterCloudService;
-//    @Resource
-//    private RedisService redisService;
+    @Resource
+    private RedisDistributedLock redisDistributedLock;
     @Value("${snowf.workId}")
     private long workId;
     //分页大小
@@ -131,17 +134,30 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> impleme
     @Override
     public void hisResourceProcess(TaskRequestDTO taskRequestDTO) {
         //考虑用户点击频繁，设置分布式锁
-//        RedisLock redisLock = redisService.tryLock(taskRequestDTO.getTaskCaption());
-//        if (!redisLock.isLockSuccessed()) {
-//            throw new BusinessException(ResultStatusEnums.CLICK_FREQUENT);
-//        }
+        try {
+            redisDistributedLock.tryLock(taskRequestDTO.getTaskId().toString(), 1, 1, TimeUnit.SECONDS, () -> true);
+        } catch (LockAcquireFailException e) {
+            throw new BusinessException(ResultStatusEnums.CLICK_FREQUENT);
+        }
         //异步执行(使用默认内置线程池ForkJoinPool.commonPool(), 也可自定义线程池)
         CompletableFuture.runAsync(() -> {
-            List<TaskEntity> taskEntities = this.lambdaQuery()
-                    .between(TaskEntity::getUpdateTime, taskRequestDTO.getUpdateTimeStart(), taskRequestDTO.getUpdateTimeEnd())
-                    .list();
-            //处理
-            System.out.println(taskEntities);
+            try {
+                redisDistributedLock.tryLock(taskRequestDTO.getTaskId().toString(), 1, 20, TimeUnit.SECONDS, () -> {
+                    List<TaskEntity> taskEntities = this.lambdaQuery()
+                            .between(TaskEntity::getUpdateTime, taskRequestDTO.getUpdateTimeStart(), taskRequestDTO.getUpdateTimeEnd())
+                            .list();
+                    try {
+                        Thread.sleep(40 * 1000);
+                        //处理
+                        log.info(JSON.toJSONString(taskEntities));
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return true;
+                });
+            } catch (Exception e) {
+                throw new BusinessException(ResultStatusEnums.SYSTEM_EXCEPTION);
+            }
         });
     }
 

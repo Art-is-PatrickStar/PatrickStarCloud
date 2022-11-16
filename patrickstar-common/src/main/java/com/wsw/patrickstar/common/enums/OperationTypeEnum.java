@@ -8,7 +8,7 @@ import lombok.Getter;
  * @Description:
  */
 @Getter
-public enum OperationType {
+public enum OperationTypeEnum {
     ADD("ADD", "新增"),
     DELETE("DELETE", "删除"),
     UPDATE("UPDATE", "修改");
@@ -16,7 +16,7 @@ public enum OperationType {
     private final String operation;
     private final String message;
 
-    OperationType(String operation, String message) {
+    OperationTypeEnum(String operation, String message) {
         this.operation = operation;
         this.message = message;
     }

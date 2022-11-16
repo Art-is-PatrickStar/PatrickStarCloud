@@ -18,6 +18,7 @@
         <module>patrickstar-recepienter-service</module>
         <module>patrickstar-search-service</module>
         <module>patrickstar-auth-service</module>
+        <module>patrickstar-log-service</module>
     </modules>
 
 </project>
