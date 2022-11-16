@@ -3,7 +3,7 @@ package com.wsw.patrickstar.common.enums;
 import lombok.Getter;
 
 /**
- * @Description: TODO
+ * @Description:
  * @Author: wangsongwen
  * @Date: 2022/7/19 10:22
  */

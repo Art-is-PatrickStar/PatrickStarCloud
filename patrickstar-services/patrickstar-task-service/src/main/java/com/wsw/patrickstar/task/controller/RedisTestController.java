@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @RestController
-public class RedisLockController {
+public class RedisTestController {
     @Resource
     private RedisDistributedLock redisDistributedLock;
     @Resource

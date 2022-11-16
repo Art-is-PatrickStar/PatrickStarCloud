@@ -1,4 +1,4 @@
-package com.wsw.patrickstar.task.entity;
+package com.wsw.patrickstar.kafka.entity;
 
 import com.wsw.patrickstar.common.base.BaseEntity;
 import lombok.AllArgsConstructor;
@@ -7,9 +7,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
+ * @Description:
  * @Author: wangsongwen
- * @Date: 2021/11/17 9:55
- * @Description: TODO
+ * @Date: 2022/11/16 10:02
  */
 @Data
 @NoArgsConstructor
