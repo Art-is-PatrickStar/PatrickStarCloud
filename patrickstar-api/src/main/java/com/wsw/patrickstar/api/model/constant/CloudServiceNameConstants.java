@@ -14,4 +14,8 @@ public class CloudServiceNameConstants {
      * recepienter服务的serviceid
      */
     public static final String RECEPIENTER_SERVICE = "patrickstar-recepienter-service";
+    /**
+     * log服务的serviceid
+     */
+    public static final String LOG_SERVICE = "patrickstar-log-service";
 }

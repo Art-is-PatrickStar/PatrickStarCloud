@@ -40,7 +40,7 @@ public class TaskController {
 
     @ApiOperation("创建任务")
     @PostMapping("/create")
-    @OpLog(opType = OperationTypeEnum.ADD, type = ModuleTypeEnum.TASK, typeId = "taskId")
+    @OpLog(opType = OperationTypeEnum.ADD, type = ModuleTypeEnum.TASK, typeId = "taskId", moduleId = "taskId")
     public Result<Void> createTask(@RequestBody @Valid TaskDTO taskDTO) {
         Result<Void> result = Result.createSuccessResult();
         taskService.createTask(taskDTO);
@@ -49,7 +49,7 @@ public class TaskController {
 
     @ApiOperation("更新任务")
     @PutMapping("/update")
-    @OpLog(opType = OperationTypeEnum.UPDATE, type = ModuleTypeEnum.TASK, typeId = "taskId", serviceClass = TaskService.class, ignoreFields = {"createTime", "updateTime"})
+    @OpLog(opType = OperationTypeEnum.UPDATE, type = ModuleTypeEnum.TASK, typeId = "taskId", moduleId = "taskId", serviceClass = TaskService.class, ignoreFields = {"createTime", "updateTime"})
     public Result<Void> updateTask(@RequestBody TaskDTO taskDTO) {
         Result<Void> result = Result.createSuccessResult();
         taskService.updateTask(taskDTO);
@@ -58,7 +58,7 @@ public class TaskController {
 
     @ApiOperation("删除任务")
     @DeleteMapping("/delete")
-    @OpLog(opType = OperationTypeEnum.DELETE, type = ModuleTypeEnum.TASK, typeId = "taskId")
+    @OpLog(opType = OperationTypeEnum.DELETE, type = ModuleTypeEnum.TASK, typeId = "taskId", moduleId = "taskId")
     public Result<Void> deleteTask(@RequestBody TaskDTO taskDTO) {
         Result<Void> result = Result.createSuccessResult();
         if (taskDTO.getTaskId() == null) {
