@@ -32,10 +32,10 @@
             <if test="query.taskId != null">
                 AND task_id = #{query.taskId, jdbcType=BIGINT}
             </if>
-            <if test="query.createTimeStart != null and query.createTimeStart != '' and query.createTimeEnd != null and query.createTimeEnd != ''">
+            <if test="query.createTimeStart != null and query.createTimeEnd != null">
                 AND create_time BETWEEN #{query.createTimeStart, jdbcType=DATE} AND #{query.createTimeEnd, jdbcType=DATE}
             </if>
-            <if test="query.updateTimeStart != null and query.updateTimeStart != '' and query.updateTimeEnd != null and query.updateTimeEnd != ''">
+            <if test="query.updateTimeStart != null and query.updateTimeEnd != null">
                 AND update_time BETWEEN #{query.updateTimeStart, jdbcType=DATE} AND #{query.updateTimeEnd, jdbcType=DATE}
             </if>
             <if test="query.taskName != null and query.taskName != ''">

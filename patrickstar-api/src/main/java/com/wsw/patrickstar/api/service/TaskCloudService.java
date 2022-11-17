@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @Date: 2022/1/6 16:27
  * @Description: Task微服务接口
  */
-@FeignClient(contextId = "taskCloudService", value = CloudServiceNameConstants.TASK_SERVICE, fallbackFactory = TaskCloudServiceFallBackFactory.class)
+@FeignClient(value = CloudServiceNameConstants.TASK_SERVICE, fallbackFactory = TaskCloudServiceFallBackFactory.class)
 public interface TaskCloudService {
     @GetMapping("/select/byTaskId")
     Result<TaskDTO> selectTaskByTaskId(@RequestParam("taskId") Long taskId);

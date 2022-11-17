@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @Description:
@@ -40,14 +41,14 @@ public class TaskRequestDTO extends PageParam implements Serializable {
     private String updateUser;
 
     @ApiModelProperty(value = "创建时间-开始")
-    private String createTimeStart;
+    private Date createTimeStart;
 
     @ApiModelProperty(value = "创建时间-结束")
-    private String createTimeEnd;
+    private Date createTimeEnd;
 
     @ApiModelProperty(value = "更新时间-开始")
-    private String updateTimeStart;
+    private Date updateTimeStart;
 
     @ApiModelProperty(value = "更新时间-结束")
-    private String updateTimeEnd;
+    private Date updateTimeEnd;
 }

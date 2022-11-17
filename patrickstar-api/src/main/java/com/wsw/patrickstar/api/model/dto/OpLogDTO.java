@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @Description:
@@ -35,5 +36,5 @@ public class OpLogDTO implements Serializable {
     private String createdUser;
 
     @ApiModelProperty(value = "创建时间")
-    private String createdTime;
+    private Date createdTime;
 }

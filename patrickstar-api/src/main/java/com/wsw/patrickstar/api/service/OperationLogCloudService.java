@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @Author: wangsongwen
  * @Date: 2022/11/16 15:26
  */
-@FeignClient(contextId = "operationLogCloudService", value = CloudServiceNameConstants.LOG_SERVICE, fallbackFactory = OperationLogCloudServiceFallBackFactory.class)
+@FeignClient(value = CloudServiceNameConstants.LOG_SERVICE, fallbackFactory = OperationLogCloudServiceFallBackFactory.class)
 public interface OperationLogCloudService {
     @PostMapping("/log/saveLog")
     Result<Void> saveLog(@RequestBody OpLogDTO opLogDTO);

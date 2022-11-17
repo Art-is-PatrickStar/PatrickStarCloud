@@ -6,18 +6,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.EnableAsync;
 import springfox.documentation.oas.annotations.EnableOpenApi;
 
+@EnableAsync
 @EnableOpenApi
-@EnableScheduling
 @EnableDiscoveryClient
-//@EnableAspectJAutoProxy
 @EnableFeignClients("com.wsw")
-@ComponentScan(basePackages = {"com.wsw"})
-@SpringBootApplication(exclude = {SpringBootConfiguration.class, DataSourceAutoConfiguration.class})
+@SpringBootApplication(scanBasePackages = {"com.wsw"}, exclude = {SpringBootConfiguration.class, DataSourceAutoConfiguration.class})
 public class PatrickStarTaskServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(PatrickStarTaskServiceApplication.class, args);

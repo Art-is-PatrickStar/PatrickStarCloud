@@ -16,7 +16,6 @@ import com.wsw.patrickstar.common.enums.TaskStatusEnum;
 import com.wsw.patrickstar.common.enums.TaskTypeEnum;
 import com.wsw.patrickstar.common.exception.BusinessException;
 import com.wsw.patrickstar.common.exception.LockAcquireFailException;
-import com.wsw.patrickstar.common.utils.DateUtils;
 import com.wsw.patrickstar.common.utils.SnowflakeUtils;
 import com.wsw.patrickstar.redis.lock.RedisDistributedLock;
 import com.wsw.patrickstar.task.entity.TaskEntity;
@@ -24,12 +23,7 @@ import com.wsw.patrickstar.task.mapper.TaskMapper;
 import com.wsw.patrickstar.task.mapstruct.ITaskConvert;
 import com.wsw.patrickstar.task.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +31,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.*;
 
 /**
@@ -54,7 +49,6 @@ import java.util.concurrent.*;
  */
 @Slf4j
 @Service
-@CacheConfig(cacheNames = "task", cacheManager = "redisCacheManager")
 public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> implements TaskService {
     @Resource
     private TaskMapper taskMapper;
@@ -93,7 +87,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> impleme
     }
 
     @Override
-    @CachePut(key = "#taskDTO.taskId", unless = "#result == null")
     public void updateTask(TaskDTO taskDTO) {
         TaskEntity taskEntity = ITaskConvert.INSTANCE.dtoToEntity(taskDTO);
         this.updateById(taskEntity);
@@ -103,7 +96,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> impleme
     }
 
     @Override
-    @CacheEvict(key = "#p0", allEntries = false)
     public void deleteTask(Long taskId) {
         this.baseMapper.deleteById(taskId);
             /*QueryWrapper<TaskEntity> queryWrapper = new QueryWrapper<>();
@@ -114,18 +106,17 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> impleme
     @Override
     public PageInfo<TaskDTO> selectTask(TaskRequestDTO taskRequestDTO) {
         Page<?> page = new Page<>(taskRequestDTO.getStart(), taskRequestDTO.getLength());
-        if (StringUtils.isNotBlank(taskRequestDTO.getCreateTimeStart()) && StringUtils.isBlank(taskRequestDTO.getCreateTimeEnd())) {
-            taskRequestDTO.setCreateTimeEnd(DateUtils.dateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS_SSS, new Date()));
+        if (!Objects.isNull(taskRequestDTO.getCreateTimeStart()) && Objects.isNull(taskRequestDTO.getCreateTimeEnd())) {
+            taskRequestDTO.setCreateTimeEnd(new Date());
         }
-        if (StringUtils.isNotBlank(taskRequestDTO.getUpdateTimeStart()) && StringUtils.isBlank(taskRequestDTO.getUpdateTimeEnd())) {
-            taskRequestDTO.setUpdateTimeEnd(DateUtils.dateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS_SSS, new Date()));
+        if (!Objects.isNull(taskRequestDTO.getUpdateTimeStart()) && Objects.isNull(taskRequestDTO.getUpdateTimeEnd())) {
+            taskRequestDTO.setUpdateTimeEnd(new Date());
         }
         IPage<TaskEntity> taskEntityIPage = taskMapper.selectTask(page, taskRequestDTO);
         return PageInfo.fromIPage(taskEntityIPage.convert(ITaskConvert.INSTANCE::entityToDto));
     }
 
     @Override
-    @Cacheable(key = "#p0", unless = "#result == null")
     public TaskDTO selectTaskByTaskId(Long taskId) {
         TaskEntity taskEntity = this.lambdaQuery().eq(TaskEntity::getTaskId, taskId).one();
         return ITaskConvert.INSTANCE.entityToDto(taskEntity);
@@ -204,11 +195,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, TaskEntity> impleme
     //分页查询数据内部类
     public static class ThreadQuery implements Callable<List<TaskEntity>> {
         private final int pageIndex;
-        private final String beginUpdateTime;
-        private final String endUpdateTime;
+        private final Date beginUpdateTime;
+        private final Date endUpdateTime;
         private final TaskMapper taskMapper;
 
-        public ThreadQuery(int pageIndex, String beginUpdateTime, String endUpdateTime, TaskMapper taskMapper) {
+        public ThreadQuery(int pageIndex, Date beginUpdateTime, Date endUpdateTime, TaskMapper taskMapper) {
             this.pageIndex = pageIndex;
             this.beginUpdateTime = beginUpdateTime;
             this.endUpdateTime = endUpdateTime;

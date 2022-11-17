@@ -12,7 +12,7 @@ import java.util.List;
  * @Author: wangsongwen
  * @Date: 2022/7/19 14:37
  */
-@Mapper(uses = DateMapper.class)
+@Mapper
 public interface ITaskConvert {
     ITaskConvert INSTANCE = Mappers.getMapper(ITaskConvert.class);
 

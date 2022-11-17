@@ -7,6 +7,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @Description:
@@ -39,11 +40,11 @@ public class TaskRecordDTO implements Serializable {
     private String createUser;
 
     @ApiModelProperty(value = "创建时间")
-    private String createTime;
+    private Date createTime;
 
     @ApiModelProperty(value = "更新人员")
     private String updateUser;
 
     @ApiModelProperty(value = "更新时间")
-    private String updateTime;
+    private Date updateTime;
 }

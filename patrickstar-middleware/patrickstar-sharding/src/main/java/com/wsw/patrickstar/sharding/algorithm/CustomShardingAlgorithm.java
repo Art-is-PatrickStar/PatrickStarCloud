@@ -1,10 +1,9 @@
-package com.wsw.patrickstar.task.algorithm;
+package com.wsw.patrickstar.sharding.algorithm;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.google.common.collect.Range;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
@@ -25,7 +24,7 @@ public class CustomShardingAlgorithm implements PreciseShardingAlgorithm<Date>, 
 
     List<Integer> cacheList;
     Map<Integer, Integer> cacheMap;
-    Map<Integer, List<String>> cacheListMap;
+    Map<Integer, List<String>> cachedActualTables; //key: 数字类型的日期， value 实际表名
 
     @Override
     public String doSharding(Collection<String> availableTargetNames, PreciseShardingValue<Date> preciseShardingValue) {
@@ -41,12 +40,9 @@ public class CustomShardingAlgorithm implements PreciseShardingAlgorithm<Date>, 
         for (int i = cacheList.size() - 1; i >= 0; i--) {
             int source = cacheList.get(i);
             if (getDateNum(date) >= source) {
-                StringBuilder sb = new StringBuilder(logicTable).append("_").append(source);
-                int num = cacheMap.get(source);
-                if (num == 1) {
-                    return sb.toString();
-                } else {
-                    return sb.append(date.getTime() % num).toString();
+                List<String> nodes = cachedActualTables.get(source);
+                if (nodes != null && nodes.size() >= 0) {
+                    return nodes.get(0);
                 }
             }
         }
@@ -173,24 +169,24 @@ public class CustomShardingAlgorithm implements PreciseShardingAlgorithm<Date>, 
     }
 
     private void addAvailableTargetName(int current, String logicTable, List<String> tables) {
-        final List<String> list = cacheListMap.get(current);
-        for (String suffix : list) {
-            tables.add(logicTable + "_" + suffix);
+        final List<String> list = cachedActualTables.get(current);
+        for (String actualNode : list) {
+            tables.add(actualNode);
         }
     }
 
     private int getDateNum(Date date) {
-        Calendar calendar = DateUtils.toCalendar(date);
+        Calendar calendar = DateUtil.calendar(date);
         return calendar.get(Calendar.YEAR) * 10000 + (calendar.get(Calendar.MONTH) + 1) * 100 + calendar.get(Calendar.DAY_OF_MONTH);
     }
 
     private void cacheTable(Collection<String> availableTargetNames, String logicTable) {
         cacheMap = new HashMap<>();
         cacheList = new ArrayList<>();
-        cacheListMap = new HashMap<>();
-
+        cachedActualTables = new HashMap<>();
         availableTargetNames.forEach(e -> {
-            String suffix = e.substring(logicTable.length() + 1);
+            String[] split = e.split("_");
+            String suffix = split[split.length - 1];
             int date;
             if (suffix.length() > 8) {
                 date = Integer.parseInt(suffix.substring(0, 8));
@@ -204,10 +200,10 @@ public class CustomShardingAlgorithm implements PreciseShardingAlgorithm<Date>, 
             if (!cacheList.contains(date)) {
                 cacheList.add(date);
             }
-            if (!cacheListMap.containsKey(date)) {
-                cacheListMap.put(date, new ArrayList<>(16));
+            if (!cachedActualTables.containsKey(date)) {
+                cachedActualTables.put(date, new ArrayList<>(16));
             }
-            cacheListMap.get(date).add(suffix);
+            cachedActualTables.get(date).add(e);
             cacheMap.put(date, num);
         });
         cacheList.sort(Comparator.comparingInt(a -> a));

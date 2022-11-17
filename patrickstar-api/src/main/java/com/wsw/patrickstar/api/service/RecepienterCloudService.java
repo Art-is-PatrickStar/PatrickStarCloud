@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @Date: 2022/1/6 16:56
  * @Description: Recepienter微服务接口
  */
-@FeignClient(contextId = "recepienterCloudService", value = CloudServiceNameConstants.RECEPIENTER_SERVICE, fallbackFactory = RecepienterCloudServiceFallBackFactory.class)
+@FeignClient(value = CloudServiceNameConstants.RECEPIENTER_SERVICE, fallbackFactory = RecepienterCloudServiceFallBackFactory.class)
 public interface RecepienterCloudService {
     @PostMapping("/recepienter/createTaskRecord")
     Result<Void> createTaskRecord(@RequestBody TaskRecordDTO taskRecordDTO);
