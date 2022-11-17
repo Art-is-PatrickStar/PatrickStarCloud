@@ -7,9 +7,9 @@
         <result column="task_caption" property="taskCaption" jdbcType="VARCHAR"/>
         <result column="extend" property="extend" jdbcType="VARCHAR"/>
         <result column="create_user" property="createUser" jdbcType="VARCHAR"/>
-        <result column="create_time" property="createTime" jdbcType="DATE"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
         <result column="update_user" property="updateUser" jdbcType="VARCHAR"/>
-        <result column="update_time" property="updateTime" jdbcType="DATE"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="baseColumn">
@@ -33,10 +33,10 @@
                 AND task_id = #{query.taskId, jdbcType=BIGINT}
             </if>
             <if test="query.createTimeStart != null and query.createTimeEnd != null">
-                AND create_time BETWEEN #{query.createTimeStart, jdbcType=DATE} AND #{query.createTimeEnd, jdbcType=DATE}
+                AND create_time BETWEEN #{query.createTimeStart, jdbcType=TIMESTAMP} AND #{query.createTimeEnd, jdbcType=TIMESTAMP}
             </if>
             <if test="query.updateTimeStart != null and query.updateTimeEnd != null">
-                AND update_time BETWEEN #{query.updateTimeStart, jdbcType=DATE} AND #{query.updateTimeEnd, jdbcType=DATE}
+                AND update_time BETWEEN #{query.updateTimeStart, jdbcType=TIMESTAMP} AND #{query.updateTimeEnd, jdbcType=TIMESTAMP}
             </if>
             <if test="query.taskName != null and query.taskName != ''">
                 AND task_name = #{query.taskName, jdbcType=VARCHAR}

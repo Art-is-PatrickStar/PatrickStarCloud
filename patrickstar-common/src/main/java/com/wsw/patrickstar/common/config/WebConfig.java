@@ -29,7 +29,7 @@ public class WebConfig {
         // 2、添加 fastJson 的配置信息，比如: 是否要格式化返回的Json数据；
         FastJsonConfig config = new FastJsonConfig();
         config.setCharset(StandardCharsets.UTF_8);
-        config.setDateFormat("yyyy-MM-dd HH:mm:ss");
+        config.setDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         config.setSerializerFeatures(SerializerFeature.WriteMapNullValue);
         //解决Long转json精度丢失的问题
         SerializeConfig serializeConfig = SerializeConfig.globalInstance;

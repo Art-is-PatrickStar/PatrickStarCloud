@@ -13,7 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @Description: 公用线程池
  */
 @Configuration
-@EnableAsync  // 异步
 public class TaskThreadPool {
     // 获得Java虚拟机可用的处理器个数 + 1
     private static final int THREADS = Runtime.getRuntime().availableProcessors() + 1;
