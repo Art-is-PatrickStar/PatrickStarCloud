@@ -1,6 +1,6 @@
-package com.wsw.patrickstar.rabbitmq.controller;
+package com.wsw.patrickstar.rabbitmq.service.controller;
 
-import com.wsw.patrickstar.rabbitmq.provider.RabbitProvider;
+import com.wsw.patrickstar.rabbitmq.service.provider.RabbitProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

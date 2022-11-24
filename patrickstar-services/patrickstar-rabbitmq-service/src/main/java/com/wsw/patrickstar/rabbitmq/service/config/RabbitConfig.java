@@ -1,4 +1,4 @@
-package com.wsw.patrickstar.rabbitmq.config;
+package com.wsw.patrickstar.rabbitmq.service.config;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;

@@ -1,4 +1,4 @@
-package com.wsw.patrickstar.rabbitmq.consumer;
+package com.wsw.patrickstar.rabbitmq.service.consumer;
 
 import com.alibaba.fastjson.JSON;
 import com.rabbitmq.client.Channel;

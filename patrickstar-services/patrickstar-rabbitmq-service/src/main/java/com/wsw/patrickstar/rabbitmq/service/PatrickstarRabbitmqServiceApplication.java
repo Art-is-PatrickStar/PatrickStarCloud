@@ -1,4 +1,4 @@
-package com.wsw.patrickstar.rabbitmq;
+package com.wsw.patrickstar.rabbitmq.service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,10 +8,10 @@ import springfox.documentation.oas.annotations.EnableOpenApi;
 @EnableOpenApi
 @EnableDiscoveryClient
 @SpringBootApplication(scanBasePackages = {"com.wsw"})
-public class PatrickStarRabbitmqApplication {
+public class PatrickstarRabbitmqServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(PatrickStarRabbitmqApplication.class, args);
+        SpringApplication.run(PatrickstarRabbitmqServiceApplication.class, args);
     }
 
 }

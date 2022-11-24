@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: patrickstar-rabbitmq
+    name: patrickstar-rabbitmq-service
   profiles:
     active: dev  # 开发环境
   main:

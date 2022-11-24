@@ -1,4 +1,4 @@
-package com.wsw.patrickstar.rabbitmq.provider;
+package com.wsw.patrickstar.rabbitmq.service.provider;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
