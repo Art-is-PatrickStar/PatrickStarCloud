@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: patrickstar-kafka
+    name: patrickstar-kafka-service
   profiles:
     active: dev  # 开发环境
   main:

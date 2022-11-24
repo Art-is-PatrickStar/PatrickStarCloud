@@ -20,6 +20,7 @@
         <module>patrickstar-auth-service</module>
         <module>patrickstar-log-service</module>
         <module>patrickstar-rabbitmq-service</module>
+        <module>patrickstar-kafka-service</module>
     </modules>
 
 </project>

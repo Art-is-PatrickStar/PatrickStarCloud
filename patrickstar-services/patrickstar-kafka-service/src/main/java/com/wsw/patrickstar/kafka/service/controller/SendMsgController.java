@@ -1,8 +1,8 @@
-package com.wsw.patrickstar.kafka.controller;
+package com.wsw.patrickstar.kafka.service.controller;
 
 import com.wsw.patrickstar.common.enums.TopicEnum;
-import com.wsw.patrickstar.kafka.entity.TaskMessage;
-import com.wsw.patrickstar.kafka.service.KafkaMessageService;
+import com.wsw.patrickstar.kafka.service.entity.TaskMessage;
+import com.wsw.patrickstar.kafka.service.service.KafkaMessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

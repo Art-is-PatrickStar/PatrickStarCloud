@@ -1,8 +1,8 @@
-package com.wsw.patrickstar.kafka.consumer;
+package com.wsw.patrickstar.kafka.service.consumer;
 
 import com.wsw.patrickstar.common.enums.TopicEnum;
 import com.wsw.patrickstar.common.utils.SerializeUtils;
-import com.wsw.patrickstar.kafka.entity.TaskMessage;
+import com.wsw.patrickstar.kafka.service.entity.TaskMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;

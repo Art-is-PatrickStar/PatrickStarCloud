@@ -1,9 +1,9 @@
-package com.wsw.patrickstar.kafka.service.impl;
+package com.wsw.patrickstar.kafka.service.service.impl;
 
 import com.wsw.patrickstar.common.enums.TopicEnum;
 import com.wsw.patrickstar.common.utils.SerializeUtils;
-import com.wsw.patrickstar.kafka.entity.TaskMessage;
-import com.wsw.patrickstar.kafka.service.KafkaMessageService;
+import com.wsw.patrickstar.kafka.service.entity.TaskMessage;
+import com.wsw.patrickstar.kafka.service.service.KafkaMessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;

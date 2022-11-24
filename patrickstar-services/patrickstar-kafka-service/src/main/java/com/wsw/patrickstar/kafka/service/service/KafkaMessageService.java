@@ -1,7 +1,7 @@
-package com.wsw.patrickstar.kafka.service;
+package com.wsw.patrickstar.kafka.service.service;
 
 import com.wsw.patrickstar.common.enums.TopicEnum;
-import com.wsw.patrickstar.kafka.entity.TaskMessage;
+import com.wsw.patrickstar.kafka.service.entity.TaskMessage;
 
 /**
  * @Description:

@@ -1,4 +1,4 @@
-package com.wsw.patrickstar.kafka.entity;
+package com.wsw.patrickstar.kafka.service.entity;
 
 import com.wsw.patrickstar.common.base.BaseEntity;
 import lombok.AllArgsConstructor;
