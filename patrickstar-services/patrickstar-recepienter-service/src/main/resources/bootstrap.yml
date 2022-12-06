@@ -1,12 +1,11 @@
-server:
-  port: 4002
-
 spring:
   application:
     name: patrickstar-recepienter-service
-  profiles:
-    active: dev  # 开发环境
 
+---
+#开发环境
+spring:
+  profiles: dev
   cloud:
     nacos:
       discovery:
@@ -14,11 +13,11 @@ spring:
       config:
         server-addr: localhost:8848  # nacos配置中心地址
         file-extension: yaml  # 配置文件格式
-        group: DEFAULT_GROUP
+        group: DEV_GROUP
         # 公共配置文件
         ext-config:
-          - data-id: patrickstar-${spring.profiles.active}.yaml
-            group: DEFAULT_GROUP
+          - data-id: patrickstar-dev.yaml
+            group: DEV_GROUP
             refresh: true  # 是否允许自动刷新
 
     sentinel:
@@ -32,6 +31,72 @@ spring:
           nacos:
             server-addr: localhost:8848
             dataId: ${spring.application.name}
-            groupId: DEFAULT_GROUP
+            groupId: DEV_GROUP
+            data-type: json
+            rule-type: flow
+
+---
+#测试环境
+spring:
+  profiles: test
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848  # 配置nacos地址
+      config:
+        server-addr: localhost:8848  # nacos配置中心地址
+        file-extension: yaml  # 配置文件格式
+        group: TEST_GROUP
+        # 公共配置文件
+        ext-config:
+          - data-id: patrickstar-test.yaml
+            group: TEST_GROUP
+            refresh: true  # 是否允许自动刷新
+
+    sentinel:
+      eager: true  # 取消控制台懒加载
+      transport:
+        dashboard: localhost:9090  # sentinel dashboard地址
+        port: 8719  # sentinel api port
+      # sentinel配置持久化
+      datasource:
+        ds1:
+          nacos:
+            server-addr: localhost:8848
+            dataId: ${spring.application.name}
+            groupId: TEST_GROUP
+            data-type: json
+            rule-type: flow
+
+---
+#生产环境
+spring:
+  profiles: prod
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848  # 配置nacos地址
+      config:
+        server-addr: localhost:8848  # nacos配置中心地址
+        file-extension: yaml  # 配置文件格式
+        group: PROD_GROUP
+        # 公共配置文件
+        ext-config:
+          - data-id: patrickstar-prod.yaml
+            group: PROD_GROUP
+            refresh: true  # 是否允许自动刷新
+
+    sentinel:
+      eager: true  # 取消控制台懒加载
+      transport:
+        dashboard: localhost:9090  # sentinel dashboard地址
+        port: 8719  # sentinel api port
+      # sentinel配置持久化
+      datasource:
+        ds1:
+          nacos:
+            server-addr: localhost:8848
+            dataId: ${spring.application.name}
+            groupId: PROD_GROUP
             data-type: json
             rule-type: flow

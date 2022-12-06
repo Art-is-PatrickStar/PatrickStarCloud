@@ -44,13 +44,11 @@ patrickstar-common
 patrickstar-redis
 patrickstar-sharding
 patrickstar-gateway -> 4000
+patrickstar-auth-service -> 3000
 patrickstar-task-service -> 4001
 patrickstar-recepienter-service -> 4002
 patrickstar-search-service -> 4003
-patrickstar-auth-service -> 4004
-patrickstar-log-service -> 4005
-patrickstar-rabbitmq-service -> 4006
-patrickstar-kafka-service -> 4007
+patrickstar-log-service -> 4004
 ```
 
 ## 程序运行

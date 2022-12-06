@@ -33,7 +33,7 @@ import java.util.Arrays;
 @Component
 public class AuthFilter implements GlobalFilter, Ordered {
     @Value("${jwt.secretKey}")
-    private String secretKey; // token密钥
+    private String jwtSecretKey; // token密钥
 
     @Value("${auth.skip.urls}")
     private String[] skipAuthUrls;
@@ -86,7 +86,7 @@ public class AuthFilter implements GlobalFilter, Ordered {
     private String verifyJWT(String token){
         String userName;
         try {
-            Algorithm algorithm = Algorithm.HMAC256(secretKey);
+            Algorithm algorithm = Algorithm.HMAC256(jwtSecretKey);
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer("WSW")
                     .build();
