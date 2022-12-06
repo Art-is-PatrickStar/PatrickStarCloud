@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -62,11 +63,19 @@ public class DataSourceDefineConfig {
     }
 
     /**
-     * recepienter数据源
+     * h2数据源
      */
-    @Bean(name = "recepienterDataSource")
-    @ConfigurationProperties(prefix = "datasource.recepienter")
-    public DataSource recepienterDataSource() {
+    @Bean(name = "h2DataSource")
+    @ConfigurationProperties(prefix = "datasource.h2")
+    public DataSource h2DataSource() {
         return DataSourceBuilder.create().build();
+    }
+
+    /**
+     * 这里注入的是dynamic datasource
+     */
+    @Bean
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
     }
 }

@@ -41,6 +41,8 @@ Java1.8
 ```text
 patrickstar-api
 patrickstar-common
+patrickstar-redis
+patrickstar-sharding
 patrickstar-gateway -> 4000
 patrickstar-task-service -> 4001
 patrickstar-recepienter-service -> 4002

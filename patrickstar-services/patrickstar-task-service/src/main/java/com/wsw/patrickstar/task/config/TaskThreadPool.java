@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TaskThreadPool {
     // 获得Java虚拟机可用的处理器个数 + 1
     private static final int THREADS = Runtime.getRuntime().availableProcessors() + 1;
-
     private static final int corePoolSize = THREADS;
     private static final int maximumPoolSize = 2 * THREADS;
     private static final int blockingQueueCapacity = 1024;
