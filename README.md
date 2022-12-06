@@ -42,10 +42,13 @@ Java1.8
 patrickstar-api
 patrickstar-common
 patrickstar-gateway -> 4000
-patrickstar-auth -> 3000
 patrickstar-task-service -> 4001
 patrickstar-recepienter-service -> 4002
 patrickstar-search-service -> 4003
+patrickstar-auth-service -> 4004
+patrickstar-log-service -> 4005
+patrickstar-rabbitmq-service -> 4006
+patrickstar-kafka-service -> 4007
 ```
 
 ## 程序运行

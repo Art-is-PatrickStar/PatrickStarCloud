@@ -1,5 +1,5 @@
 server:
-  port: 20002
+  port: 4007
 
 spring:
   application:
