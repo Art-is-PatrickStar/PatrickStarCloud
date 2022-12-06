@@ -1,7 +1,6 @@
 package com.wsw.patrickstar.common.utils;
 
 import com.alibaba.fastjson.JSON;
-import com.wsw.patrickstar.common.base.BaseEntity;
 
 import java.util.List;
 
@@ -17,7 +16,7 @@ public class SerializeUtils {
      * @param dto 传输对象-单一对象
      * @return byte数组
      */
-    public static <T extends BaseEntity> byte[] serialize2JsonByte(T dto) {
+    public static <T> byte[] serialize2JsonByte(T dto) {
         return JSON.toJSONBytes(dto);
     }
 
@@ -27,7 +26,7 @@ public class SerializeUtils {
      * @param dtoList 传输对象-列表
      * @return byte数组
      */
-    public static <T extends BaseEntity> byte[] serialize2JsonByte(List<T> dtoList) {
+    public static <T> byte[] serialize2JsonByte(List<T> dtoList) {
         return JSON.toJSONBytes(dtoList);
     }
 
@@ -38,7 +37,7 @@ public class SerializeUtils {
      * @param clazz           对象类型
      * @return 传输对象-单一对象
      */
-    public static <T extends BaseEntity> T deserialize(byte[] serializedBytes, Class<T> clazz) {
+    public static <T> T deserialize(byte[] serializedBytes, Class<T> clazz) {
         return JSON.parseObject(serializedBytes, clazz);
     }
 
@@ -49,7 +48,7 @@ public class SerializeUtils {
      * @param clazz           对象类型
      * @return 传输对象-列表
      */
-    public static <T extends BaseEntity> List<T> deserializeList(byte[] serializedBytes, Class<T> clazz) {
+    public static <T> List<T> deserializeList(byte[] serializedBytes, Class<T> clazz) {
         return JSON.parseArray(new String(serializedBytes), clazz);
     }
 }

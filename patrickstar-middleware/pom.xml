@@ -16,6 +16,8 @@
     <modules>
         <module>patrickstar-redis</module>
         <module>patrickstar-sharding</module>
+        <module>patrickstar-rabbitmq</module>
+        <module>patrickstar-kafka</module>
     </modules>
 
 </project>

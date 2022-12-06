@@ -56,6 +56,18 @@
             <artifactId>patrickstar-sharding</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- patrickstar-rabbitmq -->
+        <dependency>
+            <groupId>com.wsw</groupId>
+            <artifactId>patrickstar-rabbitmq</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- patrickstar-kafka -->
+        <!--<dependency>
+            <groupId>com.wsw</groupId>
+            <artifactId>patrickstar-kafka</artifactId>
+            <version>${project.version}</version>
+        </dependency>-->
         <!-- openFeign -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
