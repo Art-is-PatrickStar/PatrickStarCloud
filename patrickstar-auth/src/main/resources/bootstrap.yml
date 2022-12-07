@@ -1,6 +1,6 @@
 spring:
   application:
-    name: patrickstar-auth-service
+    name: patrickstar-auth
 
 ---
 #开发环境

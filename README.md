@@ -44,7 +44,7 @@ patrickstar-common
 patrickstar-redis
 patrickstar-sharding
 patrickstar-gateway -> 4000
-patrickstar-auth-service -> 3000
+patrickstar-auth -> 3000
 patrickstar-task-service -> 4001
 patrickstar-recepienter-service -> 4002
 patrickstar-search-service -> 4003

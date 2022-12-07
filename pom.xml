@@ -13,6 +13,7 @@
         <module>patrickstar-api</module>
         <module>patrickstar-common</module>
         <module>patrickstar-gateway</module>
+        <module>patrickstar-auth</module>
         <module>patrickstar-middleware</module>
         <module>patrickstar-services</module>
     </modules>

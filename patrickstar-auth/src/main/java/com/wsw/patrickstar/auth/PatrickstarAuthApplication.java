@@ -8,8 +8,10 @@ import springfox.documentation.oas.annotations.EnableOpenApi;
 @EnableOpenApi
 @EnableDiscoveryClient
 @SpringBootApplication(scanBasePackages = {"com.wsw"})
-public class PatrickStarAuthServiceApplication {
+public class PatrickstarAuthApplication {
+
     public static void main(String[] args) {
-        SpringApplication.run(PatrickStarAuthServiceApplication.class, args);
+        SpringApplication.run(PatrickstarAuthApplication.class, args);
     }
+
 }
