@@ -52,10 +52,10 @@ spring:
           filters: # 过滤器
             - StripPrefix=1  # 忽略掉第一层前缀进行转发 4000/patrickstar-task-service/task/select/byid -> 4001/task/select/byid
         # 认证中心
-        - id: patrickstar-auth-service
-          uri: lb://patrickstar-auth-service
+        - id: patrickstar-auth
+          uri: lb://patrickstar-auth
           predicates:
-            - Path=/patrickstar-auth-service/**
+            - Path=/patrickstar-auth/**
           filters:
             - StripPrefix=1
         # recepienter服务
@@ -131,10 +131,10 @@ spring:
           filters: # 过滤器
             - StripPrefix=1  # 忽略掉第一层前缀进行转发 4000/patrickstar-task-service/task/select/byid -> 4001/task/select/byid
         # 认证中心
-        - id: patrickstar-auth-service
-          uri: lb://patrickstar-auth-service
+        - id: patrickstar-auth
+          uri: lb://patrickstar-auth
           predicates:
-            - Path=/patrickstar-auth-service/**
+            - Path=/patrickstar-auth/**
           filters:
             - StripPrefix=1
         # recepienter服务
@@ -210,10 +210,10 @@ spring:
           filters: # 过滤器
             - StripPrefix=1  # 忽略掉第一层前缀进行转发 4000/patrickstar-task-service/task/select/byid -> 4001/task/select/byid
         # 认证中心
-        - id: patrickstar-auth-service
-          uri: lb://patrickstar-auth-service
+        - id: patrickstar-auth
+          uri: lb://patrickstar-auth
           predicates:
-            - Path=/patrickstar-auth-service/**
+            - Path=/patrickstar-auth/**
           filters:
             - StripPrefix=1
         # recepienter服务

@@ -19,6 +19,8 @@ public enum ResultStatusEnums {
 
     //参数校验级
     PARAMS_EXCEPTION(5000, "请求参数校验异常", 0),
+    USER_NOT_FOUND(5001, "用户名或密码错误", 0),
+    USER_IS_EXIST(5002, "用户名已存在", 0),
 
     //业务级
     OP_LOG_SAVE_FAILD(6000, "操作日志插入失败", 0),

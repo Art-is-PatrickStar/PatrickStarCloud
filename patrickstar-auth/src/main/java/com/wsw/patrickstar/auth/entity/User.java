@@ -14,17 +14,13 @@ import javax.persistence.*;
  * @Description:
  */
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @ApiModel("用户信息实体")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ApiModelProperty(value = "主键")
-    private Long id;
-
-    @Column(nullable = false)
     @ApiModelProperty(value = "用户id")
     private Long userId;
 
@@ -35,4 +31,12 @@ public class User {
     @Column(nullable = false)
     @ApiModelProperty(value = "密码")
     private String password;
+
+    @Column
+    @ApiModelProperty(value = "邮箱")
+    private String mail;
+
+    @Column
+    @ApiModelProperty(value = "其他")
+    private String extend;
 }
