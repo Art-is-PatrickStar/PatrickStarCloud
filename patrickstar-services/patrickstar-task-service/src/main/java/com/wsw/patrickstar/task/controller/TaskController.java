@@ -1,5 +1,6 @@
 package com.wsw.patrickstar.task.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.wsw.patrickstar.api.model.dto.TaskDTO;
 import com.wsw.patrickstar.api.model.dto.TaskRequestDTO;
 import com.wsw.patrickstar.api.response.Result;
@@ -9,6 +10,7 @@ import com.wsw.patrickstar.common.base.PageInfo;
 import com.wsw.patrickstar.common.enums.ModuleTypeEnum;
 import com.wsw.patrickstar.common.enums.OperationTypeEnum;
 import com.wsw.patrickstar.common.exception.BusinessException;
+import com.wsw.patrickstar.common.utils.LoginInfoUtils;
 import com.wsw.patrickstar.task.service.TaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -84,6 +86,7 @@ public class TaskController {
             throw new BusinessException(ResultStatusEnums.VALIDATE_FAILED);
         }
         result.value(taskService.selectTaskByTaskId(taskId));
+        //log.info(JSON.toJSONString(LoginInfoUtils.getCurrentThreadLoginInfo()));
         return result;
     }
 
