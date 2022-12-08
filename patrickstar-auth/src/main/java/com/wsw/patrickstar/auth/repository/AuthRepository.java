@@ -15,5 +15,7 @@ import java.util.List;
 public interface AuthRepository extends JpaRepository<User, Long> {
     User findUserByUsernameAndPassword(String username, String password);
 
-    List<User> findUserByUsername(String username);
+    List<User> findUsersByUsername(String username);
+
+    User findUserByUsername(String username);
 }

@@ -16,15 +16,17 @@ public enum ResultStatusEnums {
     SQL_ERROR_EXCEPTION(406, "SQL语法异常", 0),
     MICRO_SERVICE_EXCEPTION(407, "微服务异常", 0),
     CLICK_FREQUENT(408, "请勿频繁点击", 0),
+    TOKEN_INVALID(409, "token已过期", 0),
 
     //参数校验级
-    PARAMS_EXCEPTION(5000, "请求参数校验异常", 0),
-    USER_NOT_FOUND(5001, "用户名或密码错误", 0),
-    USER_IS_EXIST(5002, "用户名已存在", 0),
+    PARAMS_EXCEPTION(5000, "参数校验异常", 0),
 
     //业务级
     OP_LOG_SAVE_FAILD(6000, "操作日志插入失败", 0),
     TASK_RECORD_INSERT_FAILD(6001, "新增任务记录失败", 0),
+    USER_NOT_FOUND(6002, "用户不存在", 0),
+    USER_INFORMATION_ERROR(6003, "用户名或密码错误", 0),
+    USER_IS_EXIST(6004, "用户名已存在", 0),
     ;
 
     private final Integer status;

@@ -22,9 +22,9 @@ public class UserAuthResponseDTO implements Serializable {
     @ApiModelProperty(value = "用户名")
     private String username;
 
-    @ApiModelProperty(value = "token")
-    private String token;
+    @ApiModelProperty(value = "access_token")
+    private String accessToken;
 
-    @ApiModelProperty(value = "refreshToken")
+    @ApiModelProperty(value = "refresh_token")
     private String refreshToken;
 }

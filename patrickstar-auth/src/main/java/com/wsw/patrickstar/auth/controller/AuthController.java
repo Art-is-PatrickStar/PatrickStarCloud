@@ -1,7 +1,6 @@
 package com.wsw.patrickstar.auth.controller;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
+import cn.hutool.core.util.StrUtil;
 import com.wsw.patrickstar.api.model.dto.UserAuthResponseDTO;
 import com.wsw.patrickstar.api.model.dto.UserLoginDTO;
 import com.wsw.patrickstar.api.model.dto.UserSignUpDTO;
@@ -9,16 +8,13 @@ import com.wsw.patrickstar.api.response.Result;
 import com.wsw.patrickstar.api.response.ResultStatusEnums;
 import com.wsw.patrickstar.auth.entity.User;
 import com.wsw.patrickstar.auth.service.AuthService;
+import com.wsw.patrickstar.auth.utils.JwtRedisUtils;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.Objects;
 
 /**
  * @Author WangSongWen
@@ -27,27 +23,12 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
     @Resource
     private AuthService authService;
-
-    @Value("${jwt.secretKey}")
-    private String secretKey; // token密钥
-
-    @Value("${token.expire.time}")
-    private long tokenExpireTime;
-
-    @Value("${refresh.token.expire.time}")
-    private long refreshTokenExpireTime;
-
-    @Value("${jwt.refresh.token.key.format}")
-    private String jwtRefreshTokenKeyFormat;
-
-    @Value("${jwt.blacklist.key.format}")
-    private String jwtBlacklistKeyFormat;
-
     @Resource
-    private StringRedisTemplate stringRedisTemplate;
+    private JwtRedisUtils jwtRedisUtils;
 
     @ApiOperation("用户登录")
     @PostMapping("/login")
@@ -57,22 +38,7 @@ public class AuthController {
         if (Objects.isNull(user)) {
             return Result.createFailResult(ResultStatusEnums.USER_NOT_FOUND);
         }
-        // 生成token
-        String token = buildJWT(user.getUsername());
-        // 生成refreshToken
-        String refreshToken = UUID.randomUUID().toString().replaceAll("-", "");
-        // 保存refreshToken至redis，使用hash结构保存使用中的token以及用户标识
-        String refreshTokenKey = String.format(jwtRefreshTokenKeyFormat, refreshToken);
-        stringRedisTemplate.opsForHash().put(refreshTokenKey, "token", token);
-        stringRedisTemplate.opsForHash().put(refreshTokenKey, "username", user.getUsername());
-        // refreshToken设置过期时间
-        stringRedisTemplate.expire(refreshTokenKey, refreshTokenExpireTime, TimeUnit.HOURS);
-        // 返回结果
-        UserAuthResponseDTO userAuthResponseDTO = new UserAuthResponseDTO();
-        userAuthResponseDTO.setUserId(user.getUserId());
-        userAuthResponseDTO.setUsername(user.getUsername());
-        userAuthResponseDTO.setToken(token);
-        userAuthResponseDTO.setRefreshToken(refreshToken);
+        UserAuthResponseDTO userAuthResponseDTO = jwtRedisUtils.generateTokenAndRefreshToken(user.getUserId(), user.getUsername());
         result.setData(userAuthResponseDTO);
         return result;
     }
@@ -87,37 +53,32 @@ public class AuthController {
         return Result.createSuccessResult();
     }
 
-    @ApiOperation("刷新token")
-    @GetMapping("/refreshToken")
-    public Result<Map<String, Object>> refreshToken(@RequestParam String refreshToken) {
-        Result<Map<String, Object>> result = Result.createSuccessResult();
-        Map<String, Object> resultMap = new HashMap<>();
-        String refreshTokenKey = String.format(jwtRefreshTokenKeyFormat, refreshToken);
-        String userName = (String) stringRedisTemplate.opsForHash().get(refreshTokenKey, "username");
-        if (StringUtils.isBlank(userName)) {
-            result = Result.createFailResult(ResultStatusEnums.UNAUTHORIZED);
-            return result;
-        }
-        String newToken = buildJWT(userName);
-        // 替换当前token，并将旧token添加到黑名单
-        String oldToken = (String) stringRedisTemplate.opsForHash().get(refreshTokenKey, "token");
-        stringRedisTemplate.opsForHash().put(refreshTokenKey, "token", newToken);
-        stringRedisTemplate.opsForValue().set(String.format(jwtBlacklistKeyFormat, oldToken), "",
-                tokenExpireTime, TimeUnit.HOURS);
-        resultMap.put("token", newToken);
-        result.setData(resultMap);
-        return result;
+    @ApiOperation("用户登出")
+    @PostMapping("/logout")
+    public Result<Void> logout(@RequestParam String userName) {
+        jwtRedisUtils.removeToken(userName);
+        return Result.createSuccessResult();
     }
 
-    private String buildJWT(String userName) {
-        //生成jwt
-        Date now = new Date();
-        Algorithm algo = Algorithm.HMAC256(secretKey);
-        return JWT.create()
-                .withIssuer(userName)
-                .withIssuedAt(now)
-                .withExpiresAt(new Date(now.getTime() + tokenExpireTime))
-                .withClaim("userName", userName) // 保存身份标识
-                .sign(algo);
+    @ApiOperation("刷新token")
+    @GetMapping("/refreshToken")
+    public Result<UserAuthResponseDTO> refreshToken(@RequestParam String refreshToken) {
+        Result<UserAuthResponseDTO> result = Result.createSuccessResult();
+        Boolean tokenExpired = jwtRedisUtils.isTokenExpired(refreshToken);
+        if (tokenExpired) {
+            return Result.createFailResult(ResultStatusEnums.TOKEN_INVALID);
+        }
+        Boolean refreshTokenNotExistCache = jwtRedisUtils.isRefreshTokenNotExistCache(refreshToken);
+        if (refreshTokenNotExistCache) {
+            return Result.createFailResult(ResultStatusEnums.TOKEN_INVALID);
+        }
+        Long userId = jwtRedisUtils.getUserIdFromToken(refreshToken);
+        String userName = jwtRedisUtils.getUserNameFromToken(refreshToken);
+        if (Objects.isNull(userId) || StrUtil.isBlank(userName)) {
+            return Result.createFailResult(ResultStatusEnums.PARAMS_EXCEPTION);
+        }
+        UserAuthResponseDTO userAuthResponseDTO = jwtRedisUtils.generateTokenAndRefreshToken(userId, userName);
+        result.setData(userAuthResponseDTO);
+        return result;
     }
 }
