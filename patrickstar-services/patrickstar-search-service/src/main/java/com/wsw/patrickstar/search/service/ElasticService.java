@@ -16,7 +16,7 @@ public interface ElasticService {
 
     List<TaskDTO> getAllEsTask();
 
-    void addEsTask(TaskDTO taskDTO);
+    void addEsTask(List<TaskDTO> taskDTOS);
 
     void deleteEsTaskById(Long taskId);
 

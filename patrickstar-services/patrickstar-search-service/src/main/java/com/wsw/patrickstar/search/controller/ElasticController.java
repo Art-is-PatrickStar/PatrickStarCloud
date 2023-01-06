@@ -23,40 +23,46 @@ public class ElasticController {
 
     @GetMapping("/searchTask")
     public Result<List<TaskDTO>> searchTask(@RequestParam String keyWord) {
-        Result<List<TaskDTO>> result = Result.createFailResult();
-        try {
-            List<TaskDTO> taskDTOS = elasticService.searchTask(keyWord);
-            result = Result.createSuccessResult(taskDTOS);
-        } catch (Exception e) {
-            result.setMsg(e.getMessage());
-            log.error(e.getMessage(), e.getCause());
-        }
+        Result<List<TaskDTO>> result = Result.createSuccessResult();
+        List<TaskDTO> taskDTOS = elasticService.searchTask(keyWord);
+        result.value(taskDTOS);
         return result;
     }
 
     @GetMapping("/getEsTaskById/{taskId}")
     public Result<TaskDTO> getEsTaskById(@PathVariable Long taskId) {
-        Result<TaskDTO> result = Result.createFailResult();
-        try {
-            TaskDTO taskDTO = elasticService.getEsTaskById(taskId);
-            result = Result.createSuccessResult(taskDTO);
-        } catch (Exception e) {
-            result.setMsg(e.getMessage());
-            log.error(e.getMessage(), e.getCause());
-        }
+        Result<TaskDTO> result = Result.createSuccessResult();
+        TaskDTO taskDTO = elasticService.getEsTaskById(taskId);
+        result.value(taskDTO);
         return result;
     }
 
     @GetMapping("/getAllEsTask")
     public Result<List<TaskDTO>> getAllEsTask() {
-        Result<List<TaskDTO>> result = Result.createFailResult();
-        try {
-            List<TaskDTO> taskDTOS = elasticService.getAllEsTask();
-            result = Result.createSuccessResult(taskDTOS);
-        } catch (Exception e) {
-            result.setMsg(e.getMessage());
-            log.error(e.getMessage(), e.getCause());
-        }
+        Result<List<TaskDTO>> result = Result.createSuccessResult();
+        List<TaskDTO> taskDTOS = elasticService.getAllEsTask();
+        result.value(taskDTOS);
+        return result;
+    }
+
+    @PostMapping("/addEsTask")
+    public Result<Void> addEsTask(@RequestBody List<TaskDTO> taskDTOS) {
+        Result<Void> result = Result.createSuccessResult();
+        elasticService.addEsTask(taskDTOS);
+        return result;
+    }
+
+    @GetMapping("/deleteEsTaskById/{taskId}")
+    public Result<TaskDTO> deleteEsTaskById(@PathVariable Long taskId) {
+        Result<TaskDTO> result = Result.createSuccessResult();
+        elasticService.deleteEsTaskById(taskId);
+        return result;
+    }
+
+    @PostMapping("/updateEsTask")
+    public Result<Void> updateEsTask(@RequestBody TaskDTO taskDTO) {
+        Result<Void> result = Result.createSuccessResult();
+        elasticService.updateEsTask(taskDTO);
         return result;
     }
 }

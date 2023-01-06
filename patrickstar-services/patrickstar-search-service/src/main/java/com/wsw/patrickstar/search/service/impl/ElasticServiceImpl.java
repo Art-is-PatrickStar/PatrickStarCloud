@@ -1,17 +1,16 @@
 package com.wsw.patrickstar.search.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.wsw.patrickstar.api.model.dto.TaskDTO;
 import com.wsw.patrickstar.search.entity.TaskEntity;
 import com.wsw.patrickstar.search.mapstruct.ITaskConvert;
 import com.wsw.patrickstar.search.repository.ElasticRepository;
 import com.wsw.patrickstar.search.service.ElasticService;
-import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,7 @@ public class ElasticServiceImpl implements ElasticService {
     @Resource
     private ElasticRepository elasticRepository;
     @Resource
-    private ElasticsearchTemplate elasticsearchTemplate;
+    private ElasticsearchRestTemplate elasticsearchRestTemplate;
 
     @Override
     public List<TaskDTO> searchTask(String keyWord) {
@@ -39,20 +38,19 @@ public class ElasticServiceImpl implements ElasticService {
         Pageable pageable = PageRequest.of(0, 10);
         // 构建查询NativeSearchQueryBuilder
         NativeSearchQueryBuilder searchQueryBuilder = new NativeSearchQueryBuilder().withPageable(pageable);
-        if (StringUtils.isNotBlank(keyWord)) {
+        if (StrUtil.isNotBlank(keyWord)) {
             searchQueryBuilder.withQuery(QueryBuilders.queryStringQuery(keyWord));
         }
         SearchQuery searchQuery = searchQueryBuilder.build();
-        Page<TaskEntity> taskEntityPage = elasticsearchTemplate.queryForPage(searchQuery, TaskEntity.class);
+        Page<TaskEntity> taskEntityPage = elasticsearchRestTemplate.queryForPage(searchQuery, TaskEntity.class);
         List<TaskEntity> taskEntities = taskEntityPage.getContent();
-        List<TaskDTO> taskDTOS = ITaskConvert.INSTANCE.entitiesToDtos(taskEntities);
-        return taskDTOS;
+        return ITaskConvert.INSTANCE.entitiesToDtos(taskEntities);
     }
 
     @Override
     public TaskDTO getEsTaskById(Long taskId) {
         Optional<TaskEntity> taskEntityOptional = elasticRepository.findById(taskId);
-        TaskDTO taskDTO = new TaskDTO();
+        TaskDTO taskDTO = null;
         if (taskEntityOptional.isPresent()) {
             taskDTO = ITaskConvert.INSTANCE.entityToDto(taskEntityOptional.get());
         }
@@ -69,9 +67,9 @@ public class ElasticServiceImpl implements ElasticService {
     }
 
     @Override
-    public void addEsTask(TaskDTO taskDTO) {
-        TaskEntity taskEntity = ITaskConvert.INSTANCE.dtoToEntity(taskDTO);
-        elasticRepository.save(taskEntity);
+    public void addEsTask(List<TaskDTO> taskDTOS) {
+        List<TaskEntity> taskEntities = ITaskConvert.INSTANCE.dtosToEntities(taskDTOS);
+        elasticRepository.saveAll(taskEntities);
     }
 
     @Override
