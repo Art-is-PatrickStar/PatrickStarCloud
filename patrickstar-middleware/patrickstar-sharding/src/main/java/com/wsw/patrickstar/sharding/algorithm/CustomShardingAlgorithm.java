@@ -21,10 +21,10 @@ import java.util.*;
 @Component
 public class CustomShardingAlgorithm implements PreciseShardingAlgorithm<Date>, RangeShardingAlgorithm<Date> {
     private final static String YYYYMMDD = "yyyyMMdd";
-
     List<Integer> cacheList;
     Map<Integer, Integer> cacheMap;
-    Map<Integer, List<String>> cachedActualTables; //key: 数字类型的日期， value 实际表名
+    //key: 数字类型的日期， value 实际表名
+    Map<Integer, List<String>> cachedActualTables;
 
     @Override
     public String doSharding(Collection<String> availableTargetNames, PreciseShardingValue<Date> preciseShardingValue) {
@@ -76,12 +76,13 @@ public class CustomShardingAlgorithm implements PreciseShardingAlgorithm<Date>, 
         }
         start = this.getStartTable(start);
         end = this.getEndTable(end);
+        //这个判断应该是有问题的，会导致开始时间如果小于最早分片中的时间，将返回最大分片。
         if (start == -1 || end == -1) {
             this.addAvailableTargetName(cacheList.get(cacheList.size() - 1), logicTable, tables);
         } else {
             int current;
-            for (int i = 0, size = cacheList.size(); i < size; i++) {
-                current = cacheList.get(i);
+            for (Integer integer : cacheList) {
+                current = integer;
                 if (current >= start && current <= end) {
                     this.addAvailableTargetName(current, logicTable, tables);
                 }
@@ -144,7 +145,6 @@ public class CustomShardingAlgorithm implements PreciseShardingAlgorithm<Date>, 
     private boolean isAvailable(int current, int start, int end) {
         boolean flag = false;
         if (current >= start) {
-
         }
         if (start > 0) {
             if (end <= 0) {
@@ -170,9 +170,7 @@ public class CustomShardingAlgorithm implements PreciseShardingAlgorithm<Date>, 
 
     private void addAvailableTargetName(int current, String logicTable, List<String> tables) {
         final List<String> list = cachedActualTables.get(current);
-        for (String actualNode : list) {
-            tables.add(actualNode);
-        }
+        tables.addAll(list);
     }
 
     private int getDateNum(Date date) {
