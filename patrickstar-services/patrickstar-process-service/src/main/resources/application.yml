@@ -1,0 +1,24 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: patrickstar-process-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/camunda?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false&allowMultiQueries=true&serverTimezone=Asia/Shanghai&&rewriteBatchedStatements=true
+    username: root
+    password: wsw19980801
+
+camunda:
+  bpm:
+    admin-user:
+      id: admin
+      password: 12345
+      first-name: admin
+    filter:
+      create: All tasks
+    database:
+      type: mysql
+      schema-update: true
+    auto-deployment-enabled: false

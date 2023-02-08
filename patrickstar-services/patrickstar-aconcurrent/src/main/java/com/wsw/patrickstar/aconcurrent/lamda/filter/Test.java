@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
  * @Description:
  * @Author: wangsongwen
  * @Date: 2022/8/24 15:16
- * Copyright © 2022 Hundsun Technologies Inc. All Rights Reserved
  */
 public class Test {
     public static class Resource {

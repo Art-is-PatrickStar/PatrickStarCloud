@@ -8,7 +8,6 @@ import java.util.Date;
  * @Description:
  * @Author: wangsongwen
  * @Date: 2022/8/5 14:09
- * Copyright © 2022 Hundsun Technologies Inc. All Rights Reserved
  */
 public class DateUtils {
     public static final String YYYY_MM = "yyyy-MM";

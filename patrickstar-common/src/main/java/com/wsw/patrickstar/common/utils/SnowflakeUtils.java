@@ -10,7 +10,6 @@ import java.util.Random;
  * @Description: 雪花算法
  * @Author: wangsongwen
  * @Date: 2022/8/4 13:23
- * Copyright © 2022 Hundsun Technologies Inc. All Rights Reserved
  */
 @Component
 public class SnowflakeUtils {

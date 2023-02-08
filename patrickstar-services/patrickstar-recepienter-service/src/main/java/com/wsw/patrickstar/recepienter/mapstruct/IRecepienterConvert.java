@@ -11,7 +11,6 @@ import java.util.List;
  * @Description:
  * @Author: wangsongwen
  * @Date: 2022/7/19 13:22
- * Copyright © 2022 Hundsun Technologies Inc. All Rights Reserved
  */
 @Mapper
 public interface IRecepienterConvert {
