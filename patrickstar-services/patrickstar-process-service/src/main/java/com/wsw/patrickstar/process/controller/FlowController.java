@@ -1,10 +1,8 @@
 package com.wsw.patrickstar.process.controller;
 
+import com.wsw.patrickstar.api.response.Result;
+import com.wsw.patrickstar.process.service.FlowService;
 import lombok.extern.slf4j.Slf4j;
-import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.repository.Deployment;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,23 +19,19 @@ import javax.annotation.Resource;
 @RestController
 public class FlowController {
     @Resource
-    private RuntimeService runtimeService;
-    @Resource
-    private RepositoryService repositoryService;
+    private FlowService flowService;
 
     @PostMapping("/deployProcess")
-    public void deployProcess(@RequestParam("name") String name, @RequestParam("resource") String resource) {
-        Deployment deploy = repositoryService.createDeployment()
-                .name(name)
-                .addClasspathResource(resource)
-                .deploy();
-        log.info("流程Id:" + deploy.getId());
-        log.info("流程Name:" + deploy.getName());
+    public Result<Void> deployProcess(@RequestParam("name") String name, @RequestParam("resource") String resource) {
+        Result<Void> result = Result.createSuccessResult();
+        flowService.deployProcess(name, resource);
+        return result;
     }
 
     @GetMapping("/startProcess")
-    public void startProcess() {
-        ProcessInstance timerSendMsg = runtimeService.startProcessInstanceByKey("timerSendMsg2");
-        log.info("instanceID: " + timerSendMsg.getId());
+    public Result<Void> startProcess(@RequestParam("processKey") String processKey, @RequestParam("businessKey") String businessKey) {
+        Result<Void> result = Result.createSuccessResult();
+        flowService.startProcess(processKey, businessKey);
+        return result;
     }
 }
