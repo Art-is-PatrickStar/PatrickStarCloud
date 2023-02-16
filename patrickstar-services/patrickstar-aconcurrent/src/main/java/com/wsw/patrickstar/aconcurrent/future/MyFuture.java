@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 /**
  * @Author: wangsongwen
  * @Date: 2021/10/27 16:12
- * @Description: TODO
+ * @Description:
  */
 public class MyFuture {
     ExecutorService executor = Executors.newFixedThreadPool(5);

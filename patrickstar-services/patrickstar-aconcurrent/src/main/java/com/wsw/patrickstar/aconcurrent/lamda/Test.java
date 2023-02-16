@@ -5,7 +5,7 @@ import java.util.Arrays;
 /**
  * @Author: wangsongwen
  * @Date: 2021/9/30 10:37
- * @Description: TODO
+ * @Description:
  */
 public class Test {
     public static void invokeCook(Cook cook) {
