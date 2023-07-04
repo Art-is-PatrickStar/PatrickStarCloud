@@ -19,7 +19,6 @@
         <module>patrickstar-search-service</module>
         <module>patrickstar-log-service</module>
         <module>patrickstar-process-service</module>
-        <module>patrickstar-aconcurrent</module>
     </modules>
 
 </project>
